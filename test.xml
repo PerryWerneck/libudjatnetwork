@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config>
+
+	<network-host name='storage' host='DNS-320L-E8943D.local' dns='true'>
+	
+		<!-- Valid range for this host -->
+		<network-state range='192.168.0.0/24' level='ready' summary='${host} is local' />
+		
+		<!-- All other ranger are invalid -->
+		<network-state range='!192.168.0.0/24' level='warning' summary='${host} is NOT local' />
+		
+	</network-host>
+	
+</config>
+
