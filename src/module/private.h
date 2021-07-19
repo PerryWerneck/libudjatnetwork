@@ -17,37 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <udjat/module.h>
+ #pragma once
 
- using namespace Udjat;
+ #include <config.h>
+ #include <udjat/defs.h>
 
- static const ModuleInfo moduleinfo{
-	PACKAGE_NAME,								// The module name.
-	"UDJat Network module", 					// The module description.
-	PACKAGE_VERSION, 							// The module version.
-	PACKAGE_URL, 								// The package URL.
-	PACKAGE_BUGREPORT 							// The bug report address.
- };
+ using namespace std;
 
- /// @brief Register udjat module.
- Udjat::Module * udjat_module_init() {
-
-	class Module : public Udjat::Module {
-	private:
-
-
-	public:
-
-		Module() : Udjat::Module("network",&moduleinfo) {
-		};
-
-		~Module() {
-		};
-
-	};
-
-	return new Module();
- }
 
 

@@ -17,37 +17,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <udjat/module.h>
+ #pragma once
 
- using namespace Udjat;
+ #include <udjat/defs.h>
 
- static const ModuleInfo moduleinfo{
-	PACKAGE_NAME,								// The module name.
-	"UDJat Network module", 					// The module description.
-	PACKAGE_VERSION, 							// The module version.
-	PACKAGE_URL, 								// The package URL.
-	PACKAGE_BUGREPORT 							// The bug report address.
- };
+ namespace Udjat {
 
- /// @brief Register udjat module.
- Udjat::Module * udjat_module_init() {
+	namespace Network {
 
-	class Module : public Udjat::Module {
-	private:
+		class UDJAT_API Agent : public Udjat::Abstract::Agent {
+		private:
 
+			struct {
+				bool dns = true;	///< @brief Check DNS resolution.
+				bool icmp = true;	///< @brief Do ICMP check.
+			} check;
 
-	public:
+			/// @brief Agent states.
+			std::vector<std::shared_ptr<Abstract::State>> states;
 
-		Module() : Udjat::Module("network",&moduleinfo) {
+			/// @brief Active state.
+			std::shared_ptr<Abstract::State> active_state;
+
+		protected:
+
+			std::shared_ptr<Abstract::State> stateFromValue() const override;
+
+		public:
+
+			void Agent(const pugi::xml_node &node);
+			virtual ~Agent();
+
+			bool hasStates() const noexcept override;
+			void append_state(const pugi::xml_node &node) override;
+			void refresh() override;
+
 		};
 
-		~Module() {
-		};
 
-	};
+	}
 
-	return new Module();
  }
-
-
