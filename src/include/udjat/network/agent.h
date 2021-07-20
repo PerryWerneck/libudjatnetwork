@@ -20,6 +20,9 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/factory.h>
+ #include <udjat/agent.h>
+ #include <udjat/state.h>
 
  namespace Udjat {
 
@@ -28,24 +31,38 @@
 		class UDJAT_API Agent : public Udjat::Abstract::Agent {
 		private:
 
+			class State;
+
 			struct {
 				bool dns = true;	///< @brief Check DNS resolution.
 				bool icmp = true;	///< @brief Do ICMP check.
 			} check;
 
+			/// @brief Host to check.
+			const char * hostname = nullptr;
+
 			/// @brief Agent states.
-			std::vector<std::shared_ptr<Abstract::State>> states;
+			std::vector<std::shared_ptr<State>> states;
 
 			/// @brief Active state.
-			std::shared_ptr<Abstract::State> active_state;
+			std::shared_ptr<State> active_state;
 
 		protected:
 
-			std::shared_ptr<Abstract::State> stateFromValue() const override;
+			//std::shared_ptr<Abstract::State> stateFromValue() const override;
+
 
 		public:
 
-			void Agent(const pugi::xml_node &node);
+			class Factory : public Udjat::Factory {
+			public:
+				Factory();
+				void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
+
+
+			};
+
+			Agent(const pugi::xml_node &node);
 			virtual ~Agent();
 
 			bool hasStates() const noexcept override;

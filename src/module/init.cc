@@ -19,10 +19,11 @@
 
  #include "private.h"
  #include <udjat/module.h>
+ #include <udjat/network/agent.h>
 
  using namespace Udjat;
 
- static const ModuleInfo moduleinfo{
+ const ModuleInfo moduleinfo{
 	PACKAGE_NAME,								// The module name.
 	"UDJat Network module", 					// The module description.
 	PACKAGE_VERSION, 							// The module version.
@@ -35,7 +36,7 @@
 
 	class Module : public Udjat::Module {
 	private:
-
+		Network::Agent::Factory agentFactory;
 
 	public:
 
