@@ -20,6 +20,7 @@
  #include "private.h"
  #include <udjat/network/agent.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/network/resolver.h>
 
  namespace Udjat {
 
@@ -42,9 +43,45 @@
 
 	Network::Agent::Agent(const pugi::xml_node &node) {
 
-		check.dns = Udjat::Attribute(node,"dns").as_bool(true);
+		memset(&addr,0,sizeof(addr));
+
+		// Do an ICMP check?
 		check.icmp = Udjat::Attribute(node,"icmp").as_bool(true);
+
+		// Get dns-server.
+		const char *dnssrv = Udjat::Attribute(node, "dns-server").as_string();
+		check.dns = Udjat::Attribute(node,"dns").as_bool(dnssrv[0] != 0);
+
+		// Host name to check.
 		hostname = Udjat::Attribute(node,"host").c_str();
+
+#ifdef DEBUG
+		{
+			info("Resolving '{}'",hostname);
+
+			DNSResolver resolver;
+			resolver.query(hostname);
+
+			info("'{}' has {} entries",hostname,resolver.size());
+
+		}
+#endif // DEBUG
+
+		if(check.dns) {
+
+			if(dnssrv[0]) {
+
+				// Resolve DNS server.
+				DNSResolver resolver;
+
+				resolver.query(dnssrv);
+
+			}
+
+		} else {
+
+
+		}
 
 		load(node);
 
@@ -61,6 +98,8 @@
 
 		/// @brief Range check.
 		class Range : public Network::Agent::State {
+		private:
+
 		public:
 			Range(const pugi::xml_node &node) : State(node) {
 			}
@@ -80,6 +119,16 @@
 	}
 
 	void Network::Agent::refresh() {
+
+		if(check.dns) {
+
+			// Check DNS resolution.
+			DNSResolver resolver{this->addr};
+
+			resolver.query(this->hostname);
+
+
+		}
 
 	}
 

@@ -6,7 +6,7 @@ AC_PREREQ(2.59)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([udjat-module-network], [1.0], [perry.werneck@gmail.com],[udjat-module-dbus],[https://github.com/PerryWerneck/udjat-module-network.git])
+AC_INIT([udjat-module-network], [1.0], [perry.werneck@gmail.com],[udjat-module-network],[https://github.com/PerryWerneck/udjat-module-network.git])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -148,6 +148,13 @@ dnl Libraries
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_EXISTS
 
+
+dnl ---------------------------------------------------------------------------
+dnl Check for libresolv
+dnl ---------------------------------------------------------------------------
+
+AC_CHECK_LIB([resolv], [gethostbyname], [LIBS="${LIBS} -lresolv"])
+
 dnl ---------------------------------------------------------------------------
 dnl Check for libudjat
 dnl ---------------------------------------------------------------------------
@@ -173,11 +180,13 @@ PKG_CHECK_MODULES(PUGIXML, pugixml, AC_DEFINE(HAVE_PUGIXML,[],[Do we have PUGIXM
 AC_SUBST(PUGIXML_LIBS)
 AC_SUBST(PUGIXML_CFLAGS)
 
-AC_SUBST(BASEDIR,$ac_pwd)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.
 dnl ---------------------------------------------------------------------------
+
+AC_SUBST(BASEDIR,$ac_pwd)
+AC_SUBST(LIBS)
 
 dnl AC_CONFIG_FILES(Makefile)
 AC_OUTPUT

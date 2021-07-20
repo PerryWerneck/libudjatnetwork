@@ -17,31 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat.h>
- #include <udjat/module.h>
- #include <udjat/factory.h>
- #include <unistd.h>
+ #pragma once
 
- using namespace std;
- using namespace Udjat;
+ #include <udjat/defs.h>
+ #include <netdb.h>
+ #include <string>
 
- int main(int argc, char **argv) {
+ namespace std {
 
-	setlocale( LC_ALL, "" );
+	UDJAT_API string to_string(const sockaddr_storage &addr, bool port = false);
+	UDJAT_API string to_string(const struct sockaddr_in &addr, bool port = false);
+	UDJAT_API string to_string(const struct sockaddr_in6 &addr, bool port = false);
 
-	Logger::redirect(nullptr,true);
+	inline ostream& operator<< (ostream& os, const sockaddr_storage &addr) {
+		return os << to_string(addr);
+	}
 
-	auto module = udjat_module_init();
+ }
 
-	auto agent = Abstract::Agent::init("test.xml");
-
-	Udjat::run();
-
-	Abstract::Agent::deinit();
-
-	cout << "Removing module" << endl;
-	delete module;
-	Module::unload();
-
-	return 0;
-}

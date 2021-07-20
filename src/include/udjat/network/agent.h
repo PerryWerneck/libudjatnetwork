@@ -23,6 +23,7 @@
  #include <udjat/factory.h>
  #include <udjat/agent.h>
  #include <udjat/state.h>
+ #include <sys/socket.h>
 
  namespace Udjat {
 
@@ -37,6 +38,9 @@
 				bool dns = true;	///< @brief Check DNS resolution.
 				bool icmp = true;	///< @brief Do ICMP check.
 			} check;
+
+			/// @brief DNS Addr if check.dns is true or host addr if check.dns is false.
+			sockaddr_storage addr;
 
 			/// @brief Host to check.
 			const char * hostname = nullptr;
