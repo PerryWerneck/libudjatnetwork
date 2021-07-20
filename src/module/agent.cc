@@ -21,6 +21,7 @@
  #include <udjat/network/agent.h>
  #include <udjat/tools/xml.h>
  #include <udjat/network/resolver.h>
+ #include <udjat/tools/inet.h>
 
  namespace Udjat {
 
@@ -30,6 +31,10 @@
 		}
 
 		virtual ~State() {
+		}
+
+		virtual bool test(const sockaddr_storage &addr) {
+			return false;
 		}
 
 	};
@@ -55,31 +60,36 @@
 		// Host name to check.
 		hostname = Udjat::Attribute(node,"host").c_str();
 
-#ifdef DEBUG
-		{
-			info("Resolving '{}'",hostname);
-
-			DNSResolver resolver;
-			resolver.query(hostname);
-
-			info("'{}' has {} entries",hostname,resolver.size());
-
-		}
-#endif // DEBUG
-
 		if(check.dns) {
+
+			// Will check DNS resolution, get the DNS server addr.
 
 			if(dnssrv[0]) {
 
 				// Resolve DNS server.
 				DNSResolver resolver;
-
 				resolver.query(dnssrv);
+
+				if(resolver.size()) {
+					this->addr = resolver.begin()->getAddr();
+				} else {
+					throw runtime_error(string{"Can't resolve '"} + dnssrv + "'");
+				}
 
 			}
 
 		} else {
 
+			// Will not check DNS resolution, get host address.
+
+			DNSResolver resolver;
+			resolver.query(hostname);
+
+			if(resolver.size()) {
+				this->addr = resolver.begin()->getAddr();
+			} else {
+				throw runtime_error(string{"Can't resolve '"} + hostname + "'");
+			}
 
 		}
 
@@ -106,6 +116,14 @@
 
 			virtual ~Range() {
 			}
+
+			bool test(const sockaddr_storage &addr) override {
+
+				// TODO: Implement
+
+				return false;
+			}
+
 		};
 
 		if(node.attribute("range")) {
@@ -120,15 +138,54 @@
 
 	void Network::Agent::refresh() {
 
+		std::shared_ptr<Abstract::State> selected;
+
+#ifdef DEBUG
+		info("Checking '{}'",hostname);
+#endif // DEBUG
+
 		if(check.dns) {
 
 			// Check DNS resolution.
 			DNSResolver resolver{this->addr};
 
-			resolver.query(this->hostname);
+			resolver.query(hostname);
 
+			if(!resolver.size()) {
+				throw runtime_error(string{"Can't resolve '"} + hostname + "'");
+			}
+
+			sockaddr_storage addr = resolver.begin()->getAddr();
+
+#ifdef DEBUG
+			info("'{}' = '{}'",hostname, std::to_string(addr));
+#endif // DEBUG
+
+			// Check states.
+			for(auto state : states) {
+
+				State * st = dynamic_cast<State *>(state.get());
+				if(st && st->test(addr)) {
+
+					// IP test is valid, check it.
+					if(!selected || st->getLevel() > selected->getLevel()) {
+						selected = state;
+					}
+
+				}
+
+			}
 
 		}
+
+		//
+		// Set current state.
+		//
+		if(!selected) {
+			selected = super::stateFromValue();
+		}
+
+		activate(selected);
 
 	}
 

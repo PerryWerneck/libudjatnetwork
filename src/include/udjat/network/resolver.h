@@ -74,6 +74,10 @@
 					return this->cls;
 				}
 
+				inline const sockaddr_storage & getAddr() const {
+					return this->addr;
+				}
+
 				inline std::string toString() const {
 					return value;
 				}

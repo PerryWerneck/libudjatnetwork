@@ -48,14 +48,6 @@
 			/// @brief Agent states.
 			std::vector<std::shared_ptr<State>> states;
 
-			/// @brief Active state.
-			std::shared_ptr<State> active_state;
-
-		protected:
-
-			//std::shared_ptr<Abstract::State> stateFromValue() const override;
-
-
 		public:
 
 			class Factory : public Udjat::Factory {

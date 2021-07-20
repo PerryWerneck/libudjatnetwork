@@ -57,6 +57,10 @@
 	/// @brief Set Address of the nameserver.
 	void Network::DNSResolver::set(const struct sockaddr_storage &server) {
 
+		if(!server.ss_family) {
+			return;
+		}
+
 		std::lock_guard<std::mutex> lock(guard);
 
 		if(server.ss_family == AF_INET) {

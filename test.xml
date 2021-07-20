@@ -2,7 +2,7 @@
 
 <config>
 
-	<network-host name='storage' host='localhost' dns='true'>
+	<network-host name='localhost' host='localhost' dns='true' update-timer='60'>
 	
 		<!-- Valid range for this host -->
 		<state range='192.168.0.0/24' level='ready' summary='${host} is local' />
