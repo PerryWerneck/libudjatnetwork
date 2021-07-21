@@ -19,6 +19,7 @@
 
  #include <udjat/tools/inet.h>
  #include <arpa/inet.h>
+ #include <system_error>
 
  using namespace std;
 
@@ -87,6 +88,18 @@
 		return to_string( (const struct sockaddr_in6 &) addr, port);
 
 	}
+
+	string to_string(const struct in_addr &addr) {
+
+		char rc[INET_ADDRSTRLEN+1];
+
+		if(!inet_ntop(AF_INET,(const void *) &addr, rc, INET_ADDRSTRLEN)) {
+			throw std::system_error(errno, std::system_category(), "Invalid in_addr");
+		}
+
+		return string(rc);
+	}
+
 
  }
 

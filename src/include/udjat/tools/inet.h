@@ -28,6 +28,7 @@
 	UDJAT_API string to_string(const sockaddr_storage &addr, bool port = false);
 	UDJAT_API string to_string(const struct sockaddr_in &addr, bool port = false);
 	UDJAT_API string to_string(const struct sockaddr_in6 &addr, bool port = false);
+	UDJAT_API string to_string(const struct in_addr &addr);
 
 	inline ostream& operator<< (ostream& os, const sockaddr_storage &addr) {
 		return os << to_string(addr);

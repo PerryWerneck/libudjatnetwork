@@ -22,6 +22,8 @@
  #include <udjat/tools/xml.h>
  #include <udjat/network/resolver.h>
  #include <udjat/tools/inet.h>
+ #include <arpa/inet.h>
+ #include <cstring>
 
  namespace Udjat {
 
@@ -109,9 +111,42 @@
 		/// @brief Range check.
 		class Range : public Network::Agent::State {
 		private:
+			in_addr addr;
+			uint16_t mask;
+			bool revert = false;
 
 		public:
 			Range(const pugi::xml_node &node) : State(node) {
+
+				const char *range = Attribute(node,"range").as_string();
+				const char *mask = strchr(range,'/');
+				if(!mask) {
+					throw runtime_error("Range should be in the format IP/bits");
+				}
+
+				this->mask = atoi(mask+1);
+				if(!this->mask) {
+					throw runtime_error("Invalid or unexpected mask");
+				}
+
+				if(*range == '!') {
+					revert = true;
+					range++;
+					while(isspace(*range) && range < mask) {
+						range++;
+					}
+				}
+
+				string addr = string(range,(mask-range));
+
+				if(inet_pton(AF_INET,addr.c_str(),&this->addr) == 0) {
+					throw std::system_error(errno, std::system_category(), addr);
+				}
+
+//#ifdef DEBUG
+//				cout << "Range = '" << std::to_string(this->addr) << "'" << endl;
+//#endif // DEBUG
+
 			}
 
 			virtual ~Range() {
@@ -119,9 +154,46 @@
 
 			bool test(const sockaddr_storage &addr) override {
 
-				// TODO: Implement
+				if(addr.ss_family != AF_INET)
+					return false;
 
-				return false;
+				uint32_t netmask = 0;
+				for(size_t ix = 0; ix < this->mask; ix++) {
+					netmask >>= 1;
+					netmask |= 0x80000000;
+				}
+
+				netmask = htonl(netmask);
+
+				uint32_t ip = htonl(((sockaddr_in *) &ip)->sin_addr.s_addr);
+				uint32_t netstart = (this->addr.s_addr & netmask); 	// first ip in subnet
+				uint32_t netend = (netstart | ~netmask); 			// last ip in subnet
+
+				bool rc = ( (ip >= htonl(netstart)) && (ip <= htonl(netend)) );
+
+#ifdef DEBUG
+				{
+					sockaddr_in i;
+					i.sin_family = AF_INET;
+					i.sin_addr.s_addr = netstart;
+
+					cout << "network starts on " << std::to_string(i);
+
+					i.sin_addr.s_addr = netend;
+					cout << " and ends on " << std::to_string(i) << endl;
+
+				}
+
+				cout	<< std::to_string(addr)
+						<< " is " << (rc ? "in range" : "not in range")
+						<< " of " << std::to_string(this->addr)
+						<< endl;
+#endif // DEBUG
+
+				if(revert)
+					return !rc;
+
+				return ip;
 			}
 
 		};
