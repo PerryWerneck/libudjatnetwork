@@ -53,16 +53,17 @@
 		memset(&addr,0,sizeof(addr));
 
 		// Do an ICMP check?
-		check.icmp = Udjat::Attribute(node,"icmp").as_bool(true);
+		icmp.check = Udjat::Attribute(node,"icmp").as_bool(true);
+		icmp.timeout = Udjat::Attribute(node,"icmp-timeout").as_uint(icmp.timeout);
 
 		// Get dns-server.
 		const char *dnssrv = Udjat::Attribute(node, "dns-server").as_string();
-		check.dns = Udjat::Attribute(node,"dns").as_bool(dnssrv[0] != 0);
+		dns.check = Udjat::Attribute(node,"dns").as_bool(dnssrv[0] != 0);
 
 		// Host name to check.
 		hostname = Udjat::Attribute(node,"host").c_str();
 
-		if(check.dns) {
+		if(dns.check) {
 
 			// Will check DNS resolution, get the DNS server addr.
 
@@ -199,7 +200,7 @@
 		};
 
 		if(node.attribute("range")) {
-			if(!check.dns) {
+			if(!dns.check) {
 				throw runtime_error("Can't use 'range' states without dns='true' attribute on the agent");
 			}
 			states.push_back(make_shared<Range>(node));
@@ -219,7 +220,7 @@
 		info("Checking '{}'",hostname);
 #endif // DEBUG
 
-		if(check.dns) {
+		if(dns.check) {
 
 			// Check DNS resolution.
 			DNSResolver resolver{this->addr};

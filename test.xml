@@ -2,13 +2,13 @@
 
 <config>
 
-	<network-host name='localhost' host='localhost' dns='true' update-timer='60'>
+	<network-host name='localhost' host='localhost' dns='true' icmp='true' update-timer='60' icmp-timeout='60'>
 	
 		<!-- Valid range for this host -->
-		<state range='127.0.0.0/24' level='ready' summary='${host} is local' />
+		<state name='local' range='127.0.0.0/24' level='ready' summary='${host} is local' />
 		
 		<!-- All other ranges are invalid -->
-		<state range='!127.0.0.0/24' level='warning' summary='${host} is NOT local' />
+		<state name='remote' range='!127.0.0.0/24' level='warning' summary='${host} is NOT local' />
 		
 	</network-host>
 	

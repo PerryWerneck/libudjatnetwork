@@ -33,11 +33,18 @@
 		private:
 
 			class State;
+			class Controller;
+
+			friend class Controller;
 
 			struct {
-				bool dns = true;	///< @brief Check DNS resolution.
-				bool icmp = true;	///< @brief Do ICMP check.
-			} check;
+				bool check = true;				///< @brief Do ICMP check.
+				unsigned int  timeout = 5;		///< @brief ICMP timeout.
+			} icmp;
+
+			struct {
+				bool check = true;	///< @brief Check DNS resolution.
+			} dns;
 
 			/// @brief DNS Addr if check.dns is true or host addr if check.dns is false.
 			sockaddr_storage addr;
@@ -54,8 +61,6 @@
 			public:
 				Factory();
 				void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
-
-
 			};
 
 			Agent(const pugi::xml_node &node);
