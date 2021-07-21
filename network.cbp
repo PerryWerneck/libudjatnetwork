@@ -40,11 +40,13 @@
 		</Linker>
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/udjat/network/agent.h" />
+		<Unit filename="src/include/udjat/network/hostcheck.h" />
 		<Unit filename="src/include/udjat/network/resolver.h" />
 		<Unit filename="src/include/udjat/tools/inet.h" />
 		<Unit filename="src/module/agent.cc" />
 		<Unit filename="src/module/dns/record.cc" />
 		<Unit filename="src/module/dns/resolver.cc" />
+		<Unit filename="src/module/hostcheck.cc" />
 		<Unit filename="src/module/init.cc" />
 		<Unit filename="src/module/private.h" />
 		<Unit filename="src/module/range.cc" />

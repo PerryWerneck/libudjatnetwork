@@ -14,5 +14,10 @@
 		
 	</network-host>
 	
+	<!-- network-host name='gw' preset='default-gateway' dns='false' icmp='true' update-timer='60' icmp-timeout='60'>
+
+
+	</network-host -->
+
 </config>
 

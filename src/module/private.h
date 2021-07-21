@@ -25,6 +25,7 @@
  #include <iostream>
  #include <udjat/tools/inet.h>
  #include <arpa/inet.h>
+ #include <udjat/network/hostcheck.h>
 
  using namespace std;
 
@@ -35,7 +36,7 @@
 	namespace Network {
 
 		/// @brief Abstract network agent state.
-		class Agent::State : public Abstract::State {
+		class Agent::State : public Abstract::State, HostCheck {
 		protected:
 			bool revert = false;
 
@@ -45,7 +46,7 @@
 			}
 
 		public:
-			State(const pugi::xml_node &node) : Abstract::State(node) {
+			State(const pugi::xml_node &node) : Abstract::State(node), HostCheck(node) {
 			}
 
 			virtual ~State() {
