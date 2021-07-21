@@ -21,25 +21,9 @@
  #include <udjat/network/agent.h>
  #include <udjat/tools/xml.h>
  #include <udjat/network/resolver.h>
- #include <udjat/tools/inet.h>
- #include <arpa/inet.h>
  #include <cstring>
 
  namespace Udjat {
-
-	class Network::Agent::State : public Abstract::State {
-	public:
-		State(const pugi::xml_node &node) : Abstract::State(node) {
-		}
-
-		virtual ~State() {
-		}
-
-		virtual bool test(const sockaddr_storage &addr) const {
-			return false;
-		}
-
-	};
 
 	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",&moduleinfo) {
 	}
@@ -109,94 +93,28 @@
 
 	void Network::Agent::append_state(const pugi::xml_node &node) {
 
-		/// @brief Range check.
-		class Range : public Network::Agent::State {
+		class Range : public Network::Range {
 		private:
 			sockaddr_storage addr;
 			uint16_t mask;
-			bool revert = false;
-
-			/// @brief IPV4 test.
-			bool test(const sockaddr_in *ip) const {
-
-				sockaddr_in *addr = ((sockaddr_in *) &this->addr);
-
-				sockaddr_in mask;
-				memset(&mask,0,sizeof(mask));
-				mask.sin_family = AF_INET;
-
-				for(size_t ix = 0; ix < this->mask; ix++) {
-					mask.sin_addr.s_addr >>= 1;
-					mask.sin_addr.s_addr |= 0x80000000;
-				}
-
-				mask.sin_addr.s_addr = htonl(mask.sin_addr.s_addr);
-
-#ifdef DEBUG
-				cout	<< "Checking " << std::to_string(*ip)
-						<< " in " << std::to_string(*addr) << " " << std::to_string(mask)
-						<< endl;
-#endif // DEBUG
-
-				in_addr_t net  = (addr->sin_addr.s_addr & mask.sin_addr.s_addr);
-                in_addr_t base = (ip->sin_addr.s_addr & mask.sin_addr.s_addr);
-
-                bool inRange = (base == net) && ((base|net) == net);
-
-#ifdef DEBUG
-				cout << "Addres is " << (inRange ? "in range" : "not in range") << endl;
-#endif // DEBUG
-
-				return (revert ? (!inRange) : inRange);
-
-			}
 
 		public:
-			Range(const pugi::xml_node &node) : State(node) {
-
-				const char *range = Attribute(node,"range").as_string();
-				const char *mask = strchr(range,'/');
-				if(!mask) {
-					throw runtime_error("Range should be in the format IP/bits");
-				}
-
-				this->mask = atoi(mask+1);
-				if(!this->mask) {
-					throw runtime_error("Invalid or unexpected mask");
-				}
-
-				if(*range == '!') {
-					revert = true;
-					range++;
-					while(isspace(*range) && range < mask) {
-						range++;
-					}
-				}
-
-				string addr = string(range,(mask-range));
-
-				this->addr.ss_family = AF_INET;
-				if(inet_pton(AF_INET,addr.c_str(),&((sockaddr_in *) &this->addr)->sin_addr) == 0) {
-					throw std::system_error(errno, std::system_category(), addr);
-				}
-
-#ifdef DEBUG
-				cout << addr << " convert to '" << std::to_string(this->addr) << "'" << endl;
-#endif // DEBUG
-
+			Range(const pugi::xml_node &node) : Network::Range(node) {
+				parse(Attribute(node,"range").as_string(),addr,mask);
 			}
 
-			virtual ~Range() {
+			bool test(const sockaddr_storage &ip) const override {
+
+				// TODO: Implement IPV6 methods.
+
+				if(addr.ss_family == AF_INET) {
+					sockaddr_in netmask;
+					return inRange(*((const sockaddr_in *) &ip), *((const sockaddr_in *) &this->addr), getMask(netmask,this->mask));
+				}
+
+				return false;
 			}
 
-			bool test(const sockaddr_storage &addr) const override {
-
-				if(addr.ss_family != AF_INET)
-					return false;
-
-				return test((sockaddr_in *) &addr);
-
-			}
 		};
 
 		if(node.attribute("range")) {

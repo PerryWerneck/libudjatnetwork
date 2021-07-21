@@ -30,13 +30,10 @@
 	namespace Network {
 
 		class UDJAT_API Agent : public Udjat::Abstract::Agent {
-		private:
-
+		public:
 			class State;
-			class Controller;
 
-			friend class Controller;
-
+		private:
 			struct {
 				bool check = true;				///< @brief Do ICMP check.
 				unsigned int  timeout = 5;		///< @brief ICMP timeout.
@@ -56,6 +53,8 @@
 			std::vector<std::shared_ptr<State>> states;
 
 		public:
+
+			class State;
 
 			class Factory : public Udjat::Factory {
 			public:

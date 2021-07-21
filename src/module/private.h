@@ -21,10 +21,56 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/network/agent.h>
  #include <iostream>
+ #include <udjat/tools/inet.h>
+ #include <arpa/inet.h>
 
  using namespace std;
 
  extern const Udjat::ModuleInfo moduleinfo;
 
+ namespace Udjat {
 
+	namespace Network {
+
+		/// @brief Abstract network agent state.
+		class Agent::State : public Abstract::State {
+		public:
+			State(const pugi::xml_node &node) : Abstract::State(node) {
+			}
+
+			virtual ~State() {
+			}
+
+			virtual bool test(const sockaddr_storage &addr) const {
+				return false;
+			}
+
+		};
+
+		/// @brief Network range state.
+		class Range : public Network::Agent::State {
+		private:
+			bool revert = false;
+
+		protected:
+			/// @brief Teste an IPV4 address range.
+			bool inRange(const sockaddr_in &ip, const sockaddr_in &addr, const sockaddr_in &netmask) const;
+
+			/// @brief Get range from string.
+			void parse(const char *range, sockaddr_storage &addr, uint16_t &mask);
+
+			/// @brief Build netmask from length.
+			static const sockaddr_in & getMask(sockaddr_in &netmask, uint16_t length);
+
+		public:
+			Range(const pugi::xml_node &node);
+			virtual ~Range();
+
+		};
+
+	}
+
+
+ }
