@@ -199,6 +199,9 @@
 		};
 
 		if(node.attribute("range")) {
+			if(!check.dns) {
+				throw runtime_error("Can't use 'range' states without dns='true' attribute on the agent");
+			}
 			states.push_back(make_shared<Range>(node));
 			return;
 		}
