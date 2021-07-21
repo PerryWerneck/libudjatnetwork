@@ -35,7 +35,7 @@
 		virtual ~State() {
 		}
 
-		virtual bool test(const sockaddr_storage &addr) {
+		virtual bool test(const sockaddr_storage &addr) const {
 			return false;
 		}
 
@@ -111,9 +111,44 @@
 		/// @brief Range check.
 		class Range : public Network::Agent::State {
 		private:
-			in_addr addr;
+			sockaddr_storage addr;
 			uint16_t mask;
 			bool revert = false;
+
+			/// @brief IPV4 test.
+			bool test(const sockaddr_in *ip) const {
+
+				sockaddr_in *addr = ((sockaddr_in *) &this->addr);
+
+				sockaddr_in mask;
+				memset(&mask,0,sizeof(mask));
+				mask.sin_family = AF_INET;
+
+				for(size_t ix = 0; ix < this->mask; ix++) {
+					mask.sin_addr.s_addr >>= 1;
+					mask.sin_addr.s_addr |= 0x80000000;
+				}
+
+				mask.sin_addr.s_addr = htonl(mask.sin_addr.s_addr);
+
+#ifdef DEBUG
+				cout	<< "Checking " << std::to_string(*ip)
+						<< " in " << std::to_string(*addr) << " " << std::to_string(mask)
+						<< endl;
+#endif // DEBUG
+
+				in_addr_t net  = (addr->sin_addr.s_addr & mask.sin_addr.s_addr);
+                in_addr_t base = (ip->sin_addr.s_addr & mask.sin_addr.s_addr);
+
+                bool inRange = (base == net) && ((base|net) == net);
+
+#ifdef DEBUG
+				cout << "Addres is " << (inRange ? "in range" : "not in range") << endl;
+#endif // DEBUG
+
+				return (revert ? (!inRange) : inRange);
+
+			}
 
 		public:
 			Range(const pugi::xml_node &node) : State(node) {
@@ -139,63 +174,28 @@
 
 				string addr = string(range,(mask-range));
 
-				if(inet_pton(AF_INET,addr.c_str(),&this->addr) == 0) {
+				this->addr.ss_family = AF_INET;
+				if(inet_pton(AF_INET,addr.c_str(),&((sockaddr_in *) &this->addr)->sin_addr) == 0) {
 					throw std::system_error(errno, std::system_category(), addr);
 				}
 
-//#ifdef DEBUG
-//				cout << "Range = '" << std::to_string(this->addr) << "'" << endl;
-//#endif // DEBUG
+#ifdef DEBUG
+				cout << addr << " convert to '" << std::to_string(this->addr) << "'" << endl;
+#endif // DEBUG
 
 			}
 
 			virtual ~Range() {
 			}
 
-			bool test(const sockaddr_storage &addr) override {
+			bool test(const sockaddr_storage &addr) const override {
 
 				if(addr.ss_family != AF_INET)
 					return false;
 
-				uint32_t netmask = 0;
-				for(size_t ix = 0; ix < this->mask; ix++) {
-					netmask >>= 1;
-					netmask |= 0x80000000;
-				}
+				return test((sockaddr_in *) &addr);
 
-				netmask = htonl(netmask);
-
-				uint32_t ip = htonl(((sockaddr_in *) &ip)->sin_addr.s_addr);
-				uint32_t netstart = (this->addr.s_addr & netmask); 	// first ip in subnet
-				uint32_t netend = (netstart | ~netmask); 			// last ip in subnet
-
-				bool rc = ( (ip >= htonl(netstart)) && (ip <= htonl(netend)) );
-
-#ifdef DEBUG
-				{
-					sockaddr_in i;
-					i.sin_family = AF_INET;
-					i.sin_addr.s_addr = netstart;
-
-					cout << "network starts on " << std::to_string(i);
-
-					i.sin_addr.s_addr = netend;
-					cout << " and ends on " << std::to_string(i) << endl;
-
-				}
-
-				cout	<< std::to_string(addr)
-						<< " is " << (rc ? "in range" : "not in range")
-						<< " of " << std::to_string(this->addr)
-						<< endl;
-#endif // DEBUG
-
-				if(revert)
-					return !rc;
-
-				return ip;
 			}
-
 		};
 
 		if(node.attribute("range")) {

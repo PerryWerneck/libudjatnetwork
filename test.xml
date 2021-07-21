@@ -5,10 +5,10 @@
 	<network-host name='localhost' host='localhost' dns='true' update-timer='60'>
 	
 		<!-- Valid range for this host -->
-		<state range='192.168.0.0/24' level='ready' summary='${host} is local' />
+		<state range='127.0.0.0/24' level='ready' summary='${host} is local' />
 		
-		<!-- All other ranger are invalid -->
-		<state range='!192.168.0.0/24' level='warning' summary='${host} is NOT local' />
+		<!-- All other ranges are invalid -->
+		<state range='!127.0.0.0/24' level='warning' summary='${host} is NOT local' />
 		
 	</network-host>
 	
