@@ -22,7 +22,7 @@
 
  namespace Udjat {
 
-	Network::Range::Range(const pugi::xml_node &node) : State(node), revert(false) {
+	Network::Range::Range(const pugi::xml_node &node) : State(node) {
 
 
 	}
@@ -81,13 +81,20 @@
 		bool inRange = (base == net) && ((base|net) == net);
 
 #ifdef DEBUG
-		cout << "Addres is " << (inRange ? "in range" : "not in range") << endl;
+		cout << "Address is " << (inRange ? "in range" : "not in range") << endl;
 #endif // DEBUG
 
-		if(revert)
-			return !inRange;
-
 		return inRange;
+
+	}
+
+	bool Network::Range::inRange(const sockaddr_storage &ip, const sockaddr &addr, const sockaddr &netmask) const {
+
+		if(ip.ss_family != AF_INET) {
+			throw runtime_error("Unexpected network family");
+		}
+
+		return inRange( *((sockaddr_in *) &ip), *((sockaddr_in *) &addr), *((sockaddr_in *) &netmask));
 
 	}
 

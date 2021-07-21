@@ -36,6 +36,14 @@
 
 		/// @brief Abstract network agent state.
 		class Agent::State : public Abstract::State {
+		protected:
+			bool revert = false;
+
+		protected:
+			virtual bool test(const sockaddr_storage &addr) const {
+				return false;
+			}
+
 		public:
 			State(const pugi::xml_node &node) : Abstract::State(node) {
 			}
@@ -43,20 +51,24 @@
 			virtual ~State() {
 			}
 
-			virtual bool test(const sockaddr_storage &addr) const {
-				return false;
+			/// @brief True if the state can be used.
+			inline bool isValid(const sockaddr_storage &addr) const noexcept {
+				bool rc = test(addr);
+				if(revert)
+					return !rc;
+				return rc;
 			}
 
 		};
 
 		/// @brief Network range state.
 		class Range : public Network::Agent::State {
-		private:
-			bool revert = false;
-
 		protected:
 			/// @brief Teste an IPV4 address range.
 			bool inRange(const sockaddr_in &ip, const sockaddr_in &addr, const sockaddr_in &netmask) const;
+
+			/// @brief Teste an IPV4 address range.
+			bool inRange(const sockaddr_storage &ip, const sockaddr &addr, const sockaddr &netmask) const;
 
 			/// @brief Get range from string.
 			void parse(const char *range, sockaddr_storage &addr, uint16_t &mask);
