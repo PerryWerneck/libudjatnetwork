@@ -65,7 +65,6 @@
 			next = time(0) + agent->icmp.interval;
 
 			memset(&packet,0,sizeof(packet));
-			packet.pid	= getpid();
 			packet.id 	= this->id;
 			packet.seq	= ++this->packets;
 

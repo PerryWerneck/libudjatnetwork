@@ -73,7 +73,6 @@
 		#pragma pack(1)
 		/// @brief ICMP payload.
 		struct Payload {
-			uint32_t	pid;
 			uint16_t	id;
 			uint16_t	seq;
 			uint64_t	time;

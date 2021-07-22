@@ -26,6 +26,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/inet.h>
+ #include <netinet/ip_icmp.h>
 
  namespace Udjat {
 
@@ -163,7 +164,34 @@
 
 	 }
 
+	static unsigned short in_chksum(const unsigned short *buf, int sz) {
+
+		int nleft = sz;
+		int sum = 0;
+		const unsigned short *w = buf;
+		unsigned short ans = 0;
+
+		while (nleft > 1) {
+			sum += *w++;
+			nleft -= 2;
+		}
+
+		if (nleft == 1) {
+			*(unsigned char *) (&ans) = *(unsigned char *) w;
+			sum += ans;
+		}
+
+		sum = (sum >> 16) + (sum & 0xFFFF);
+		sum += (sum >> 16);
+		ans = ~sum;
+		return ans;
+	}
+
 	void Network::Agent::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
+
+		if(sock < 0) {
+			throw runtime_error("ICMP Controller is not available");
+		}
 
 		// TODO: Add IPV6 support.
 
@@ -176,6 +204,25 @@
 				<< " to " << std::to_string(addr) << endl;
 #endif // DEBUG
 
+		// Send package
+#pragma pack(1)
+		struct {
+			struct icmp icmp;
+			struct Payload payload;
+		} packet;
+
+		memset(&packet,0,sizeof(packet));
+		packet.payload = payload;
+
+		static uint16_t seq = 0;
+		packet.icmp.icmp_type = ICMP_ECHO;
+		packet.icmp.icmp_seq = htons(++seq);
+		packet.icmp.icmp_id = htons((uint16_t) getpid());
+		packet.icmp.icmp_cksum = in_chksum((unsigned short *) &packet, sizeof(packet));
+
+		if(sendto(sock, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
+			throw std::system_error(errno, std::system_category(), "Can't sendo ICMP packet");
+		}
 
 	}
 
