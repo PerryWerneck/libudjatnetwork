@@ -17,33 +17,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <controller.h>
  #include <unistd.h>
  #include <netdb.h>
  #include <fcntl.h>
  #include <sys/types.h>
  #include <sys/socket.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/inet.h>
 
  namespace Udjat {
 
-	 mutex Network::HostCheck::Controller::guard;
+	 recursive_mutex Network::Agent::Controller::guard;
 
-	 Network::HostCheck::Controller::Controller() {
+	 Network::Agent::Controller::Controller() {
 	 }
 
-	 Network::HostCheck::Controller::~Controller() {
-		lock_guard<mutex> lock(guard);
+	 Network::Agent::Controller::~Controller() {
+		lock_guard<recursive_mutex> lock(guard);
 	 	stop();
 	 }
 
-	 Network::HostCheck::Controller & Network::HostCheck::Controller::getInstance() {
-		lock_guard<mutex> lock(guard);
+	 Network::Agent::Controller & Network::Agent::Controller::getInstance() {
+		lock_guard<recursive_mutex> lock(guard);
 		static Controller instance;
 		return instance;
 	 }
 
-	 void Network::HostCheck::Controller::stop() {
+	 void Network::Agent::Controller::stop() {
 
 #ifdef DEBUG
 		cout << "Stopping ICMP Worker" << endl;
@@ -58,7 +60,7 @@
 
 	 }
 
-	 void Network::HostCheck::Controller::start() {
+	 void Network::Agent::Controller::start() {
 
 		if(sock > 0) {
 			return;
@@ -99,7 +101,7 @@
 			// Listen for package
 			MainLoop::getInstance().insert(this,sock,MainLoop::oninput,[this](const MainLoop::Event event) {
 
-				lock_guard<mutex> lock(guard);
+				lock_guard<recursive_mutex> lock(guard);
 
 
 				return true;
@@ -109,10 +111,23 @@
 			// Timer for packet sent.
 			MainLoop::getInstance().insert(this,1000L,[this]() {
 
-				lock_guard<mutex> lock(guard);
+				ThreadPool::getInstance().push([this]() {
 
+					lock_guard<recursive_mutex> lock(guard);
+
+					// Send packets.
+					hosts.remove_if([](Host &host) {
+						return !host.onTimer();
+					});
+
+					if(hosts.empty()) {
+						stop();
+					}
+
+				});
 
 				return true;
+
 			});
 
 		} catch(...) {
@@ -125,21 +140,21 @@
 
 	 }
 
-	 void Network::HostCheck::Controller::insert(Network::HostCheck *host, const sockaddr_storage &addr) {
+	 void Network::Agent::Controller::insert(Network::Agent *agent, const sockaddr_storage &addr) {
 
-		lock_guard<mutex> lock(guard);
+		lock_guard<recursive_mutex> lock(guard);
 
 		start();
-		hosts.emplace_back(host,addr);
+		hosts.emplace_back(agent,addr);
 
 	 }
 
-	 void Network::HostCheck::Controller::remove(Network::HostCheck *host) {
+	 void Network::Agent::Controller::remove(Network::Agent *agent) {
 
-		lock_guard<mutex> lock(guard);
+		lock_guard<recursive_mutex> lock(guard);
 
-		hosts.remove_if([host](Host &h) {
-			return h.host == host;
+		hosts.remove_if([agent](Host &h) {
+			return h == agent;
 		});
 
 		if(hosts.empty()) {
@@ -148,5 +163,20 @@
 
 	 }
 
+	void Network::Agent::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
+
+		// TODO: Add IPV6 support.
+
+		if(addr.ss_family != AF_INET) {
+			throw runtime_error("Unsupported family");
+		}
+
+#ifdef DEBUG
+		cout 	<< "Sending ICMP " << payload.id << "." << payload.seq
+				<< " to " << std::to_string(addr) << endl;
+#endif // DEBUG
+
+
+	}
 
  }

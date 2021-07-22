@@ -19,26 +19,42 @@
 
  #pragma once
 
- #include <udjat/network/hostcheck.h>
+ #include <config.h>
+ #include <udjat/network/agent.h>
  #include <mutex>
  #include <memory>
  #include <iostream>
+ #include <list>
 
  using namespace std;
 
  namespace Udjat {
 
- 	class Network::HostCheck::Controller {
+ 	class Network::Agent::Controller {
 	private:
 
-		static mutex guard;
+		static recursive_mutex guard;
 
 		class Host {
-		public:
-			HostCheck *host;
+		private:
+
+			Network::Agent *agent;
 			sockaddr_storage addr;
 
-			constexpr Host(HostCheck *h, const sockaddr_storage &a) : host(h),addr(a) {
+			uint16_t id;
+			uint16_t packets = 0;
+			time_t timeout;
+			time_t next = 0;
+
+		public:
+
+			Host(Network::Agent *agent, const sockaddr_storage &addr);
+
+			bool onTimer();
+			void send() noexcept;
+
+			inline bool operator ==(const Network::Agent *agent) const noexcept {
+				return agent == this->agent;
 			}
 
 		};
@@ -53,12 +69,25 @@
 		void stop();
 
 	public:
+
+		#pragma pack(1)
+		/// @brief ICMP payload.
+		struct Payload {
+			uint32_t	pid;
+			uint16_t	id;
+			uint16_t	seq;
+			uint64_t	time;
+		};
+		#pragma pack()
+
 		static Controller & getInstance();
 
 		~Controller();
 
-		void insert(Network::HostCheck *host, const sockaddr_storage &addr);
-		void remove(Network::HostCheck *host);
+		void insert(Network::Agent *agent, const sockaddr_storage &addr);
+		void remove(Network::Agent *agent);
+
+		void send(const sockaddr_storage &addr, const Payload &payload);
 
 	};
 

@@ -25,7 +25,6 @@
  #include <iostream>
  #include <udjat/tools/inet.h>
  #include <arpa/inet.h>
- #include <udjat/network/hostcheck.h>
 
  using namespace std;
 

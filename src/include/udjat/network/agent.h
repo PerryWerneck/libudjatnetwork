@@ -24,20 +24,24 @@
  #include <udjat/agent.h>
  #include <udjat/state.h>
  #include <sys/socket.h>
- #include <udjat/network/hostcheck.h>
 
  namespace Udjat {
 
 	namespace Network {
 
-		class UDJAT_API Agent : public Udjat::Abstract::Agent, private HostCheck {
+		class UDJAT_API Agent : public Udjat::Abstract::Agent {
 		public:
 			class State;
 
 		private:
+
+			class Controller;
+			friend class Controller;
+
 			struct {
-				bool check = true;				///< @brief Do ICMP check.
-				unsigned int  timeout = 5;		///< @brief ICMP timeout.
+				bool check = true;		///< @brief Do ICMP check.
+				time_t interval = 1;	///< @brief ICMP packet interval.
+				time_t timeout = 5;		///< @brief ICMP timeout.
 			} icmp;
 
 			struct {
@@ -52,6 +56,9 @@
 
 			/// @brief Agent states.
 			std::vector<std::shared_ptr<State>> states;
+
+			/// @brief Called when ICMP timeouts.
+			void onICMPTimeout();
 
 		public:
 

@@ -19,6 +19,7 @@
 
  #include "private.h"
  #include <udjat/network/agent.h>
+ #include <controller.h>
  #include <udjat/tools/xml.h>
  #include <udjat/network/resolver.h>
  #include <cstring>
@@ -35,7 +36,7 @@
 		parent.insert(make_shared<Network::Agent>(node));
 	}
 
-	Network::Agent::Agent(const pugi::xml_node &node) : Network::HostCheck(node) {
+	Network::Agent::Agent(const pugi::xml_node &node) {
 
 		memset(&addr,0,sizeof(addr));
 
@@ -193,6 +194,14 @@
 
 	}
 
+	void Network::Agent::onICMPTimeout() {
+
+		cout << getName() << "\tICMP timeout" << endl;
+
+
+
+	}
+
 	void Network::Agent::refresh() {
 
 		sockaddr_storage addr;
@@ -245,7 +254,7 @@
 		}
 
 		if(icmp.check) {
-			check(addr);
+			Controller::getInstance().insert(this,addr);
 		}
 
 		//
