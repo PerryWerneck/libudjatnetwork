@@ -117,28 +117,28 @@
 					"active",
 					ICMPResponse::echo_reply,
 					Level::ready,
-					"Host is active",
+					"${agent.name} is active",
 					"Got ICMP echo reply from host."
 				},
 				{
 					"unreachable",
 					ICMPResponse::destination_unreachable,
 					Level::error,
-					"Host is not reachable",
+					"${agent.name} is not reachable",
 					"Destination Unreachable. The gateway doesnt know how to get to the defined network."
 				},
 				{
 					"time-exceeded",
 					ICMPResponse::time_exceeded,
 					Level::error,
-					"Host is not acessible",
+					"${agent.name} is not acessible",
 					"Time Exceeded. The ICMP request has been discarded because it was 'out of time'."
 				},
 				{
 					"timeout",
 					ICMPResponse::timeout,
 					Level::error,
-					"Host is not available",
+					"${agent.name} is not available",
 					"No ICMP response from host."
 				}
 
@@ -151,7 +151,7 @@
 				states.push_back(make_shared<ICMPResponseState>(
 										responses[ix].name,
 										responses[ix].level,
-										responses[ix].summary,
+										Quark(expand(responses[ix].summary)).c_str(),
 										responses[ix].body,
 										responses[ix].id
 									)
