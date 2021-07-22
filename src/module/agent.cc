@@ -35,7 +35,7 @@
 		parent.insert(make_shared<Network::Agent>(node));
 	}
 
-	Network::Agent::Agent(const pugi::xml_node &node) {
+	Network::Agent::Agent(const pugi::xml_node &node) : Network::HostCheck(node) {
 
 		memset(&addr,0,sizeof(addr));
 
@@ -195,6 +195,8 @@
 
 	void Network::Agent::refresh() {
 
+		sockaddr_storage addr;
+
 		std::shared_ptr<Abstract::State> selected;
 
 #ifdef DEBUG
@@ -212,7 +214,7 @@
 				throw runtime_error(string{"Can't resolve '"} + hostname + "'");
 			}
 
-			sockaddr_storage addr = resolver.begin()->getAddr();
+			addr = resolver.begin()->getAddr();
 
 #ifdef DEBUG
 			info("{}: '{}' = '{}'",__FUNCTION__,hostname, std::to_string(addr));
@@ -236,6 +238,14 @@
 
 			}
 
+		} else {
+
+			addr = this->addr;
+
+		}
+
+		if(icmp.check) {
+			check(addr);
 		}
 
 		//

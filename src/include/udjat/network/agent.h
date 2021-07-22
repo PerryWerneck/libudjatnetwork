@@ -24,12 +24,13 @@
  #include <udjat/agent.h>
  #include <udjat/state.h>
  #include <sys/socket.h>
+ #include <udjat/network/hostcheck.h>
 
  namespace Udjat {
 
 	namespace Network {
 
-		class UDJAT_API Agent : public Udjat::Abstract::Agent {
+		class UDJAT_API Agent : public Udjat::Abstract::Agent, private HostCheck {
 		public:
 			class State;
 

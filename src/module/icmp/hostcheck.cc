@@ -17,36 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
- #include <udjat/defs.h>
- #include <resolv.h>
- #include <arpa/nameser.h>
- #include <mutex>
- #include <vector>
- #include <string>
- #include <sys/socket.h>
- #include <pugixml.hpp>
- #include <list>
+ #include "private.h"
 
  namespace Udjat {
 
-	namespace Network {
+	Network::HostCheck::HostCheck(const pugi::xml_node &node) {
+	}
 
-		class UDJAT_API HostCheck {
-		private:
-			class Controller;
-			friend class Controller;
+	Network::HostCheck::~HostCheck() {
+		Controller::getInstance().remove(this);
+	}
 
-		public:
-			HostCheck(const pugi::xml_node &node);
-			~HostCheck();
-
-			/// @brief Check if the host is online.
-			void check(const sockaddr_storage &addr);
-
-		};
-
+	/// @brief Check if the host is online.
+	void Network::HostCheck::check(const sockaddr_storage &addr) {
+		Controller::getInstance().insert(this,addr);
 	}
 
  }
+

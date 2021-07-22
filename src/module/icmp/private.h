@@ -17,27 +17,50 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #pragma once
+
  #include <udjat/network/hostcheck.h>
  #include <mutex>
  #include <memory>
+ #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
-	Network::HostCheck::HostCheck(const pugi::xml_node &node) {
-	}
+ 	class Network::HostCheck::Controller {
+	private:
 
-	Network::HostCheck::~HostCheck() {
-	}
+		static mutex guard;
 
-	/// @brief Check if the host is online.
-	int Network::HostCheck::check(const sockaddr_storage &addr) const {
+		class Host {
+		public:
+			HostCheck *host;
+			sockaddr_storage addr;
 
+			constexpr Host(HostCheck *h, const sockaddr_storage &a) : host(h),addr(a) {
+			}
 
-		return 0;
-	}
+		};
+
+		int sock = -1;
+
+		list<Host> hosts;
+
+		Controller();
+
+		void start();
+		void stop();
+
+	public:
+		static Controller & getInstance();
+
+		~Controller();
+
+		void insert(Network::HostCheck *host, const sockaddr_storage &addr);
+		void remove(Network::HostCheck *host);
+
+	};
+
 
  }
-

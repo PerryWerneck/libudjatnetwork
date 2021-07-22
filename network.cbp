@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output=".bin/Debug/Udjat network module" prefix_auto="1" extension_auto="1" />
+				<Option output=".bin/Debug/udjat-network-test" prefix_auto="1" extension_auto="1" />
 				<Option object_output=".obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -46,7 +46,9 @@
 		<Unit filename="src/module/agent.cc" />
 		<Unit filename="src/module/dns/record.cc" />
 		<Unit filename="src/module/dns/resolver.cc" />
-		<Unit filename="src/module/hostcheck.cc" />
+		<Unit filename="src/module/icmp/controller.cc" />
+		<Unit filename="src/module/icmp/hostcheck.cc" />
+		<Unit filename="src/module/icmp/private.h" />
 		<Unit filename="src/module/init.cc" />
 		<Unit filename="src/module/private.h" />
 		<Unit filename="src/module/range.cc" />

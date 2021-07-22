@@ -36,7 +36,7 @@
 	namespace Network {
 
 		/// @brief Abstract network agent state.
-		class Agent::State : public Abstract::State, HostCheck {
+		class Agent::State : public Abstract::State {
 		protected:
 			bool revert = false;
 
@@ -46,7 +46,7 @@
 			}
 
 		public:
-			State(const pugi::xml_node &node) : Abstract::State(node), HostCheck(node) {
+			State(const pugi::xml_node &node) : Abstract::State(node) {
 			}
 
 			virtual ~State() {
