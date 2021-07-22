@@ -29,7 +29,25 @@
 
  namespace Udjat {
 
-	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",&moduleinfo) {
+	/// @brief ICMP Response state.
+	class ICMPResponseState : public Network::Agent::State {
+	private:
+		Network::ICMPResponse id;
+
+	public:
+		constexpr ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const Network::ICMPResponse i) : Network::Agent::State(name,level,summary,body), id(i) {
+		}
+
+		ICMPResponseState(const pugi::xml_node &node, const Network::ICMPResponse i) : Network::Agent::State(node), id(i) {
+		}
+
+		bool isValid(const Network::ICMPResponse response) const noexcept override {
+			return response == id;
+		}
+
+	};
+
+ 	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",&moduleinfo) {
 	}
 
 	void Network::Agent::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
@@ -85,6 +103,63 @@
 		}
 
 		load(node);
+
+		if(states.empty() && icmp.check) {
+
+			static const struct {
+				const char *name;
+				const ICMPResponse id;
+				const Level level;
+				const char *summary;
+				const char *body;
+			} responses[] = {
+				{
+					"active",
+					ICMPResponse::echo_reply,
+					Level::ready,
+					"Host is active",
+					"Got ICMP echo reply from host."
+				},
+				{
+					"unreachable",
+					ICMPResponse::destination_unreachable,
+					Level::error,
+					"Host is not reachable",
+					"Destination Unreachable. The gateway doesnt know how to get to the defined network."
+				},
+				{
+					"time-exceeded",
+					ICMPResponse::time_exceeded,
+					Level::error,
+					"Host is not acessible",
+					"Time Exceeded. The ICMP request has been discarded because it was 'out of time'."
+				},
+				{
+					"timeout",
+					ICMPResponse::timeout,
+					Level::error,
+					"Host is not available",
+					"No ICMP response from host."
+				}
+
+			};
+
+			cout << getName() << "\tLoading standard ICMP states" << endl;
+
+			for(size_t ix = 0; ix < (sizeof(responses)/sizeof(responses[0])); ix++) {
+
+				states.push_back(make_shared<ICMPResponseState>(
+										responses[ix].name,
+										responses[ix].level,
+										responses[ix].summary,
+										responses[ix].body,
+										responses[ix].id
+									)
+								);
+
+			}
+
+		}
 
 	}
 
@@ -171,21 +246,6 @@
 
 				return rc;
 			}
-		};
-
-		/// @brief ICMP Response state
-		class ICMPResponseState : public Network::Agent::State {
-		private:
-			ICMPResponse id;
-
-		public:
-			ICMPResponseState(const pugi::xml_node &node, const ICMPResponse i) : Network::Agent::State(node), id(i) {
-			}
-
-			bool isValid(const ICMPResponse response) const noexcept override {
-				return response == id;
-			}
-
 		};
 
 		if(node.attribute("range")) {

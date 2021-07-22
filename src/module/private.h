@@ -43,6 +43,9 @@
 			virtual bool test(const sockaddr_storage &addr) const;
 
 		public:
+			constexpr State(const char *name, const Level level, const char *summary, const char *body) : Abstract::State(name,level,summary,body) {
+			}
+
 			State(const pugi::xml_node &node) : Abstract::State(node) {
 			}
 
