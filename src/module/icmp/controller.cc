@@ -30,23 +30,30 @@
 
  namespace Udjat {
 
-	 recursive_mutex Network::Agent::Controller::guard;
+	#pragma pack(1)
+	struct Packet {
+		struct icmp icmp;
+		struct Network::Agent::Controller::Payload payload;
+	};
+	#pragma pack()
 
-	 Network::Agent::Controller::Controller() {
-	 }
+	recursive_mutex Network::Agent::Controller::guard;
 
-	 Network::Agent::Controller::~Controller() {
+	Network::Agent::Controller::Controller() {
+	}
+
+	Network::Agent::Controller::~Controller() {
 		lock_guard<recursive_mutex> lock(guard);
 	 	stop();
-	 }
+	}
 
-	 Network::Agent::Controller & Network::Agent::Controller::getInstance() {
+	Network::Agent::Controller & Network::Agent::Controller::getInstance() {
 		lock_guard<recursive_mutex> lock(guard);
 		static Controller instance;
 		return instance;
-	 }
+	}
 
-	 void Network::Agent::Controller::stop() {
+	void Network::Agent::Controller::stop() {
 
 #ifdef DEBUG
 		cout << "Stopping ICMP Worker" << endl;
@@ -59,9 +66,9 @@
 			sock = -1;
 	 	}
 
-	 }
+	}
 
-	 void Network::Agent::Controller::start() {
+	void Network::Agent::Controller::start() {
 
 		if(sock > 0) {
 			return;
@@ -104,6 +111,53 @@
 
 				lock_guard<recursive_mutex> lock(guard);
 
+				if(event & MainLoop::oninput) {
+
+					// Receive packet.
+					#pragma pack(1)
+					struct {
+						struct iphdr    hdr;
+						struct Packet   packet;
+					} in;
+					#pragma pack()
+
+					struct sockaddr_storage addr;
+					socklen_t szAddr = sizeof(addr);
+
+					memset(&in,0,sizeof(in));
+					memset(&addr,0,sizeof(addr));
+
+					int rc = recvfrom(sock,&in,sizeof(in),MSG_DONTWAIT,(struct sockaddr *) &addr,&szAddr);
+					if(rc < 0) {
+						cerr << "ICMP\tError '" << strerror(errno) << "' receiving ICMP packet" << endl;
+						return true;
+					}
+
+					if(rc != sizeof(in)) {
+#ifdef DEBUG
+						cout << "ICMP\tIgnoring packet with invalid size" << endl;
+#endif // DEBUG
+						return true;
+					}
+
+					if(in.packet.icmp.icmp_id != htons((uint16_t) getpid())) {
+						cout << "ICMP\tIgnoring packet with invalid id" << endl;
+						return true;
+					}
+
+#ifdef DEBUG
+					cout << "ICMP\tReceived packet " << htons(in.packet.icmp.icmp_seq) << " from " << std::to_string(addr) << endl;
+#endif // DEBUG
+
+					hosts.remove_if([&in,&addr](Host &host) {
+						return host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload);
+					});
+
+					/*
+					*/
+
+				}
+
 
 				return true;
 
@@ -139,18 +193,18 @@
 		}
 
 
-	 }
+	}
 
-	 void Network::Agent::Controller::insert(Network::Agent *agent, const sockaddr_storage &addr) {
+	void Network::Agent::Controller::insert(Network::Agent *agent, const sockaddr_storage &addr) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
 		start();
 		hosts.emplace_back(agent,addr);
 
-	 }
+	}
 
-	 void Network::Agent::Controller::remove(Network::Agent *agent) {
+	void Network::Agent::Controller::remove(Network::Agent *agent) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
@@ -162,7 +216,7 @@
 			stop();
 		}
 
-	 }
+	}
 
 	static unsigned short in_chksum(const unsigned short *buf, int sz) {
 
@@ -205,11 +259,7 @@
 #endif // DEBUG
 
 		// Send package
-#pragma pack(1)
-		struct {
-			struct icmp icmp;
-			struct Payload payload;
-		} packet;
+		Packet packet;
 
 		memset(&packet,0,sizeof(packet));
 		packet.payload = payload;
@@ -217,11 +267,11 @@
 		static uint16_t seq = 0;
 		packet.icmp.icmp_type = ICMP_ECHO;
 		packet.icmp.icmp_seq = htons(++seq);
-		packet.icmp.icmp_id = htons((uint16_t) getpid());
+		packet.icmp.icmp_id = htons(getpid());
 		packet.icmp.icmp_cksum = in_chksum((unsigned short *) &packet, sizeof(packet));
 
 		if(sendto(sock, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
-			throw std::system_error(errno, std::system_category(), "Can't sendo ICMP packet");
+			throw std::system_error(errno, std::system_category(), "Can't send ICMP packet");
 		}
 
 	}

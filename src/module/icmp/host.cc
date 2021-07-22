@@ -56,6 +56,42 @@
 		return true;
 	}
 
+	bool Network::Agent::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
+
+		if(payload.id != this->id) {
+			return false;
+		}
+
+		try {
+
+			switch(icmp_type) {
+			case ICMP_ECHO: // Received my own Echo Request, ignore it.
+				return false;
+
+			case ICMP_ECHOREPLY: // Echo Reply
+				agent->info("Got response from {}", std::to_string(addr));
+				break;
+
+			case ICMP_DEST_UNREACH: // Destination Unreachable
+				agent->error("Received 'Destination Unreachable' from {}", std::to_string(addr));
+				break;
+
+			case ICMP_TIME_EXCEEDED: // Time Exceeded
+				agent->error("Received 'Time Exceeded' from {}", std::to_string(addr));
+				break;
+
+			}
+
+		} catch(const exception &e) {
+
+			agent->failed("Error processing ICMP response", e);
+
+		}
+
+		return true;
+
+	}
+
 	void Network::Agent::Controller::Host::send() noexcept {
 
 		try {

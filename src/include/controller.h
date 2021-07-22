@@ -31,6 +31,17 @@
  namespace Udjat {
 
  	class Network::Agent::Controller {
+	public:
+			#pragma pack(1)
+		/// @brief ICMP payload.
+		struct Payload {
+			uint16_t	id;
+			uint16_t	seq;
+			uint64_t	time;
+		};
+		#pragma pack()
+
+
 	private:
 
 		static recursive_mutex guard;
@@ -57,6 +68,8 @@
 				return agent == this->agent;
 			}
 
+			bool onResponse(int icmp_type, const sockaddr_storage &addr, const Controller::Payload &payload) noexcept;
+
 		};
 
 		int sock = -1;
@@ -69,15 +82,6 @@
 		void stop();
 
 	public:
-
-		#pragma pack(1)
-		/// @brief ICMP payload.
-		struct Payload {
-			uint16_t	id;
-			uint16_t	seq;
-			uint64_t	time;
-		};
-		#pragma pack()
 
 		static Controller & getInstance();
 
