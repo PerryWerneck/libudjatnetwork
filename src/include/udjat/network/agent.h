@@ -29,6 +29,13 @@
 
 	namespace Network {
 
+		enum ICMPResponse : uint8_t {
+			echo_reply,
+			destination_unreachable,
+			time_exceeded,
+			timeout
+		};
+
 		class UDJAT_API Agent : public Udjat::Abstract::Agent {
 		public:
 			class State;
@@ -57,9 +64,6 @@
 			/// @brief Agent states.
 			std::vector<std::shared_ptr<State>> states;
 
-			/// @brief Called when ICMP timeouts.
-			void onICMPTimeout();
-
 		public:
 
 			class State;
@@ -76,6 +80,8 @@
 			bool hasStates() const noexcept override;
 			void append_state(const pugi::xml_node &node) override;
 			void refresh() override;
+
+			void set(ICMPResponse response);
 
 		};
 

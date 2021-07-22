@@ -194,14 +194,6 @@
 
 	}
 
-	void Network::Agent::onICMPTimeout() {
-
-		cout << getName() << "\tICMP timeout" << endl;
-
-
-
-	}
-
 	void Network::Agent::refresh() {
 
 		sockaddr_storage addr;

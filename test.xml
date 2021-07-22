@@ -12,6 +12,11 @@
 		<!-- state name='remote' range='!127.0.0.0/24' level='warning' summary='${host} is NOT local' / -->
 		<state name='remote' same-network='no' level='warning' summary='${host} is NOT local' />
 		
+		<state name='active' icmp-response='echo-reply' level='error' summary='${host} is active' />
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='${host} is not reachable' />
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='${host} is not available' />
+
+
 	</network-host>
 	
 	<!-- network-host name='gw' preset='default-gateway' dns='false' icmp='true' update-timer='60' icmp-timeout='60'>

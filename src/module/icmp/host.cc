@@ -45,7 +45,7 @@
 		time_t now = time(0);
 
 		if(now > timeout) {
-			agent->onICMPTimeout();
+			agent->set(ICMPResponse::timeout);
 			return false;
 		}
 
@@ -70,14 +70,17 @@
 
 			case ICMP_ECHOREPLY: // Echo Reply
 				agent->info("Got response from {}", std::to_string(addr));
+				agent->set(ICMPResponse::echo_reply);
 				break;
 
 			case ICMP_DEST_UNREACH: // Destination Unreachable
 				agent->error("Received 'Destination Unreachable' from {}", std::to_string(addr));
+				agent->set(ICMPResponse::destination_unreachable);
 				break;
 
 			case ICMP_TIME_EXCEEDED: // Time Exceeded
 				agent->error("Received 'Time Exceeded' from {}", std::to_string(addr));
+				agent->set(ICMPResponse::time_exceeded);
 				break;
 
 			}

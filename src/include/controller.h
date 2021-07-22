@@ -32,7 +32,8 @@
 
  	class Network::Agent::Controller {
 	public:
-			#pragma pack(1)
+
+		#pragma pack(1)
 		/// @brief ICMP payload.
 		struct Payload {
 			uint16_t	id;
