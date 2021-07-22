@@ -173,24 +173,47 @@
 			}
 		};
 
+		/// @brief ICMP Response state
+		class ICMPResponseState : public Network::Agent::State {
+		private:
+			ICMPResponse id;
+
+		public:
+			ICMPResponseState(const pugi::xml_node &node, const ICMPResponse i) : Network::Agent::State(node), id(i) {
+			}
+
+			bool isValid(const ICMPResponse response) const noexcept override {
+				return response == id;
+			}
+
+		};
+
 		if(node.attribute("range")) {
 			if(!dns.check) {
-				throw runtime_error("Can't use 'range' states without dns='true' attribute on the agent");
+				throw runtime_error("Can't use 'range' states without dns='true' attribute on the agent definition");
 			}
 			states.push_back(make_shared<Range>(node));
-			return;
 
 		} else if(node.attribute("same-network")) {
 			if(!dns.check) {
-				throw runtime_error("Can't use 'range' states without dns='true' attribute on the agent");
+				throw runtime_error("Can't use 'range' states without dns='true' attribute on the agent definition");
 			}
 			states.push_back(make_shared<SameNetwork>(node));
-			return;
+
+		} else if(node.attribute("icmp-response")) {
+			if(!icmp.check) {
+				throw runtime_error("Can't use 'icmp-response' states without icmp='true' attribute on the agent definition");
+			}
+
+			ICMPResponse id = (ICMPResponse) Attribute(node,"icmp-response").select("echo-reply", "destination-unreachable", "time-exceeded", "timeout", nullptr);
+			states.push_back(make_shared<ICMPResponseState>(node,id));
+
+		} else {
+
+			super::append_state(node);
 
 		}
 
-
-		super::append_state(node);
 
 	}
 
@@ -257,6 +280,23 @@
 		}
 
 		activate(selected);
+
+	}
+
+	void Udjat::Network::Agent::set(const Udjat::Network::ICMPResponse response) {
+
+		for(auto state : states) {
+
+			State * st = dynamic_cast<State *>(state.get());
+
+			if(st->getLevel() >= getState()->getLevel()) {
+				if(st->isValid(response)) {
+					activate(state);
+					return;
+				}
+			}
+
+		}
 
 	}
 

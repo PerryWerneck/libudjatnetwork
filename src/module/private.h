@@ -40,9 +40,7 @@
 			bool revert = false;
 
 		protected:
-			virtual bool test(const sockaddr_storage &addr) const {
-				return false;
-			}
+			virtual bool test(const sockaddr_storage &addr) const;
 
 		public:
 			State(const pugi::xml_node &node) : Abstract::State(node) {
@@ -52,12 +50,10 @@
 			}
 
 			/// @brief True if the state can be used.
-			inline bool isValid(const sockaddr_storage &addr) const noexcept {
-				bool rc = test(addr);
-				if(revert)
-					return !rc;
-				return rc;
-			}
+			bool isValid(const sockaddr_storage &addr) const noexcept;
+
+			/// @brief True if the response can be used.
+			virtual bool isValid(const ICMPResponse response) const noexcept;
 
 		};
 
