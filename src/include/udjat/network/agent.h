@@ -42,6 +42,8 @@
 
 		private:
 
+			std::shared_ptr<Abstract::State> selected;
+
 			class Controller;
 			friend class Controller;
 

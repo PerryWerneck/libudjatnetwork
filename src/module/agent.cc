@@ -221,7 +221,8 @@
 
 		sockaddr_storage addr;
 
-		std::shared_ptr<Abstract::State> selected;
+		// Start with a clean state.
+		selected.reset();
 
 #ifdef DEBUG
 		info("Checking '{}'",hostname);
@@ -275,11 +276,11 @@
 		//
 		// Set current state.
 		//
-		if(!selected) {
-			selected = super::stateFromValue();
+		if(selected) {
+			activate(selected);
+		} else {
+			activate(super::stateFromValue());
 		}
-
-		activate(selected);
 
 	}
 
@@ -289,13 +290,16 @@
 
 			State * st = dynamic_cast<State *>(state.get());
 
-			if(st->getLevel() >= getState()->getLevel()) {
+			if(st && (!selected || st->getLevel() >= selected->getLevel())) {
 				if(st->isValid(response)) {
-					activate(state);
-					return;
+					selected = state;
 				}
 			}
 
+		}
+
+		if(selected) {
+			activate(selected);
 		}
 
 	}
