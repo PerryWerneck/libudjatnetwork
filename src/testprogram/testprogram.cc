@@ -49,9 +49,7 @@
 
 	Logger::redirect(nullptr,true);
 
-	{
-		cout << "The default gateway is " << std::to_string(Udjat::Network::DefaultGateway().refresh()) << endl;
-	}
+	mainloop();
 
 	return 0;
 }

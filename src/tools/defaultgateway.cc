@@ -150,7 +150,7 @@
 						break;
 
 					case RTA_GATEWAY:
-						if(route_attribute_len > sizeof(sockaddr_storage)) {
+						if(route_attribute_len > sizeof(struct sockaddr_in)) {
 							throw runtime_error("Invalid size on RTA_GATEWAY");
 						}
 

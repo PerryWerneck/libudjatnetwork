@@ -118,12 +118,35 @@
 
 		};
 
+		/// @brief Gateway Agent
+		class GatewayAgent : public Network::Agent {
+		public:
+			GatewayAgent(const pugi::xml_node &node) : Network::Agent(node) {
+
+				if(!icmp.check) {
+					throw runtime_error("Gateway agent requires icmp='true'");
+				}
+
+				checkStates();
+
+			}
+
+			void refresh() override {
+
+				// Start with a clean state.
+				selected.reset();
+				set(DefaultGateway().refresh());
+			}
+
+		};
+
 		switch(Attribute(node,"type").select("default","default-gateway",nullptr)) {
 		case standard_host:
 			parent.insert(make_shared<StandardAgent>(node));
 			break;
 
 		case default_gateway:
+			parent.insert(make_shared<GatewayAgent>(node));
 			break;
 		}
 
