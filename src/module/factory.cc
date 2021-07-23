@@ -20,12 +20,6 @@
  #include "private.h"
  #include <udjat/network/resolver.h>
 
- // References:
- //
- // https://www.linuxquestions.org/questions/linux-networking-3/howto-find-gateway-address-through-code-397078/
- // https://gist.github.com/javiermon/6272065#file-gateway_netlink-c
- //
-
  namespace Udjat {
 
 	enum AgentType : uint8_t {

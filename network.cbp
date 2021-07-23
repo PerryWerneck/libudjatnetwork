@@ -57,6 +57,7 @@
 		<Unit filename="src/module/range.cc" />
 		<Unit filename="src/module/state.cc" />
 		<Unit filename="src/testprogram/testprogram.cc" />
+		<Unit filename="src/tools/defaultgateway.cc" />
 		<Unit filename="src/tools/inet.cc" />
 		<Extensions />
 	</Project>

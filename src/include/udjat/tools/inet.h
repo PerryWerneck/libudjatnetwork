@@ -23,6 +23,26 @@
  #include <netdb.h>
  #include <string>
 
+ namespace Udjat {
+
+	namespace Network {
+
+		class UDJAT_API DefaultGateway {
+		private:
+			sockaddr_storage address;
+			std::string interface;
+
+		public:
+			DefaultGateway();
+
+			const sockaddr_storage & refresh();
+
+		};
+
+	}
+
+ }
+
  namespace std {
 
 	UDJAT_API string to_string(const sockaddr_storage &addr, bool port = false);

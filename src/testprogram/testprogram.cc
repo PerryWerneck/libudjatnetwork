@@ -20,19 +20,16 @@
  #include <udjat.h>
  #include <udjat/module.h>
  #include <udjat/factory.h>
+ #include <udjat/tools/inet.h>
  #include <unistd.h>
+ #include <iostream>
 
  using namespace std;
  using namespace Udjat;
 
- int main(int argc, char **argv) {
-
-	setlocale( LC_ALL, "" );
-
-	Logger::redirect(nullptr,true);
+ static void mainloop() {
 
 	auto module = udjat_module_init();
-
 	auto agent = Abstract::Agent::init("test.xml");
 
 	Udjat::run();
@@ -40,8 +37,21 @@
 	Abstract::Agent::deinit();
 
 	cout << "Removing module" << endl;
+
 	delete module;
 	Module::unload();
+
+ }
+
+ int main(int argc, char **argv) {
+
+	setlocale( LC_ALL, "" );
+
+	Logger::redirect(nullptr,true);
+
+	{
+		cout << "The default gateway is " << std::to_string(Udjat::Network::DefaultGateway().refresh()) << endl;
+	}
 
 	return 0;
 }
