@@ -19,7 +19,7 @@
 
 	</network-host>
 	
-	<network-host name='gateway' type='default-gateway' dns='false' icmp='true' update-timer='60' icmp-timeout='60' />
+	<network-host name='gateway' type='default-gateway' update-timer='60' icmp-timeout='60' />
 
 </config>
 
