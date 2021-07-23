@@ -47,6 +47,7 @@
 		<Unit filename="src/module/agent.cc" />
 		<Unit filename="src/module/dns/record.cc" />
 		<Unit filename="src/module/dns/resolver.cc" />
+		<Unit filename="src/module/factory.cc" />
 		<Unit filename="src/module/icmp/controller.cc" />
 		<Unit filename="src/module/icmp/host.cc" />
 		<Unit filename="src/module/icmp/hostcheck.cc" />

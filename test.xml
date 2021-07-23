@@ -19,14 +19,7 @@
 
 	</network-host>
 	
-	<!-- network-host name='gateway' type='default-gateway' dns='false' icmp='true' update-timer='60' icmp-timeout='60'>
-
-		<state name='active' icmp-response='echo-reply' level='error' summary='${host} is active' />
-		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='${host} is not reachable' />
-		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='${host} is not available' />
-		<state name='timeout' icmp-response='timeout' level='error' summary='${host} is not available' />
-
-	</network-host -->
+	<network-host name='gateway' type='default-gateway' dns='false' icmp='true' update-timer='60' icmp-timeout='60' />
 
 </config>
 

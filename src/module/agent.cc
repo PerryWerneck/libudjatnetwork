@@ -47,13 +47,6 @@
 
 	};
 
- 	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",&moduleinfo) {
-	}
-
-	void Network::Agent::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
-		parent.insert(make_shared<Network::Agent>(node));
-	}
-
 	Network::Agent::Agent(const pugi::xml_node &node) {
 
 		memset(&addr,0,sizeof(addr));
