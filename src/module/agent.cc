@@ -49,110 +49,11 @@
 
 	Network::Agent::Agent(const pugi::xml_node &node) {
 
-		memset(&addr,0,sizeof(addr));
-
 		// Do an ICMP check?
 		icmp.check = Udjat::Attribute(node,"icmp").as_bool(true);
 		icmp.timeout = Udjat::Attribute(node,"icmp-timeout").as_uint(icmp.timeout);
 
-		// Get dns-server.
-		const char *dnssrv = Udjat::Attribute(node, "dns-server").as_string();
-		dns.check = Udjat::Attribute(node,"dns").as_bool(dnssrv[0] != 0);
-
-		// Host name to check.
-		hostname = Udjat::Attribute(node,"host").c_str();
-
-		if(dns.check) {
-
-			// Will check DNS resolution, get the DNS server addr.
-
-			if(dnssrv[0]) {
-
-				// Resolve DNS server.
-				DNSResolver resolver;
-				resolver.query(dnssrv);
-
-				if(resolver.size()) {
-					this->addr = resolver.begin()->getAddr();
-				} else {
-					throw runtime_error(string{"Can't resolve '"} + dnssrv + "'");
-				}
-
-			}
-
-		} else {
-
-			// Will not check DNS resolution, get host address.
-
-			DNSResolver resolver;
-			resolver.query(hostname);
-
-			if(resolver.size()) {
-				this->addr = resolver.begin()->getAddr();
-			} else {
-				throw runtime_error(string{"Can't resolve '"} + hostname + "'");
-			}
-
-		}
-
 		load(node);
-
-		if(states.empty() && icmp.check) {
-
-			static const struct {
-				const char *name;
-				const ICMPResponse id;
-				const Level level;
-				const char *summary;
-				const char *body;
-			} responses[] = {
-				{
-					"active",
-					ICMPResponse::echo_reply,
-					Level::ready,
-					"${agent.name} is active",
-					"Got ICMP echo reply from host."
-				},
-				{
-					"unreachable",
-					ICMPResponse::destination_unreachable,
-					Level::error,
-					"${agent.name} is not reachable",
-					"Destination Unreachable. The gateway doesnt know how to get to the defined network."
-				},
-				{
-					"time-exceeded",
-					ICMPResponse::time_exceeded,
-					Level::error,
-					"${agent.name} is not acessible",
-					"Time Exceeded. The ICMP request has been discarded because it was 'out of time'."
-				},
-				{
-					"timeout",
-					ICMPResponse::timeout,
-					Level::error,
-					"${agent.name} is not available",
-					"No ICMP response from host."
-				}
-
-			};
-
-			cout << getName() << "\tLoading standard ICMP states" << endl;
-
-			for(size_t ix = 0; ix < (sizeof(responses)/sizeof(responses[0])); ix++) {
-
-				states.push_back(make_shared<ICMPResponseState>(
-										responses[ix].name,
-										responses[ix].level,
-										Quark(expand(responses[ix].summary)).c_str(),
-										responses[ix].body,
-										responses[ix].id
-									)
-								);
-
-			}
-
-		}
 
 	}
 
@@ -242,18 +143,15 @@
 		};
 
 		if(node.attribute("range")) {
-			if(!dns.check) {
-				throw runtime_error("Can't use 'range' states without dns='true' attribute on the agent definition");
-			}
+
 			states.push_back(make_shared<Range>(node));
 
 		} else if(node.attribute("same-network")) {
-			if(!dns.check) {
-				throw runtime_error("Can't use 'range' states without dns='true' attribute on the agent definition");
-			}
+
 			states.push_back(make_shared<SameNetwork>(node));
 
 		} else if(node.attribute("icmp-response")) {
+
 			if(!icmp.check) {
 				throw runtime_error("Can't use 'icmp-response' states without icmp='true' attribute on the agent definition");
 			}
@@ -267,74 +165,53 @@
 
 		}
 
-
 	}
 
-	void Network::Agent::refresh() {
+	void Network::Agent::set(const sockaddr_storage &addr) {
 
-		sockaddr_storage addr;
+		// Check states.
+		for(auto state : states) {
 
-		// Start with a clean state.
-		selected.reset();
+			State * st = dynamic_cast<State *>(state.get());
 
-#ifdef DEBUG
-		info("Checking '{}'",hostname);
-#endif // DEBUG
-
-		if(dns.check) {
-
-			// Check DNS resolution.
-			DNSResolver resolver{this->addr};
-
-			resolver.query(hostname);
-
-			if(!resolver.size()) {
-				throw runtime_error(string{"Can't resolve '"} + hostname + "'");
-			}
-
-			addr = resolver.begin()->getAddr();
-
-#ifdef DEBUG
-			info("{}: '{}' = '{}'",__FUNCTION__,hostname, std::to_string(addr));
-#endif // DEBUG
-
-			// Check states.
-			for(auto state : states) {
-
-				State * st = dynamic_cast<State *>(state.get());
-
-				if(st && (!selected || st->getLevel() > selected->getLevel())) {
-					if(st->isValid(addr)) {
-						selected = state;
-					}
-#ifdef DEBUG
-					else {
-						cout << "State " << st->getName() << " was rejected" << endl;
-					}
-#endif // DEBUG
+			if(st && (!selected || st->getLevel() > selected->getLevel())) {
+				if(st->isValid(addr)) {
+					selected = state;
 				}
-
+#ifdef DEBUG
+				else {
+					cout << "State " << st->getName() << " was rejected" << endl;
+				}
+#endif // DEBUG
 			}
-
-		} else {
-
-			addr = this->addr;
-
 		}
 
 		if(icmp.check) {
 			Controller::getInstance().insert(this,addr);
 		}
 
-		//
-		// Set current state.
-		//
-		if(selected) {
-			activate(selected);
-		} else {
-			activate(super::stateFromValue());
+	}
+
+	sockaddr_storage Network::Agent::resolv(sockaddr_storage &dnssrv, const char *hostname) {
+
+		sockaddr_storage addr;
+
+#ifdef DEBUG
+		cout << "Checking " << hostname << endl;
+#endif // DEBUG
+
+		// Check DNS resolution.
+		DNSResolver resolver{dnssrv};
+
+		resolver.query(hostname);
+
+		if(!resolver.size()) {
+			throw runtime_error(string{"Can't resolve '"} + hostname + "'");
 		}
 
+		addr = resolver.begin()->getAddr();
+
+		return addr;
 	}
 
 	void Udjat::Network::Agent::set(const Udjat::Network::ICMPResponse response) {
@@ -353,6 +230,67 @@
 
 		if(selected) {
 			activate(selected);
+		}
+
+	}
+
+	void Network::Agent::checkStates() {
+
+		if(states.empty() && icmp.check) {
+
+			static const struct {
+				const char *name;
+				const ICMPResponse id;
+				const Level level;
+				const char *summary;
+				const char *body;
+			} responses[] = {
+				{
+					"active",
+					ICMPResponse::echo_reply,
+					Level::ready,
+					"${agent.name} is active",
+					"Got ICMP echo reply from host."
+				},
+				{
+					"unreachable",
+					ICMPResponse::destination_unreachable,
+					Level::error,
+					"${agent.name} is not reachable",
+					"Destination Unreachable. The gateway doesnt know how to get to the defined network."
+				},
+				{
+					"time-exceeded",
+					ICMPResponse::time_exceeded,
+					Level::error,
+					"${agent.name} is not acessible",
+					"Time Exceeded. The ICMP request has been discarded because it was 'out of time'."
+				},
+				{
+					"timeout",
+					ICMPResponse::timeout,
+					Level::error,
+					"${agent.name} is not available",
+					"No ICMP response from host."
+				}
+
+			};
+
+			cout << getName() << "\tLoading standard ICMP states" << endl;
+
+			for(size_t ix = 0; ix < (sizeof(responses)/sizeof(responses[0])); ix++) {
+
+				states.push_back(make_shared<ICMPResponseState>(
+										responses[ix].name,
+										responses[ix].level,
+										Quark(expand(responses[ix].summary)).c_str(),
+										responses[ix].body,
+										responses[ix].id
+									)
+								);
+
+			}
+
 		}
 
 	}

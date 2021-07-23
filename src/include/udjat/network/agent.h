@@ -42,6 +42,7 @@
 
 		private:
 
+			/// @brief Internal agent state.
 			std::shared_ptr<Abstract::State> selected;
 
 			class Controller;
@@ -53,18 +54,19 @@
 				time_t timeout = 5;		///< @brief ICMP timeout.
 			} icmp;
 
-			struct {
-				bool check = true;	///< @brief Check DNS resolution.
-			} dns;
-
-			/// @brief DNS Addr if check.dns is true or host addr if check.dns is false.
-			sockaddr_storage addr;
-
-			/// @brief Host to check.
-			const char * hostname = nullptr;
-
 			/// @brief Agent states.
 			std::vector<std::shared_ptr<State>> states;
+
+		protected:
+
+			/// @brief If the agent has no states load the default ones.
+			void checkStates();
+
+			/// @brief Set address (do an ICMP check if necessary).
+			void set(const sockaddr_storage &addr);
+
+			/// @brief Do a DNS check.
+			static sockaddr_storage resolv(sockaddr_storage &dnssrv, const char *hostname);
 
 		public:
 
@@ -81,7 +83,6 @@
 
 			bool hasStates() const noexcept override;
 			void append_state(const pugi::xml_node &node) override;
-			void refresh() override;
 
 			void set(ICMPResponse response);
 

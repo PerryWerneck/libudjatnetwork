@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <udjat/network/resolver.h>
 
  // References:
  //
@@ -30,7 +31,6 @@
 	enum AgentType : uint8_t {
 		standard_host,
 		default_gateway,
-
 	};
 
  	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",&moduleinfo) {
@@ -38,16 +38,95 @@
 
 	void Network::Agent::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 
-		AgentType type = standard_host;
+		/// @brief Standard agent.
+		class StandardAgent : public Network::Agent {
+		private:
+			/// @brief Host to check.
+			const char * hostname = nullptr;
 
-		if(node.attribute("type")) {
-			type = (AgentType) Attribute(node,"type").select("default","default-gateway",nullptr);
-		}
+			/// @brief DNS Addr if check.dns is true or host addr if check.dns is false.
+			sockaddr_storage addr;
+
+			struct {
+				bool check = true;	///< @brief Check DNS resolution.
+			} dns;
+
+		public:
+			StandardAgent(const pugi::xml_node &node) : Network::Agent(node) {
+
+				memset(&addr,0,sizeof(addr));
+
+				// Get dns-server.
+				const char *dnssrv = Udjat::Attribute(node, "dns-server").as_string();
+				dns.check = Udjat::Attribute(node,"dns").as_bool(dnssrv[0] != 0);
+
+				// Host name to check.
+				hostname = Udjat::Attribute(node,"host").c_str();
+
+				if(dns.check) {
+
+					// Will check DNS resolution, get the DNS server addr.
+					if(dnssrv[0]) {
+
+						// Resolve DNS server.
+						DNSResolver resolver;
+						resolver.query(dnssrv);
+
+						if(resolver.size()) {
+							this->addr = resolver.begin()->getAddr();
+						} else {
+							throw runtime_error(string{"Can't resolve '"} + dnssrv + "'");
+						}
+
+					}
+
+				} else {
+
+					// Will not check DNS resolution, get host address.
+
+					DNSResolver resolver;
+					resolver.query(hostname);
+
+					if(resolver.size()) {
+						this->addr = resolver.begin()->getAddr();
+					} else {
+						throw runtime_error(string{"Can't resolve '"} + hostname + "'");
+					}
+
+				}
+
+				checkStates();
+
+			}
+
+			void refresh() override {
+
+				// Start with a clean state.
+				selected.reset();
+
+				if(dns.check) {
+					set(resolv(this->addr,hostname));
+				} else {
+					set(this->addr);
+				}
+
+				//
+				// Set current state.
+				//
+				if(selected) {
+					activate(selected);
+				} else {
+					activate(super::stateFromValue());
+				}
 
 
-		switch(type) {
+			}
+
+		};
+
+		switch(Attribute(node,"type").select("default","default-gateway",nullptr)) {
 		case standard_host:
-			parent.insert(make_shared<Network::Agent>(node));
+			parent.insert(make_shared<StandardAgent>(node));
 			break;
 
 		case default_gateway:
