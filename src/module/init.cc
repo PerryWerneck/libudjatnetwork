@@ -20,6 +20,10 @@
  #include "private.h"
  #include <udjat/module.h>
  #include <udjat/network/agent.h>
+ #include <unistd.h>
+ #include <sys/types.h>
+ #include <linux/capability.h>
+ #include <sys/syscall.h>
 
  using namespace Udjat;
 
@@ -47,6 +51,31 @@
 		};
 
 	};
+
+	if(getuid()) {
+
+		// Non root, do we have CAP_NET_RAW
+		struct __user_cap_header_struct caphdr = {
+			.version=_LINUX_CAPABILITY_VERSION_3,
+			.pid=0,
+		};
+
+		struct __user_cap_data_struct cap[_LINUX_CAPABILITY_U32S_3];
+
+		if (!syscall(SYS_capget,&caphdr,cap)) {
+
+			if (cap[CAP_TO_INDEX(CAP_NET_RAW)].effective&CAP_TO_MASK(CAP_NET_RAW)) {
+
+				cout << "network\tRunning as user with CAP_NET_RAW capability." << endl;
+
+			} else {
+
+				throw runtime_error("This module requires root privileges or CAP_NET_RAW capability.");
+			}
+
+		}
+
+	}
 
 	return new Module();
  }
