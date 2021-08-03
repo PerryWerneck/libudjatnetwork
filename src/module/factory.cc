@@ -30,7 +30,7 @@
  	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",&moduleinfo) {
 	}
 
-	void Network::Agent::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
+	bool Network::Agent::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 
 		/// @brief Standard agent.
 		class StandardAgent : public Network::Agent {
@@ -93,7 +93,7 @@
 
 			}
 
-			void refresh() override {
+			bool refresh() override {
 
 				// Start with a clean state.
 				selected.reset();
@@ -113,6 +113,7 @@
 					activate(super::stateFromValue());
 				}
 
+				return true;
 
 			}
 
@@ -131,11 +132,12 @@
 
 			}
 
-			void refresh() override {
+			bool refresh() override {
 
 				// Start with a clean state.
 				selected.reset();
 				set(DefaultGateway().refresh());
+				return true;
 			}
 
 		};
@@ -148,7 +150,12 @@
 		case default_gateway:
 			parent.insert(make_shared<GatewayAgent>(node));
 			break;
+
+		default:
+			return false;
 		}
+
+		return true;
 
 	}
 
