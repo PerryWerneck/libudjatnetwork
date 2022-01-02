@@ -21,6 +21,7 @@
  #include <udjat/module.h>
  #include <udjat/factory.h>
  #include <udjat/tools/inet.h>
+ #include <udjat/tools/mainloop.h>
  #include <unistd.h>
  #include <iostream>
 
@@ -32,7 +33,7 @@
 	auto module = udjat_module_init();
 	auto agent = Abstract::Agent::init("test.xml");
 
-	Udjat::run();
+	Udjat::MainLoop::getInstance().run();
 
 	Abstract::Agent::deinit();
 

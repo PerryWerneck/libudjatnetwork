@@ -45,6 +45,7 @@
  namespace Udjat {
 
 	Network::DefaultGateway::DefaultGateway() {
+		memset(&address,0,sizeof(address));
 		refresh();
 	}
 

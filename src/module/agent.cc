@@ -74,6 +74,7 @@
 
 		public:
 			Range(const pugi::xml_node &node) : Network::Range(node) {
+				memset(&addr,0,sizeof(addr));
 				parse(Attribute(node,"range").as_string(),addr,mask);
 			}
 
