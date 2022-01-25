@@ -30,7 +30,7 @@
  static void mainloop() {
 
 	auto module = udjat_module_init();
-	auto agent = Abstract::Agent::init("test.xml");
+	auto agent = Udjat::init("test.xml");
 
 	Udjat::MainLoop::getInstance().run();
 

@@ -57,3 +57,10 @@ valgrind.suppression
 # Personal Notes
 *.[0-9]
 
+ABOUT-NLS
+intl
+m4
+po
+vgcore.*
+
+
