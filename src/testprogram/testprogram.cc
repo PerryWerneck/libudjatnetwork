@@ -17,7 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat.h>
  #include <udjat/module.h>
  #include <udjat/factory.h>
  #include <udjat/tools/inet.h>
@@ -31,7 +30,7 @@
  static void mainloop() {
 
 	auto module = udjat_module_init();
-	auto agent = Abstract::Agent::init("test.xml");
+	auto agent = Udjat::init("test.xml");
 
 	Udjat::MainLoop::getInstance().run();
 

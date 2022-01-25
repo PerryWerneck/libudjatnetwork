@@ -35,7 +35,7 @@
 		Network::ICMPResponse id;
 
 	public:
-		constexpr ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const Network::ICMPResponse i) : Network::Agent::State(name,level,summary,body), id(i) {
+		ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const Network::ICMPResponse i) : Network::Agent::State(name,level,summary,body), id(i) {
 		}
 
 		ICMPResponseState(const pugi::xml_node &node, const Network::ICMPResponse i) : Network::Agent::State(node), id(i) {
