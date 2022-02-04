@@ -175,13 +175,13 @@
 
 			State * st = dynamic_cast<State *>(state.get());
 
-			if(st && (!selected || st->getLevel() > selected->getLevel())) {
+			if(st && (!selected || st->level() > selected->level())) {
 				if(st->isValid(addr)) {
 					selected = state;
 				}
 #ifdef DEBUG
 				else {
-					cout << "State " << st->getName() << " was rejected" << endl;
+					info() << "State " << st->name() << " was rejected" << endl;
 				}
 #endif // DEBUG
 			}
@@ -221,7 +221,7 @@
 
 			State * st = dynamic_cast<State *>(state.get());
 
-			if(st && (!selected || st->getLevel() >= selected->getLevel())) {
+			if(st && (!selected || st->level() >= selected->level())) {
 				if(st->isValid(response)) {
 					selected = state;
 				}
@@ -250,34 +250,34 @@
 					"active",
 					ICMPResponse::echo_reply,
 					Level::ready,
-					"${agent.name} is active",
+					"${name} is active",
 					"Got ICMP echo reply from host."
 				},
 				{
 					"unreachable",
 					ICMPResponse::destination_unreachable,
 					Level::error,
-					"${agent.name} is not reachable",
+					"${name} is not reachable",
 					"Destination Unreachable. The gateway doesnt know how to get to the defined network."
 				},
 				{
 					"time-exceeded",
 					ICMPResponse::time_exceeded,
 					Level::error,
-					"${agent.name} is not acessible",
+					"${name} is not acessible",
 					"Time Exceeded. The ICMP request has been discarded because it was 'out of time'."
 				},
 				{
 					"timeout",
 					ICMPResponse::timeout,
 					Level::error,
-					"${agent.name} is not available",
+					"${name} is not available",
 					"No ICMP response from host."
 				}
 
 			};
 
-			cout << getName() << "\tLoading standard ICMP states" << endl;
+			info() << "Loading standard ICMP states" << endl;
 
 			for(size_t ix = 0; ix < (sizeof(responses)/sizeof(responses[0])); ix++) {
 
