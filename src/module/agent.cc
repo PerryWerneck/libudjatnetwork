@@ -47,11 +47,11 @@
 
 	};
 
-	Network::Agent::Agent(const pugi::xml_node &node) {
+	Network::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
 
 		// Do an ICMP check?
-		icmp.check = Udjat::Attribute(node,"icmp").as_bool(true);
-		icmp.timeout = Udjat::Attribute(node,"icmp-timeout").as_uint(icmp.timeout);
+		icmp.check = getAttribute(node,"icmp",icmp.check);
+		icmp.timeout = getAttribute(node,"icmp-timeout", (unsigned int) icmp.timeout);
 
 		load(node);
 

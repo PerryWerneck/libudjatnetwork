@@ -27,7 +27,7 @@
 		default_gateway,
 	};
 
- 	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",&moduleinfo) {
+ 	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",moduleinfo) {
 	}
 
 	bool Network::Agent::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {

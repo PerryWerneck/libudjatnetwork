@@ -30,16 +30,15 @@
  static void mainloop() {
 
 	auto module = udjat_module_init();
-	auto agent = Udjat::load("./test.xml");
+	Udjat::load("./test.xml");
 
 	Udjat::MainLoop::getInstance().run();
 
 	Abstract::Agent::deinit();
 
 	cout << "Removing module" << endl;
+	Udjat::Module::unload();
 
-	delete module;
-	Module::unload();
 
  }
 

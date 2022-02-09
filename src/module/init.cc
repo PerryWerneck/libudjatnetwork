@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include "private.h"
  #include <udjat/module.h>
  #include <udjat/network/agent.h>
@@ -24,16 +25,11 @@
  #include <sys/types.h>
  #include <linux/capability.h>
  #include <sys/syscall.h>
+ #include <udjat/moduleinfo.h>
 
  using namespace Udjat;
 
- const ModuleInfo moduleinfo{
-	PACKAGE_NAME,								// The module name.
-	"UDJat Network module", 					// The module description.
-	PACKAGE_VERSION, 							// The module version.
-	PACKAGE_URL, 								// The package URL.
-	PACKAGE_BUGREPORT 							// The bug report address.
- };
+ const ModuleInfo moduleinfo{ "Network monitor" };
 
  /// @brief Register udjat module.
  Udjat::Module * udjat_module_init() {
@@ -44,7 +40,7 @@
 
 	public:
 
-		Module() : Udjat::Module("network",&moduleinfo) {
+		Module() : Udjat::Module("network",moduleinfo) {
 		};
 
 		~Module() {
