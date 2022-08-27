@@ -33,6 +33,7 @@
  #include <unistd.h>
  #include <net/if.h>
  #include <iostream>
+ #include <udjat/tools/intl.h>
 
  #include <stdexcept>
  #include <system_error>
@@ -58,7 +59,7 @@
 		int sock = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
 
 		if(sock < 0) {
-			throw std::system_error(errno, std::system_category(), "Cant get netlink socket");
+			throw std::system_error(errno, std::system_category(), _("Cant get netlink socket"));
 		}
 
 		try {
@@ -82,7 +83,7 @@
 
 			// Send
 			if(send(sock, nlmsg, nlmsg->nlmsg_len, 0) < 0) {
-				throw std::system_error(errno, std::system_category(), "Cant send netlink message");
+				throw std::system_error(errno, std::system_category(), _("Cant send netlink message"));
 			}
 
 			// receive response
@@ -96,14 +97,14 @@
 
 				received_bytes = recv(sock, ptr, sizeof(buffer) - msg_len, 0);
 				if (received_bytes < 0) {
-					throw std::system_error(errno, std::system_category(), "Cant receive netlink response");
+					throw std::system_error(errno, std::system_category(), _("Cant receive netlink response"));
 				}
 
 				nlh = (struct nlmsghdr *) ptr;
 
 				// Check if the header is valid
 				if((NLMSG_OK(nlmsg, received_bytes) == 0) || (nlmsg->nlmsg_type == NLMSG_ERROR)) {
-					throw runtime_error("Error in received packet");
+					throw runtime_error(_("Error in received packet"));
 				}
 
 				// If we received all data break
@@ -152,7 +153,7 @@
 
 					case RTA_GATEWAY:
 						if(route_attribute_len > sizeof(struct sockaddr_in)) {
-							throw runtime_error("Invalid size on RTA_GATEWAY");
+							throw runtime_error(_("Invalid size on RTA_GATEWAY"));
 						}
 
 						{
