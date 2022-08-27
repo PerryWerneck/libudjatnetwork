@@ -17,38 +17,71 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat/module.h>
+ #include <config.h>
+
+ #include <udjat/tools/systemservice.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/tools/http/client.h>
+ #include <udjat/agent.h>
  #include <udjat/factory.h>
- #include <udjat/tools/inet.h>
- #include <udjat/tools/mainloop.h>
- #include <unistd.h>
+ #include <udjat/module.h>
  #include <iostream>
+ #include <memory>
 
  using namespace std;
  using namespace Udjat;
 
- static void mainloop() {
+//---[ Implement ]------------------------------------------------------------------------------------------
 
-	auto module = udjat_module_init();
-	Udjat::load("./test.xml");
+int main(int argc, char **argv) {
 
-	Udjat::MainLoop::getInstance().run();
+	class Service : public SystemService {
+	protected:
+		/// @brief Initialize service.
+		void init() override {
 
-	Abstract::Agent::deinit();
+			udjat_module_init();
 
-	cout << "Removing module" << endl;
-	Udjat::Module::unload();
+			SystemService::init();
+
+			if(Module::find("httpd")) {
+
+				if(Module::find("information")) {
+					cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
+					cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
+					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
+					cout << "http://localhost:8989/api/1.0/info/services.xml" << endl;
+				}
+
+			}
+
+			auto root = Abstract::Agent::root();
+			if(root) {
+				for(auto agent : *root) {
+					cout << "http://localhost:8989/api/1.0/agent/" << agent->name() << ".xml" << endl;
+				}
+			}
 
 
- }
+		}
 
- int main(int argc, char **argv) {
+		/// @brief Deinitialize service.
+		void deinit() override {
+			cout << Application::Name() << "\t**** Deinitializing" << endl;
+			Udjat::Module::unload();
+		}
 
-	setlocale( LC_ALL, "" );
+	public:
+		Service() : SystemService{"./test.xml"} {
+		}
 
-	Logger::redirect(nullptr,true);
 
-	mainloop();
+	};
+
+	Service().run(argc,argv);
+
+	cout << "*** Test program finished" << endl;
 
 	return 0;
+
 }

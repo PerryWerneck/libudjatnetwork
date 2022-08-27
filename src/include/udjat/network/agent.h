@@ -22,7 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/factory.h>
  #include <udjat/agent.h>
- #include <udjat/state.h>
+ #include <udjat/agent/state.h>
  #include <sys/socket.h>
 
  namespace Udjat {
@@ -68,6 +68,8 @@
 			/// @brief Do a DNS check.
 			static sockaddr_storage resolv(sockaddr_storage &dnssrv, const char *hostname);
 
+			//std::shared_ptr<Abstract::State> stateFromValue() const override;
+
 		public:
 
 			class State;
@@ -75,18 +77,17 @@
 			class Factory : public Udjat::Factory {
 			public:
 				Factory();
-				bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
+				std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const override;
 			};
 
 			Agent(const pugi::xml_node &node);
 			virtual ~Agent();
 
-			bool hasStates() const noexcept override;
-			void append_state(const pugi::xml_node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 
 			void set(ICMPResponse response);
 
-		};
+ 		};
 
 
 	}

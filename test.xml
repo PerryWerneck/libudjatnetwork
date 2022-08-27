@@ -2,24 +2,28 @@
 
 <config>
 
+	<!-- module name='http' required='no' / -->
+	<module name='civetweb' required='no' />
+	<module name='information' required='no' />
+
 	<network-host name='localhost' host='localhost' dns='true' icmp='true' update-timer='60' icmp-timeout='10'>
 	
 		<!-- Valid range for this host -->
-		<!-- state name='local' range='127.0.0.0/24' level='ready' summary='${host} is local' / -->
-		<state name='local' same-network='yes' level='ready' summary='${host} is local' />
+		<!-- state name='local' range='127.0.0.0/24' level='ready' summary='localhost is local' / -->
+		<state name='local' same-network='yes' level='ready' summary='localhost is local' />
 		
 		<!-- All other ranges are invalid -->
-		<!-- state name='remote' range='!127.0.0.0/24' level='warning' summary='${host} is NOT local' / -->
-		<state name='remote' same-network='no' level='warning' summary='${host} is NOT local' />
+		<!-- state name='remote' range='!127.0.0.0/24' level='warning' summary='localhost is NOT local' / -->
+		<state name='remote' same-network='no' level='warning' summary='localhost is NOT local' />
 		
-		<state name='active' icmp-response='echo-reply' level='ready' summary='${host} is active' />
-		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='${host} is not reachable' />
-		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='${host} is not available' />
-		<state name='timeout' icmp-response='timeout' level='error' summary='${host} is not available' />
+		<state name='active' icmp-response='echo-reply' level='ready' summary='localhost is active' />
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='localhost is not reachable' />
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='localhost is not available' />
+		<state name='timeout' icmp-response='timeout' level='error' summary='localhost is not available' />
 
 	</network-host>
 	
-	<network-host name='gateway' type='default-gateway' update-timer='60' icmp-timeout='60' />
+	<network-host name='gateway' type='default-gateway' icmp='true' update-timer='60' icmp-timeout='60' />
 
 </config>
 

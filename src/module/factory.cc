@@ -30,7 +30,7 @@
  	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",moduleinfo) {
 	}
 
-	bool Network::Agent::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
+	std::shared_ptr<Abstract::Agent> Network::Agent::Factory::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
 
 		/// @brief Standard agent.
 		class StandardAgent : public Network::Agent {
@@ -117,6 +117,16 @@
 
 			}
 
+			bool getProperty(const char *key, std::string &value) const noexcept override {
+
+				if(!(strcasecmp(key,"host") && strcasecmp(key,"hostname")) ) {
+					value = hostname;
+					return true;
+				}
+
+				return Network::Agent::getProperty(key,value);
+			}
+
 		};
 
 		/// @brief Gateway Agent
@@ -144,18 +154,14 @@
 
 		switch(Attribute(node,"type").select("default","default-gateway",nullptr)) {
 		case standard_host:
-			parent.insert(make_shared<StandardAgent>(node));
-			break;
+			return make_shared<StandardAgent>(node);
 
 		case default_gateway:
-			parent.insert(make_shared<GatewayAgent>(node));
-			break;
+			return make_shared<GatewayAgent>(node);
 
-		default:
-			return false;
 		}
 
-		return true;
+		return Udjat::Factory::AgentFactory(parent,node);
 
 	}
 

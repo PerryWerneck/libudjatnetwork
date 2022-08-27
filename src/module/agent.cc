@@ -26,6 +26,7 @@
  #include <sys/types.h>
  #include <sys/socket.h>
  #include <ifaddrs.h>
+ #include <udjat/tools/intl.h>
 
  namespace Udjat {
 
@@ -60,11 +61,7 @@
 	Network::Agent::~Agent() {
 	}
 
-	bool Network::Agent::hasStates() const noexcept {
-		return !this->states.empty();
-	}
-
-	void Network::Agent::append_state(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::State> Network::Agent::StateFactory(const pugi::xml_node &node) {
 
 		/// @brief IP Address range state.
 		class Range : public Network::Range {
@@ -145,27 +142,35 @@
 
 		if(node.attribute("range")) {
 
-			states.push_back(make_shared<Range>(node));
+			auto state = make_shared<Range>(node);
+			states.push_back(state);
+			return state;
 
-		} else if(node.attribute("same-network")) {
+		}
 
-			states.push_back(make_shared<SameNetwork>(node));
+		if(node.attribute("same-network")) {
 
-		} else if(node.attribute("icmp-response")) {
+			auto state = make_shared<SameNetwork>(node);
+			states.push_back(state);
+			return state;
+
+		}
+
+		if(node.attribute("icmp-response")) {
 
 			if(!icmp.check) {
 				throw runtime_error("Can't use 'icmp-response' states without icmp='true' attribute on the agent definition");
 			}
 
 			ICMPResponse id = (ICMPResponse) Attribute(node,"icmp-response").select("echo-reply", "destination-unreachable", "time-exceeded", "timeout", nullptr);
-			states.push_back(make_shared<ICMPResponseState>(node,id));
 
-		} else {
-
-			super::append_state(node);
+			auto state = make_shared<ICMPResponseState>(node,id);
+			states.push_back(state);
+			return state;
 
 		}
 
+		return super::StateFactory(node);
 	}
 
 	void Network::Agent::set(const sockaddr_storage &addr) {
@@ -250,29 +255,29 @@
 					"active",
 					ICMPResponse::echo_reply,
 					Level::ready,
-					"${name} is active",
-					"Got ICMP echo reply from host."
+					N_("${name} is active"),
+					N_("Got ICMP echo reply from host.")
 				},
 				{
 					"unreachable",
 					ICMPResponse::destination_unreachable,
 					Level::error,
-					"${name} is not reachable",
-					"Destination Unreachable. The gateway doesnt know how to get to the defined network."
+					N_("${name} is not reachable"),
+					N_("Destination Unreachable. The gateway doesnt know how to get to the defined network.")
 				},
 				{
 					"time-exceeded",
 					ICMPResponse::time_exceeded,
 					Level::error,
-					"${name} is not acessible",
-					"Time Exceeded. The ICMP request has been discarded because it was 'out of time'."
+					N_("${name} is not acessible"),
+					N_("Time Exceeded. The ICMP request has been discarded because it was 'out of time'.")
 				},
 				{
 					"timeout",
 					ICMPResponse::timeout,
 					Level::error,
-					"${name} is not available",
-					"No ICMP response from host."
+					N_("${name} is not available"),
+					N_("No ICMP response from host.")
 				}
 
 			};
@@ -284,7 +289,11 @@
 				states.push_back(make_shared<ICMPResponseState>(
 										responses[ix].name,
 										responses[ix].level,
+#ifdef HAVE_LIBINTL
+										Quark(expand(dgettext(PACKAGE_NAME,responses[ix].summary)).c_str(),
+#else
 										Quark(expand(responses[ix].summary)).c_str(),
+#endif // HAVE_LIBINTL
 										responses[ix].body,
 										responses[ix].id
 									)
