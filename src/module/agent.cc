@@ -289,11 +289,11 @@
 				states.push_back(make_shared<ICMPResponseState>(
 										responses[ix].name,
 										responses[ix].level,
-#ifdef HAVE_LIBINTL
-										Quark(expand(dgettext(PACKAGE_NAME,responses[ix].summary)).c_str(),
+#ifdef GETTEXT_PACKAGE
+										Quark(expand(dgettext(GETTEXT_PACKAGE,responses[ix].summary)).c_str(),
 #else
 										Quark(expand(responses[ix].summary)).c_str(),
-#endif // HAVE_LIBINTL
+#endif // GETTEXT_PACKAGE
 										responses[ix].body,
 										responses[ix].id
 									)

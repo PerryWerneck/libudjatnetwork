@@ -43,13 +43,15 @@ sysconfdir=/etc
 
 BASEDIR=@BASEDIR@
 
-OBJDIR=.obj
+OBJDIR=.obj/@OSNAME@
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
 
-BINDIR=$(BASEDIR)/.bin
+BINDIR=.bin
 BINDBG=$(BINDIR)/Debug
 BINRLS=$(BINDIR)/Release
+
+POTDIR=.pot
 
 #---[ Rules ]----------------------------------------------------------------------------
 
@@ -127,13 +129,45 @@ $(OBJRLS)/%.o: \
 	@$(MKDIR) $(@D)
 	@$(WINDRES) $< -O coff -o $@
 
+#---[ Misc Rules ]-----------------------------------------------------------------------
+
+$(POTDIR)/%.pot: \
+	%.cc
+
+	@echo $(notdir $@) ...
+	@$(MKDIR) $(dir $@)
+	@$(XGETTEXT) \
+		--from-code=UTF-8 \
+		--language=C \
+		--keyword=_ \
+		--keyword=N_ \
+		--keyword=MSG_:2 \
+		--output=$@ \
+		$<
+	@touch $@
+
+$(POTDIR)/%.pot: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(dir $@)
+	@touch $@
+
+install-%: \
+	%/Makefile
+
+	@$(MAKE) -C `dirname $<` DESTDIR=$(DESTDIR) install
+
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
-	$(BINRLS)/$(PACKAGE_NAME).so
+	$(BINRLS)/$(PACKAGE_NAME).so \
+	locale/$(PACKAGE_NAME).pot
+
 
 Release: \
-	$(BINRLS)/$(PACKAGE_NAME).so
+	$(BINRLS)/$(PACKAGE_NAME).so \
+	locale/$(PACKAGE_NAME).pot
 
 $(BINRLS)/$(PACKAGE_NAME).so: \
 	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o)
@@ -149,10 +183,21 @@ $(BINRLS)/$(PACKAGE_NAME).so: \
 		$(LIBS)
 
 
+locale/$(PACKAGE_NAME).pot: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(POTDIR)/$(SRC).pot)
+
+	@rm -f $@
+	@$(MKDIR) $(dir $@)
+	@$(MSGCAT) --sort-output $^ > $@
+
+locale: \
+	locale/$(PACKAGE_NAME).pot
+
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
-	install-linux-module
+	install-linux-module \
+	locale/$(PACKAGE_NAME).pot
 
 install-linux-module: \
 	$(BINRLS)/$(PACKAGE_NAME).so

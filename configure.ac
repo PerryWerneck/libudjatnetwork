@@ -151,6 +151,37 @@ dnl Libraries
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_EXISTS
 
+dnl ---------------------------------------------------------------------------
+dnl Check for libintl
+dnl ---------------------------------------------------------------------------
+
+AC_PATH_TOOL([XGETTEXT], [xgettext], [true])
+AC_PATH_TOOL([MSGCAT], [msgcat], [true])
+AC_PATH_TOOL([MSGINIT], [msginit], [true])
+AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
+AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
+
+AC_CHECK_HEADER(libintl.h, [
+        AC_DEFINE(HAVE_LIBINTL, 1, [Libintl is available])
+
+        case "$host" in
+        *-mingw32|*-pc-msys)
+            LIBS="$LIBS -lintl"
+            ;;
+
+        *)
+			AC_MSG_NOTICE([No need for libintl])
+
+        esac
+
+], [
+        AC_MSG_ERROR([Can't find required file libintl.h])
+])
+
+AC_SUBST(INTL_LIBS)
+
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"udjat-module-network-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
+AC_SUBST(GETTEXT_PACKAGE,"udjat-module-network-$app_vrs_major.$app_vrs_minor")
 
 dnl ---------------------------------------------------------------------------
 dnl Check for libresolv
@@ -192,5 +223,7 @@ AC_SUBST(BASEDIR,$ac_pwd)
 AC_SUBST(LIBS)
 
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(locale/Makefile)
+
 AC_OUTPUT
 

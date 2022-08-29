@@ -1,0 +1,55 @@
+#: src/module/agent.cc:258
+msgid "${name} is active"
+msgstr ""
+
+#: src/module/agent.cc:272
+msgid "${name} is not acessible"
+msgstr ""
+
+#: src/module/agent.cc:279
+msgid "${name} is not available"
+msgstr ""
+
+#: src/module/agent.cc:265
+msgid "${name} is not reachable"
+msgstr ""
+
+#: src/tools/defaultgateway.cc:62
+msgid "Cant get netlink socket"
+msgstr ""
+
+#: src/tools/defaultgateway.cc:100
+msgid "Cant receive netlink response"
+msgstr ""
+
+#: src/tools/defaultgateway.cc:86
+msgid "Cant send netlink message"
+msgstr ""
+
+#: src/module/agent.cc:266
+msgid ""
+"Destination Unreachable. The gateway doesnt know how to get to the defined "
+"network."
+msgstr ""
+
+#: src/tools/defaultgateway.cc:107
+msgid "Error in received packet"
+msgstr ""
+
+#: src/module/agent.cc:259
+msgid "Got ICMP echo reply from host."
+msgstr ""
+
+#: src/tools/defaultgateway.cc:156
+msgid "Invalid size on RTA_GATEWAY"
+msgstr ""
+
+#: src/module/agent.cc:280
+msgid "No ICMP response from host."
+msgstr ""
+
+#: src/module/agent.cc:273
+msgid ""
+"Time Exceeded. The ICMP request has been discarded because it was 'out of "
+"time'."
+msgstr ""

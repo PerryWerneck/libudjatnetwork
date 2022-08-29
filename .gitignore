@@ -49,6 +49,7 @@ stamp-h1
 *.depend
 .bin
 .obj
+.pot
 *.bak
 
 Makefile
