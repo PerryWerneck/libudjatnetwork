@@ -54,8 +54,6 @@
 		icmp.check = getAttribute(node,"icmp",icmp.check);
 		icmp.timeout = getAttribute(node,"icmp-timeout", (unsigned int) icmp.timeout);
 
-		load(node);
-
 	}
 
 	Network::Agent::~Agent() {
@@ -290,7 +288,7 @@
 										responses[ix].name,
 										responses[ix].level,
 #ifdef GETTEXT_PACKAGE
-										Quark(expand(dgettext(GETTEXT_PACKAGE,responses[ix].summary)).c_str(),
+										Quark(expand(dgettext(GETTEXT_PACKAGE,responses[ix].summary))).c_str(),
 #else
 										Quark(expand(responses[ix].summary)).c_str(),
 #endif // GETTEXT_PACKAGE
