@@ -59,12 +59,32 @@
 		cout << "Stopping ICMP Worker" << endl;
 #endif // DEBUG
 
+		this->disable();
 		MainLoop::getInstance().remove(this);
 
 	 	if(sock > 0) {
 			close(sock);
 			sock = -1;
 	 	}
+
+	}
+
+	void Network::Agent::Controller::on_timer() {
+
+		ThreadPool::getInstance().push([this]() {
+
+			lock_guard<recursive_mutex> lock(guard);
+
+			// Send packets.
+			hosts.remove_if([](Host &host) {
+				return !host.onTimer();
+			});
+
+			if(hosts.empty()) {
+				stop();
+			}
+
+		});
 
 	}
 
@@ -164,6 +184,11 @@
 			});
 
 			// Timer for packet sent.
+			this->reset(1000L);
+			if(!this->enabled()) {
+				this->enable();
+			}
+			/*
 			MainLoop::getInstance().insert(this,1000L,[this]() {
 
 				ThreadPool::getInstance().push([this]() {
@@ -184,6 +209,7 @@
 				return true;
 
 			});
+			*/
 
 		} catch(...) {
 

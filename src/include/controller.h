@@ -21,6 +21,7 @@
 
  #include <config.h>
  #include <udjat/network/agent.h>
+ #include <udjat/tools/timer.h>
  #include <mutex>
  #include <memory>
  #include <iostream>
@@ -30,7 +31,7 @@
 
  namespace Udjat {
 
- 	class Network::Agent::Controller {
+ 	class Network::Agent::Controller : private MainLoop::Timer {
 	public:
 
 		#pragma pack(1)
@@ -81,6 +82,8 @@
 
 		void start();
 		void stop();
+
+		void on_timer() override;
 
 	public:
 
