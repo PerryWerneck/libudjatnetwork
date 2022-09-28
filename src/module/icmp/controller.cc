@@ -17,10 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DEBUG
-	#error FIX-ME: ICMP is not working.
-#endif // DEBUG
-
  #include <config.h>
  #include <controller.h>
  #include <unistd.h>
@@ -60,24 +56,18 @@
 
 	void Network::Agent::Controller::stop() {
 
-#ifdef DEBUG
-		cout << "Stopping ICMP Worker" << endl;
-#endif // DEBUG
-
-#ifdef DEBUG
-		cout << "---[ICMP Was disabled]-------------------------------------------------" << endl;
-#endif // DEBUG
-
 		this->Handler::disable();
 		this->Timer::disable();
 		this->Handler::close();
+
+		cout << "ICMP\tICMP listener disabled" << endl;
 
 	}
 
 	void Network::Agent::Controller::handle_event(const Event event) {
 
 #ifdef DEBUG
-		cout << "*** EVENT on ICMP Controller" << endl;
+		cout << "*** EVENT on ICMP listener" << endl;
 #endif // DEBUG
 
 		lock_guard<recursive_mutex> lock(guard);
@@ -184,62 +174,6 @@
 
 			}
 
-			/*
-			// Listen for package
-			MainLoop::getInstance().insert(this,sock,MainLoop::oninput,[this](const MainLoop::Event event) {
-
-				lock_guard<recursive_mutex> lock(guard);
-
-				if(event & MainLoop::oninput) {
-
-					// Receive packet.
-					#pragma pack(1)
-					struct {
-						struct iphdr    hdr;
-						struct Packet   packet;
-					} in;
-					#pragma pack()
-
-					struct sockaddr_storage addr;
-					socklen_t szAddr = sizeof(addr);
-
-					memset(&in,0,sizeof(in));
-					memset(&addr,0,sizeof(addr));
-
-					int rc = recvfrom(sock,&in,sizeof(in),MSG_DONTWAIT,(struct sockaddr *) &addr,&szAddr);
-					if(rc < 0) {
-						cerr << "ICMP\tError '" << strerror(errno) << "' receiving ICMP packet" << endl;
-						return true;
-					}
-
-					if(rc != sizeof(in)) {
-#ifdef DEBUG
-						cout << "ICMP\tIgnoring packet with invalid size" << endl;
-#endif // DEBUG
-						return true;
-					}
-
-					if(in.packet.icmp.icmp_id != htons((uint16_t) getpid())) {
-						cout << "ICMP\tIgnoring packet with invalid id" << endl;
-						return true;
-					}
-
-#ifdef DEBUG
-					cout << "ICMP\tReceived packet " << htons(in.packet.icmp.icmp_seq) << " from " << std::to_string(addr) << endl;
-#endif // DEBUG
-
-					hosts.remove_if([&in,&addr](Host &host) {
-						return host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload);
-					});
-
-				}
-
-
-				return true;
-
-			});
-			*/
-
 			// Timer for packet sent.
 			this->Timer::reset(1000L);
 			if(!this->Timer::enabled()) {
@@ -247,9 +181,6 @@
 			}
 
 			if(!this->Handler::enabled()) {
-#ifdef DEBUG
-				cout << "---[ICMP Was enabled]--------------------------------------------------" << endl;
-#endif // DEBUG
 				cout << "ICMP\tEnabling ICMP listener" << endl;
 				this->Handler::enable();
 			}
