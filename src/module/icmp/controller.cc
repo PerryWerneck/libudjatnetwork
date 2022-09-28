@@ -44,7 +44,7 @@
 
 	recursive_mutex Network::Agent::Controller::guard;
 
-	Network::Agent::Controller::Controller() {
+	Network::Agent::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
 	}
 
 	Network::Agent::Controller::~Controller() {
@@ -62,6 +62,10 @@
 
 #ifdef DEBUG
 		cout << "Stopping ICMP Worker" << endl;
+#endif // DEBUG
+
+#ifdef DEBUG
+		cout << "---[ICMP Was disabled]-------------------------------------------------" << endl;
 #endif // DEBUG
 
 		this->Handler::disable();
@@ -147,10 +151,6 @@
 
 	void Network::Agent::Controller::start() {
 
-		if(fd > 0) {
-			return;
-		}
-
 		try {
 
 #ifdef DEBUG
@@ -158,7 +158,8 @@
 #endif // DEBUG
 
 			// Create socket
-			{
+			if(fd <= 0) {
+
 				// Reference: https://github.com/schweikert/fping/blob/develop/src/socket4.c
 				protoent * proto = getprotobyname("icmp");
 				if(!proto) {
@@ -246,6 +247,10 @@
 			}
 
 			if(!this->Handler::enabled()) {
+#ifdef DEBUG
+				cout << "---[ICMP Was enabled]--------------------------------------------------" << endl;
+#endif // DEBUG
+				cout << "ICMP\tEnabling ICMP listener" << endl;
 				this->Handler::enable();
 			}
 
@@ -319,7 +324,7 @@
 
 #ifdef DEBUG
 		cout 	<< "Sending ICMP " << payload.id << "." << payload.seq
-				<< " to " << std::to_string(addr) << endl;
+				<< " to " << std::to_string(addr) << " on socket " << fd << endl;
 #endif // DEBUG
 
 		// Send package
