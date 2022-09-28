@@ -17,6 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef DEBUG
+	#error FIX-ME: ICMP is not working.
+#endif // DEBUG
+
+ #include <config.h>
  #include <controller.h>
  #include <unistd.h>
  #include <netdb.h>
@@ -59,13 +64,64 @@
 		cout << "Stopping ICMP Worker" << endl;
 #endif // DEBUG
 
-		this->disable();
-		MainLoop::getInstance().remove(this);
+		this->Handler::disable();
+		this->Timer::disable();
+		this->Handler::close();
 
-	 	if(sock > 0) {
-			close(sock);
-			sock = -1;
-	 	}
+	}
+
+	void Network::Agent::Controller::handle_event(const Event event) {
+
+#ifdef DEBUG
+		cout << "*** EVENT on ICMP Controller" << endl;
+#endif // DEBUG
+
+		lock_guard<recursive_mutex> lock(guard);
+
+		if(event & MainLoop::Handler::oninput) {
+
+			// Receive packet.
+			#pragma pack(1)
+			struct {
+				struct iphdr    hdr;
+				struct Packet   packet;
+			} in;
+			#pragma pack()
+
+			struct sockaddr_storage addr;
+			socklen_t szAddr = sizeof(addr);
+
+			memset(&in,0,sizeof(in));
+			memset(&addr,0,sizeof(addr));
+
+			int rc = recvfrom(fd,&in,sizeof(in),MSG_DONTWAIT,(struct sockaddr *) &addr,&szAddr);
+			if(rc < 0) {
+				cerr << "ICMP\tError '" << strerror(errno) << "' receiving ICMP packet" << endl;
+				return;
+			}
+
+			if(rc != sizeof(in)) {
+#ifdef DEBUG
+				cout << "ICMP\tIgnoring packet with invalid size" << endl;
+#endif // DEBUG
+				return;
+			}
+
+			if(in.packet.icmp.icmp_id != htons((uint16_t) getpid())) {
+				cout << "ICMP\tIgnoring packet with invalid id" << endl;
+				return;
+			}
+
+#ifdef DEBUG
+			cout << "ICMP\tReceived packet " << htons(in.packet.icmp.icmp_seq) << " from " << std::to_string(addr) << endl;
+#endif // DEBUG
+
+			hosts.remove_if([&in,&addr](Host &host) {
+				return host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload);
+			});
+
+		}
+
 
 	}
 
@@ -81,6 +137,7 @@
 			});
 
 			if(hosts.empty()) {
+				cout << "ICMP\tNo more hosts, disabling ICMP listener" << endl;
 				stop();
 			}
 
@@ -90,7 +147,7 @@
 
 	void Network::Agent::Controller::start() {
 
-		if(sock > 0) {
+		if(fd > 0) {
 			return;
 		}
 
@@ -108,24 +165,25 @@
 					throw runtime_error("ICMP: Unknown protocol");
 				}
 
-				sock = socket(AF_INET, SOCK_RAW, proto->p_proto);
-				if(sock < 0) {
+				fd = socket(AF_INET, SOCK_RAW, proto->p_proto);
+				if(fd < 0) {
 					throw std::system_error(errno, std::system_category(), "Cant create ICMP socket");
 				}
 
 				// Set non-blocking
 				int flags;
 
-				if ((flags = fcntl(sock, F_GETFL, 0)) < 0) {
+				if ((flags = fcntl(fd, F_GETFL, 0)) < 0) {
 					throw std::system_error(errno, std::system_category(), "Cant get ICMP socket flags");
 				}
 
-				if (fcntl(sock, F_SETFL, flags | O_NONBLOCK) < 0){
+				if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0){
 					throw std::system_error(errno, std::system_category(), "Cant set ICMP socket flags");
 				}
 
 			}
 
+			/*
 			// Listen for package
 			MainLoop::getInstance().insert(this,sock,MainLoop::oninput,[this](const MainLoop::Event event) {
 
@@ -173,43 +231,23 @@
 						return host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload);
 					});
 
-					/*
-					*/
-
 				}
 
 
 				return true;
 
 			});
+			*/
 
 			// Timer for packet sent.
-			this->reset(1000L);
-			if(!this->enabled()) {
-				this->enable();
+			this->Timer::reset(1000L);
+			if(!this->Timer::enabled()) {
+				this->Timer::enable();
 			}
-			/*
-			MainLoop::getInstance().insert(this,1000L,[this]() {
 
-				ThreadPool::getInstance().push([this]() {
-
-					lock_guard<recursive_mutex> lock(guard);
-
-					// Send packets.
-					hosts.remove_if([](Host &host) {
-						return !host.onTimer();
-					});
-
-					if(hosts.empty()) {
-						stop();
-					}
-
-				});
-
-				return true;
-
-			});
-			*/
+			if(!this->Handler::enabled()) {
+				this->Handler::enable();
+			}
 
 		} catch(...) {
 
@@ -269,7 +307,7 @@
 
 	void Network::Agent::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
 
-		if(sock < 0) {
+		if(fd < 0) {
 			throw runtime_error("ICMP Controller is not available");
 		}
 
@@ -296,7 +334,7 @@
 		packet.icmp.icmp_id = htons(getpid());
 		packet.icmp.icmp_cksum = in_chksum((unsigned short *) &packet, sizeof(packet));
 
-		if(sendto(sock, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
+		if(sendto(fd, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
 			throw std::system_error(errno, std::system_category(), "Can't send ICMP packet");
 		}
 
