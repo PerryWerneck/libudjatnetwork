@@ -233,7 +233,7 @@
 		}
 
 		if(selected) {
-			activate(selected);
+			super::set(selected);
 		}
 
 	}

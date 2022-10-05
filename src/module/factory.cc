@@ -108,9 +108,9 @@
 				// Set current state.
 				//
 				if(selected) {
-					activate(selected);
+					super::set(selected);
 				} else {
-					activate(super::stateFromValue());
+					super::set(super::stateFromValue());
 				}
 
 				return true;
