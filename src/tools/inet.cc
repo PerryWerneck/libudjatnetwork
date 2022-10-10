@@ -30,6 +30,7 @@
 		string rc;
 
 #ifdef _WIN32
+
 		char ipaddr[INET_ADDRSTRLEN+1];
 		sockaddr_in in;
 

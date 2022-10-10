@@ -130,6 +130,7 @@
 		};
 
 		/// @brief Gateway Agent
+		/*
 		class GatewayAgent : public Network::Agent {
 		public:
 			GatewayAgent(const pugi::xml_node &node) : Network::Agent(node) {
@@ -151,13 +152,14 @@
 			}
 
 		};
+		*/
 
 		switch(Attribute(node,"type").select("default","default-gateway",nullptr)) {
 		case standard_host:
 			return make_shared<StandardAgent>(node);
 
-		case default_gateway:
-			return make_shared<GatewayAgent>(node);
+//		case default_gateway:
+//			return make_shared<GatewayAgent>(node);
 
 		}
 

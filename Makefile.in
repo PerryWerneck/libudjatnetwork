@@ -4,6 +4,9 @@
 PACKAGE_NAME=@PACKAGE_NAME@
 
 MAIN_SOURCES= \
+	$(wildcard src/library/*.cc) \
+	$(wildcard src/library/ip/*.cc) \
+	$(wildcard src/library/os/@OSNAME@/*.cc) \
 	$(wildcard src/module/*.cc) \
 	$(wildcard src/tools/*.cc) \
 	$(wildcard src/module/dns/*.cc) \

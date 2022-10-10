@@ -22,6 +22,7 @@
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/http/client.h>
+ #include <udjat/tools/inet.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/module.h>
@@ -78,7 +79,10 @@ int main(int argc, char **argv) {
 
 	};
 
-	Service().run(argc,argv);
+
+	cout << "------------> " << Udjat::Network::DefaultGateway() << endl;
+
+	//Service().run(argc,argv);
 
 	cout << "*** Test program finished" << endl;
 

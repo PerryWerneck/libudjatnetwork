@@ -17,42 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
- #include <udjat/defs.h>
+ #include <config.h>
  #include <udjat/network/ipaddress.h>
- #include <netdb.h>
+ #include <exception>
+ #include <cstring>
  #include <string>
+
+ using namespace std;
 
  namespace Udjat {
 
-	namespace Network {
-
-		class UDJAT_API DefaultGateway : public IP::Address {
-		private:
-			std::string interface;
-
-		public:
-			DefaultGateway();
-
-			const DefaultGateway & refresh();
-
-		};
-
+	/// @brief Resolve hostname and setup storage.
+	IP::Address::Address(const char *hostname) {
 	}
 
- }
-
- namespace std {
-
-	UDJAT_API string to_string(const sockaddr_storage &addr, bool port = false);
-	UDJAT_API string to_string(const struct sockaddr_in &addr, bool port = false);
-	UDJAT_API string to_string(const struct sockaddr_in6 &addr, bool port = false);
-	UDJAT_API string to_string(const struct in_addr &addr);
-
-	inline ostream& operator<< (ostream& os, const sockaddr_storage &addr) {
-		return os << to_string(addr);
-	}
 
  }
-
