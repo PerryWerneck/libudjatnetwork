@@ -75,6 +75,10 @@
 	/// @brief Run DNS query.
 	void Network::DNSResolver::query(ns_class cls, ns_type type, const char *name) {
 
+		if(!(name && *name)) {
+			throw runtime_error("Cant resolve an empty hostname");
+		}
+
 		std::lock_guard<std::mutex> lock(guard);
 
 		records.clear();

@@ -80,9 +80,9 @@ int main(int argc, char **argv) {
 	};
 
 
-	cout << "------------> " << Udjat::Network::DefaultGateway() << endl;
+	// cout << "------------> " << Udjat::Network::DefaultGateway() << endl;
 
-	//Service().run(argc,argv);
+	Service().run(argc,argv);
 
 	cout << "*** Test program finished" << endl;
 

@@ -43,8 +43,6 @@
 			{
 				sockaddr_in * in = ((sockaddr_in *) & addr);
 
-				trace("IPV4 Family=",in->sin_family," addr=",in->sin_addr.s_addr, " port= ",htons(in->sin_port));
-
 				if(!inet_ntop(AF_INET,&in->sin_addr,ipaddr,sizeof(ipaddr))) {
 					throw std::system_error(errno, std::system_category(), "Cant convert IP to string");
 				}
@@ -70,8 +68,6 @@
 		default:
 			throw runtime_error("Invalid network family");
 		}
-
-		trace("Result='",ipaddr,"'");
 
 		if(ipaddr[0]) {
 			string rc = ipaddr;

@@ -26,6 +26,7 @@
  #include <sys/socket.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/inet.h>
  #include <netinet/ip_icmp.h>
 
@@ -60,7 +61,7 @@
 		this->Timer::disable();
 		this->Handler::close();
 
-		cout << "ICMP\tICMP listener disabled" << endl;
+		Logger::String{"ICMP listener disabled"}.write(Logger::Trace,"ICMP");
 
 	}
 
@@ -131,7 +132,7 @@
 			});
 
 			if(hosts.empty()) {
-				cout << "ICMP\tNo more hosts, disabling ICMP listener" << endl;
+				Logger::String{"No more hosts, disabling ICMP listener"}.write(Logger::Trace,"ICMP");
 				stop();
 			}
 
@@ -143,9 +144,7 @@
 
 		try {
 
-#ifdef DEBUG
-			cout << "Starting ICMP Worker" << endl;
-#endif // DEBUG
+			Logger::String{"Starting ICMP Listener"}.write(Logger::Trace,"ICMP");
 
 			// Create socket
 			if(fd <= 0) {
@@ -181,7 +180,7 @@
 			}
 
 			if(!this->Handler::enabled()) {
-				cout << "ICMP\tEnabling ICMP listener" << endl;
+				Logger::String{"Enabling ICMP listener"}.write(Logger::Trace,"ICMP");
 				this->Handler::enable();
 			}
 
@@ -253,10 +252,12 @@
 			throw runtime_error("Unsupported family");
 		}
 
+		Logger::String(
+			"Sending ICMP ", payload.id ,".", payload.seq, " to ", std::to_string(addr)
 #ifdef DEBUG
-		cout 	<< "Sending ICMP " << payload.id << "." << payload.seq
-				<< " to " << std::to_string(addr) << " on socket " << fd << endl;
+			, " on socket ", fd
 #endif // DEBUG
+		).write(Logger::Debug,"ICMP");
 
 		// Send package
 		Packet packet;

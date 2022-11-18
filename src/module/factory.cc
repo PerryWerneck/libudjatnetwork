@@ -19,6 +19,7 @@
 
  #include "private.h"
  #include <udjat/network/resolver.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
@@ -50,44 +51,68 @@
 
 				memset(&addr,0,sizeof(addr));
 
-				// Get dns-server.
-				const char *dnssrv = Udjat::Attribute(node, "dns-server").as_string();
-				dns.check = Udjat::Attribute(node,"dns").as_bool(dnssrv[0] != 0);
+				auto ipaddr = getAttribute(node,"ip");
+				if(ipaddr) {
 
-				// Host name to check.
-				hostname = Udjat::Attribute(node,"host").c_str();
+					// Have an IP addr.
+					dns.check = false;
 
-				if(dns.check) {
-
-					// Will check DNS resolution, get the DNS server addr.
-					if(dnssrv[0]) {
-
-						// Resolve DNS server.
-						DNSResolver resolver;
-						resolver.query(dnssrv);
-
-						if(resolver.size()) {
-							this->addr = resolver.begin()->getAddr();
-						} else {
-							throw runtime_error(string{"Can't resolve '"} + dnssrv + "'");
-						}
-
+					if(inet_pton(AF_INET,ipaddr.as_string(),&((sockaddr_in *) &addr)->sin_addr) != 0) {
+						addr.ss_family = AF_INET;
+						debug(ipaddr.as_string()," is an IPV4 address");
+					} else if(inet_pton(AF_INET6,ipaddr.as_string(),&((sockaddr_in6 *) &addr)->sin6_addr) != 0) {
+						addr.ss_family = AF_INET6;
+						debug(ipaddr.as_string()," is an IPV6 address");
+					} else {
+						throw std::system_error(errno, std::system_category(), ipaddr.as_string());
 					}
 
 				} else {
 
-					// Will not check DNS resolution, get host address.
+					// Get dns-server.
+					const char *dnssrv = getAttribute(node, "dns-server").as_string();
+					dns.check = getAttribute(node,"network-host","dns",dnssrv[0] != 0);
 
-					DNSResolver resolver;
-					resolver.query(hostname);
+					// Host name to check.
+					hostname = getAttribute(node,"host","");
+					if(!*hostname) {
+						throw runtime_error("Missing required attribute 'host'");
+					}
 
-					if(resolver.size()) {
-						this->addr = resolver.begin()->getAddr();
+					if(dns.check) {
+
+						// Will check DNS resolution, get the DNS server addr.
+						if(dnssrv[0]) {
+
+							// Resolve DNS server.
+							DNSResolver resolver;
+							resolver.query(dnssrv);
+
+							if(resolver.size()) {
+								this->addr = resolver.begin()->getAddr();
+							} else {
+								throw runtime_error(string{"Can't resolve '"} + dnssrv + "'");
+							}
+
+						}
+
 					} else {
-						throw runtime_error(string{"Can't resolve '"} + hostname + "'");
+
+						// Will not check DNS resolution, get host address.
+
+						DNSResolver resolver;
+						resolver.query(hostname);
+
+						if(resolver.size()) {
+							this->addr = resolver.begin()->getAddr();
+						} else {
+							throw runtime_error(string{"Can't resolve '"} + hostname + "'");
+						}
+
 					}
 
 				}
+
 
 				checkStates();
 
@@ -110,7 +135,7 @@
 				if(selected) {
 					super::set(selected);
 				} else {
-					super::set(super::stateFromValue());
+					super::set(super::computeState());
 				}
 
 				return true;

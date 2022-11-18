@@ -22,6 +22,22 @@
 		<state name='timeout' icmp-response='timeout' level='error' summary='localhost is not available' />
 
 	</network-host>
+
+	<network-host name='ip' ip='10.8.4.1' icmp='true' update-timer='60' icmp-timeout='10'>
+
+		<state name='active' icmp-response='echo-reply' level='ready' summary='10.8.4.1 está respondendo'>
+		</state>
+
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='10.8.4.1 não está acessível'>
+		</state>
+
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='Timeout no acesso ao 10.8.4.1'>
+		</state>
+
+		<state name='timeout' icmp-response='timeout' level='error' summary='10.8.4.1 indisponível'>
+		</state>
+
+	</network-host>
 	
 	<network-host name='gateway' type='default-gateway' icmp='true' update-timer='60' icmp-timeout='60' />
 

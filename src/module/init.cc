@@ -66,7 +66,11 @@
 
 			} else {
 
+#ifdef DEBUG
+				cerr << "module\tThis module requires root privileges or CAP_NET_RAW capability." << endl;
+#else
 				throw runtime_error("This module requires root privileges or CAP_NET_RAW capability.");
+#endif // DEBUG
 			}
 
 		}
