@@ -46,11 +46,12 @@
  namespace Udjat {
 
 	Network::DefaultGateway::DefaultGateway() {
-		memset(&address,0,sizeof(address));
 		refresh();
 	}
 
-	const sockaddr_storage & Network::DefaultGateway::refresh() {
+	const Network::DefaultGateway & Network::DefaultGateway::refresh() {
+
+		clear();
 
 		int msgseq = 0;
 		int received_bytes;
@@ -152,14 +153,21 @@
 						break;
 
 					case RTA_GATEWAY:
+
 						if(route_attribute_len > sizeof(struct sockaddr_in)) {
 							throw runtime_error(_("Invalid size on RTA_GATEWAY"));
 						}
 
 						{
-							struct sockaddr_in *addr = (struct sockaddr_in *) &this->address;
+							sockaddr_storage storage;
+							memset(&storage,0,sizeof(storage));
+
+							struct sockaddr_in *addr = (struct sockaddr_in *) &storage;
 							addr->sin_family = AF_INET;
+
 							memcpy(&addr->sin_addr,RTA_DATA(route_attribute),sizeof(addr->sin_addr));
+
+							set(storage);
 						}
 						break;
 
@@ -180,7 +188,7 @@
 
 		::close(sock);
 
-		return this->address;
+		return *this;
 	}
 
  }
