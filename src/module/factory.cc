@@ -155,7 +155,6 @@
 		};
 
 		/// @brief Gateway Agent
-		/*
 		class GatewayAgent : public Network::Agent {
 		public:
 			GatewayAgent(const pugi::xml_node &node) : Network::Agent(node) {
@@ -170,22 +169,38 @@
 
 			bool refresh() override {
 
-				// Start with a clean state.
+				sockaddr_storage addr;
+				Network::DefaultGateway().refresh().get(addr);
+
 				selected.reset();
-				set(DefaultGateway().refresh());
+
+				set(addr);
+
+				//
+				// Set current state.
+				//
+				if(selected) {
+					super::set(selected);
+				} else {
+					super::set(super::computeState());
+				}
+
 				return true;
+
 			}
 
 		};
-		*/
 
-		switch(Attribute(node,"type").select("default","default-gateway",nullptr)) {
+		auto type = Attribute(node,"type");
+		switch(type.select("default","default-gateway",nullptr)) {
 		case standard_host:
 			return make_shared<StandardAgent>(node);
 
-//		case default_gateway:
-//			return make_shared<GatewayAgent>(node);
+		case default_gateway:
+			return make_shared<GatewayAgent>(node);
 
+		default:
+			Factory::error() << "Unexpected node type '" << type.c_str() << "'" << endl;
 		}
 
 		return Udjat::Factory::AgentFactory(parent,node);

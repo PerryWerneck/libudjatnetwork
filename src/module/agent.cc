@@ -184,7 +184,7 @@
 				}
 #ifdef DEBUG
 				else {
-					info() << "State " << st->name() << " was rejected" << endl;
+					trace() << "State " << st->name() << " was rejected" << endl;
 				}
 #endif // DEBUG
 			}

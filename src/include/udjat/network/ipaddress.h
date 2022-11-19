@@ -65,7 +65,11 @@
 			const std::string to_string(bool port = true) const;
 
 			inline void set(const sockaddr_storage &addr)  {
-				memcpy(&this->addr,&addr,sizeof(addr));
+				this->addr = addr;
+			}
+
+			inline void get(sockaddr_storage &addr) const {
+				addr = this->addr;
 			}
 
 		};
