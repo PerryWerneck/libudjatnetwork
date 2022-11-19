@@ -17,19 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <private/module.h>
 
  namespace Udjat {
 
-	bool Network::Agent::State::test(const sockaddr_storage &addr) const {
+	bool Network::HostAgent::State::test(const sockaddr_storage &addr) const {
 		return false;
 	}
 
-	bool Network::Agent::State::isValid(const ICMPResponse response) const noexcept {
+	bool Network::HostAgent::State::isValid(const ICMPResponse response) const noexcept {
 		return false;
 	}
 
-	bool Network::Agent::State::isValid(const sockaddr_storage &addr) const noexcept {
+	bool Network::HostAgent::State::isValid(const sockaddr_storage &addr) const noexcept {
 		bool rc = test(addr);
 		if(revert)
 			return !rc;

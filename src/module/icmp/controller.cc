@@ -35,27 +35,27 @@
 	#pragma pack(1)
 	struct Packet {
 		struct icmp icmp;
-		struct Network::Agent::Controller::Payload payload;
+		struct Network::HostAgent::Controller::Payload payload;
 	};
 	#pragma pack()
 
-	recursive_mutex Network::Agent::Controller::guard;
+	recursive_mutex Network::HostAgent::Controller::guard;
 
-	Network::Agent::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
+	Network::HostAgent::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
 	}
 
-	Network::Agent::Controller::~Controller() {
+	Network::HostAgent::Controller::~Controller() {
 		lock_guard<recursive_mutex> lock(guard);
 	 	stop();
 	}
 
-	Network::Agent::Controller & Network::Agent::Controller::getInstance() {
+	Network::HostAgent::Controller & Network::HostAgent::Controller::getInstance() {
 		lock_guard<recursive_mutex> lock(guard);
 		static Controller instance;
 		return instance;
 	}
 
-	void Network::Agent::Controller::stop() {
+	void Network::HostAgent::Controller::stop() {
 
 		this->Handler::disable();
 		this->Timer::disable();
@@ -65,7 +65,7 @@
 
 	}
 
-	void Network::Agent::Controller::handle_event(const Event event) {
+	void Network::HostAgent::Controller::handle_event(const Event event) {
 
 #ifdef DEBUG
 		cout << "*** EVENT on ICMP listener" << endl;
@@ -120,7 +120,7 @@
 
 	}
 
-	void Network::Agent::Controller::on_timer() {
+	void Network::HostAgent::Controller::on_timer() {
 
 		ThreadPool::getInstance().push([this]() {
 
@@ -140,7 +140,7 @@
 
 	}
 
-	void Network::Agent::Controller::start() {
+	void Network::HostAgent::Controller::start() {
 
 		try {
 
@@ -194,7 +194,7 @@
 
 	}
 
-	void Network::Agent::Controller::insert(Network::Agent *agent, const sockaddr_storage &addr) {
+	void Network::HostAgent::Controller::insert(Network::HostAgent *agent, const sockaddr_storage &addr) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
@@ -203,7 +203,7 @@
 
 	}
 
-	void Network::Agent::Controller::remove(Network::Agent *agent) {
+	void Network::HostAgent::Controller::remove(Network::HostAgent *agent) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
@@ -240,7 +240,7 @@
 		return ans;
 	}
 
-	void Network::Agent::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
+	void Network::HostAgent::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
 
 		if(fd < 0) {
 			throw runtime_error("ICMP Controller is not available");

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <private/module.h>
  #include <udjat/network/resolver.h>
  #include <udjat/tools/logger.h>
 
@@ -28,13 +28,13 @@
 		default_gateway,
 	};
 
- 	Network::Agent::Factory::Factory() : Udjat::Factory("network-host",moduleinfo) {
+ 	Network::HostAgent::Factory::Factory() : Udjat::Factory("network-host",moduleinfo) {
 	}
 
-	std::shared_ptr<Abstract::Agent> Network::Agent::Factory::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
+	std::shared_ptr<Abstract::Agent> Network::HostAgent::Factory::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
 
 		/// @brief Standard agent.
-		class StandardAgent : public Network::Agent {
+		class StandardAgent : public Network::HostAgent {
 		private:
 			/// @brief Host to check.
 			const char * hostname = nullptr;
@@ -47,7 +47,7 @@
 			} dns;
 
 		public:
-			StandardAgent(const pugi::xml_node &node) : Network::Agent(node) {
+			StandardAgent(const pugi::xml_node &node) : Network::HostAgent(node) {
 
 				memset(&addr,0,sizeof(addr));
 
@@ -149,15 +149,15 @@
 					return true;
 				}
 
-				return Network::Agent::getProperty(key,value);
+				return Network::HostAgent::getProperty(key,value);
 			}
 
 		};
 
 		/// @brief Gateway Agent
-		class GatewayAgent : public Network::Agent {
+		class GatewayAgent : public Network::HostAgent {
 		public:
-			GatewayAgent(const pugi::xml_node &node) : Network::Agent(node) {
+			GatewayAgent(const pugi::xml_node &node) : Network::HostAgent(node) {
 
 				if(!icmp.check) {
 					throw runtime_error("Gateway agent requires icmp='true'");

@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <udjat/network/agent.h>
+ #include <private/module.h>
+ #include <udjat/network/agents/host.h>
  #include <controller.h>
  #include <udjat/tools/xml.h>
  #include <udjat/network/resolver.h>
@@ -31,15 +31,15 @@
  namespace Udjat {
 
 	/// @brief ICMP Response state.
-	class ICMPResponseState : public Network::Agent::State {
+	class ICMPResponseState : public Network::HostAgent::State {
 	private:
 		Network::ICMPResponse id;
 
 	public:
-		ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const Network::ICMPResponse i) : Network::Agent::State(name,level,summary,body), id(i) {
+		ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const Network::ICMPResponse i) : Network::HostAgent::State(name,level,summary,body), id(i) {
 		}
 
-		ICMPResponseState(const pugi::xml_node &node, const Network::ICMPResponse i) : Network::Agent::State(node), id(i) {
+		ICMPResponseState(const pugi::xml_node &node, const Network::ICMPResponse i) : Network::HostAgent::State(node), id(i) {
 		}
 
 		bool isValid(const Network::ICMPResponse response) const noexcept override {
@@ -48,7 +48,7 @@
 
 	};
 
-	Network::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
+	Network::HostAgent::HostAgent(const pugi::xml_node &node) : Abstract::Agent(node) {
 
 		// Do an ICMP check?
 		icmp.check = getAttribute(node,"icmp",icmp.check);
@@ -56,10 +56,10 @@
 
 	}
 
-	Network::Agent::~Agent() {
+	Network::HostAgent::~HostAgent() {
 	}
 
-	std::shared_ptr<Abstract::State> Network::Agent::StateFactory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::State> Network::HostAgent::StateFactory(const pugi::xml_node &node) {
 
 		/// @brief IP Address range state.
 		class Range : public Network::Range {
@@ -171,7 +171,7 @@
 		return super::StateFactory(node);
 	}
 
-	void Network::Agent::set(const sockaddr_storage &addr) {
+	void Network::HostAgent::set(const sockaddr_storage &addr) {
 
 		// Check states.
 		for(auto state : states) {
@@ -196,7 +196,7 @@
 
 	}
 
-	sockaddr_storage Network::Agent::resolv(sockaddr_storage &dnssrv, const char *hostname) {
+	sockaddr_storage Network::HostAgent::resolv(sockaddr_storage &dnssrv, const char *hostname) {
 
 		sockaddr_storage addr;
 
@@ -218,7 +218,7 @@
 		return addr;
 	}
 
-	void Udjat::Network::Agent::set(const Udjat::Network::ICMPResponse response) {
+	void Udjat::Network::HostAgent::set(const Udjat::Network::ICMPResponse response) {
 
 		for(auto state : states) {
 
@@ -238,7 +238,7 @@
 
 	}
 
-	void Network::Agent::checkStates() {
+	void Network::HostAgent::checkStates() {
 
 		if(states.empty() && icmp.check) {
 

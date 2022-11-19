@@ -9,6 +9,8 @@ MAIN_SOURCES= \
 	$(wildcard src/library/os/@OSNAME@/*.cc) \
 	$(wildcard src/module/*.cc) \
 	$(wildcard src/tools/*.cc) \
+	$(wildcard src/module/agents/host/*.cc) \
+	$(wildcard src/module/agents/nic/*.cc) \
 	$(wildcard src/module/dns/*.cc) \
 	$(wildcard src/module/icmp/*.cc)
 	

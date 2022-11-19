@@ -23,15 +23,12 @@
  #include <cstring>
  #include <sys/types.h>
  #include <unistd.h>
-
-// #include <sys/socket.h>
-// #include <netinet/in.h>
-// #include <arpa/inet.h>
+ #include <udjat/network/agents/host.h>
  #include <netinet/ip_icmp.h>
 
  namespace Udjat {
 
-	Network::Agent::Controller::Host::Host(Network::Agent *a, const sockaddr_storage &i) : agent(a), addr(i) {
+	Network::HostAgent::Controller::Host::Host(Network::HostAgent *a, const sockaddr_storage &i) : agent(a), addr(i) {
 
 		static unsigned short id = 0;
 
@@ -40,7 +37,7 @@
 		send();
 	}
 
-	bool Network::Agent::Controller::Host::onTimer() {
+	bool Network::HostAgent::Controller::Host::onTimer() {
 
 		time_t now = time(0);
 
@@ -56,7 +53,7 @@
 		return true;
 	}
 
-	bool Network::Agent::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
+	bool Network::HostAgent::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
 
 		if(payload.id != this->id) {
 			return false;
@@ -95,7 +92,7 @@
 
 	}
 
-	void Network::Agent::Controller::Host::send() noexcept {
+	void Network::HostAgent::Controller::Host::send() noexcept {
 
 		try {
 

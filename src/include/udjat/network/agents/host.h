@@ -36,7 +36,8 @@
 			timeout
 		};
 
-		class UDJAT_API Agent : public Udjat::Abstract::Agent {
+		/// @brief Agent to check for DNS resolution and ICMP test.
+		class UDJAT_API HostAgent : public Udjat::Abstract::Agent {
 		public:
 			class State;
 
@@ -80,8 +81,8 @@
 				std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const override;
 			};
 
-			Agent(const pugi::xml_node &node);
-			virtual ~Agent();
+			HostAgent(const pugi::xml_node &node);
+			virtual ~HostAgent();
 
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 

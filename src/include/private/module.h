@@ -21,7 +21,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/network/agent.h>
+ #include <udjat/network/agents/host.h>
  #include <iostream>
  #include <udjat/tools/inet.h>
  #include <arpa/inet.h>
@@ -35,7 +35,7 @@
 	namespace Network {
 
 		/// @brief Abstract network agent state.
-		class Agent::State : public Abstract::State {
+		class HostAgent::State : public Abstract::State {
 		protected:
 			bool revert = false;
 
@@ -61,7 +61,7 @@
 		};
 
 		/// @brief Network range state.
-		class Range : public Network::Agent::State {
+		class Range : public Network::HostAgent::State {
 		protected:
 			/// @brief Teste an IPV4 address range.
 			bool inRange(const sockaddr_in &ip, const sockaddr_in &addr, const sockaddr_in &netmask) const;

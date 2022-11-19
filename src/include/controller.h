@@ -20,7 +20,7 @@
  #pragma once
 
  #include <config.h>
- #include <udjat/network/agent.h>
+ #include <udjat/network/agents/host.h>
  #include <udjat/tools/timer.h>
  #include <udjat/tools/handler.h>
  #include <mutex>
@@ -32,7 +32,7 @@
 
  namespace Udjat {
 
- 	class Network::Agent::Controller : private MainLoop::Timer, private MainLoop::Handler {
+ 	class Network::HostAgent::Controller : private MainLoop::Timer, private MainLoop::Handler {
 	public:
 
 		#pragma pack(1)
@@ -52,7 +52,7 @@
 		class Host {
 		private:
 
-			Network::Agent *agent;
+			Network::HostAgent *agent;
 			sockaddr_storage addr;
 
 			uint16_t id;
@@ -62,12 +62,12 @@
 
 		public:
 
-			Host(Network::Agent *agent, const sockaddr_storage &addr);
+			Host(Network::HostAgent *agent, const sockaddr_storage &addr);
 
 			bool onTimer();
 			void send() noexcept;
 
-			inline bool operator ==(const Network::Agent *agent) const noexcept {
+			inline bool operator ==(const Network::HostAgent *agent) const noexcept {
 				return agent == this->agent;
 			}
 
@@ -92,8 +92,8 @@
 
 		~Controller();
 
-		void insert(Network::Agent *agent, const sockaddr_storage &addr);
-		void remove(Network::Agent *agent);
+		void insert(Network::HostAgent *agent, const sockaddr_storage &addr);
+		void remove(Network::HostAgent *agent);
 
 		void send(const sockaddr_storage &addr, const Payload &payload);
 
