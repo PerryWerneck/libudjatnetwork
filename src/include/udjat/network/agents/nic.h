@@ -24,20 +24,42 @@
  #include <udjat/agent.h>
  #include <udjat/agent/state.h>
  #include <sys/socket.h>
+ #include <vector>
 
  namespace Udjat {
 
 	namespace Network {
 
+		enum NIC_STATE : unsigned short {
+			NIC_STATE_UNDEFINED,	///< @brief Undefined state.
+
+			NIC_STATE_OFFLINE,		///< @brief No active interface.
+			NIC_STATE_SINGLE,		///< @brief Just one active interface.
+			NIC_STATE_MULTIPLE,		///< @brief More than one active interface.
+
+		};
+
 		/// @brief Agent to check network interface.
-		class UDJAT_API NICAgent : public Udjat::Abstract::Agent {
+		class UDJAT_API NICAgent : public Udjat::Agent<unsigned short> {
 		public:
 			class State;
 
 		private:
 
-			/// @brief Internal agent state.
-			std::shared_ptr<Abstract::State> selected;
+			/// @brief Network interfaces.
+			struct Interface {
+				std::string name;
+				bool up = false;
+
+				Interface(const char *n) : name{n} {
+				}
+
+			};
+
+			std::vector<Interface> interfaces;
+
+			/// @brief Find interface by name, insert one if needed.
+			struct Interface & find_interface(const char *name);
 
 			/// @brief Agent states.
 			std::vector<std::shared_ptr<State>> states;
@@ -49,8 +71,6 @@
 
 		public:
 
-			class State;
-
 			class Factory : public Udjat::Factory {
 			public:
 				Factory();
@@ -60,9 +80,11 @@
 			NICAgent(const pugi::xml_node &node);
 			virtual ~NICAgent();
 
-			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+			// std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 
 			bool refresh() override;
+
+			bool getProperty(const char *key, std::string &value) const noexcept override;
 
  		};
 

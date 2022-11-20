@@ -42,6 +42,7 @@
 		</Linker>
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/controller.h" />
+		<Unit filename="src/include/private/module.h" />
 		<Unit filename="src/include/udjat/network/agents/host.h" />
 		<Unit filename="src/include/udjat/network/agents/nic.h" />
 		<Unit filename="src/include/udjat/network/ipaddress.h" />
@@ -52,20 +53,22 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="src/library/os/linux/defaultgateway.cc" />
 		<Unit filename="src/library/os/linux/ipaddress.cc" />
 		<Unit filename="src/library/os/windows/ipaddress.cc" />
-		<Unit filename="src/module/agent.cc" />
+		<Unit filename="src/module/agents/host/agent.cc" />
+		<Unit filename="src/module/agents/host/factory.cc" />
+		<Unit filename="src/module/agents/host/state.cc" />
+		<Unit filename="src/module/agents/nic/agent.cc" />
+		<Unit filename="src/module/agents/nic/factory.cc" />
 		<Unit filename="src/module/dns/record.cc" />
 		<Unit filename="src/module/dns/resolver.cc" />
-		<Unit filename="src/module/factory.cc" />
 		<Unit filename="src/module/icmp/controller.cc" />
 		<Unit filename="src/module/icmp/host.cc" />
 		<Unit filename="src/module/icmp/private.h" />
 		<Unit filename="src/module/init.cc" />
-		<Unit filename="src/module/ipagent.cc" />
 		<Unit filename="src/module/private.h" />
 		<Unit filename="src/module/range.cc" />
-		<Unit filename="src/module/state.cc" />
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/defaultgateway.cc" />
 		<Unit filename="src/tools/inet.cc" />

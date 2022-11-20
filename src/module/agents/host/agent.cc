@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <private/module.h>
  #include <udjat/network/agents/host.h>
  #include <controller.h>
