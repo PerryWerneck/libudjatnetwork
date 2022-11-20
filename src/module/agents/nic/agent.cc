@@ -22,6 +22,10 @@
  #include <udjat/tools/net/nic.h>
  #include <udjat/tools/logger.h>
  #include <iostream>
+ #include <cstdio>
+ #include <unistd.h>
+ #include <fcntl.h>
+ #include <unordered_set>
 
  using namespace std;
 
@@ -35,6 +39,28 @@
 
 	bool Network::NICAgent::getProperty(const char *key, std::string &value) const noexcept {
 
+		if(!strcasecmp(key,"active-nic")) {
+			// Find first active nic.
+			for(const Interface &interface : interfaces) {
+				if(interface.active) {
+					value = interface.name;
+					return true;
+				}
+			}
+		}
+
+		if(!strcasecmp(key,"active-nics")) {
+			// Get all interfaces.
+			for(const Interface &interface : interfaces) {
+				if(interface.active) {
+					if(!value.empty()) {
+						value += ",";
+					}
+					value += interface.name;
+				}
+			}
+			return true;
+		}
 
 		return false;
 
@@ -42,39 +68,78 @@
 
 	bool Network::NICAgent::refresh() {
 
-		size_t active = 0;
+		unordered_set<string> nics;
 
 		// Load network cards.
-		Network::Interface::for_each([this,&active](const Network::Interface &intf){
+		Network::Interface::for_each([this,&nics](const Network::Interface &intf){
 
 			if(!intf.loopback()) {
 
 				Interface &state = find_interface(intf.name());
 
-				if(state.up != intf.up()) {
-					info() << "Interface " << state.name << " is now " << (intf.up() ? "UP" : "DOWN") << endl;
-					state.up = intf.up();
+				bool active = intf.up();
+				if(active) {
+
+					// Check link
+					string path{"/sys/class/net/"};
+					path += intf.name();
+					path += "/carrier";
+
+					if(access(path.c_str(),R_OK)) {
+						error() << "Can't acess " << path << endl;
+					} else {
+						FILE *in = fopen(path.c_str(),"r");
+						if(in) {
+							if(fgetc(in) == '0') {
+								if(state.active) {
+									warning() << "No carrier on interface " << intf.name() << endl;
+								}
+								active = false;
+							}
+							fclose(in);
+						}
+					}
+
 				}
 
-				if(intf.up()) {
-					active++;
+				if(state.active != active) {
+					info() << "Interface " << state.name << " is now " << (intf.up() ? "ACTIVE" : "INACTIVE") << endl;
+					state.active = active;
 				}
+
+				nics.emplace(intf.name());
 
 			}
 
 			return false;
 		});
 
-		debug("Detected nics: ",interfaces.size(), " Active nics: ", active);
+		// Detect removed interfaces.
+		interfaces.remove_if([this,nics](Interface &intf){
+			if(nics.find(intf.name) == nics.end()) {
+				info() << "Interface " << intf.name << " was removed" << endl;
+				return true;
+			}
+			return false;
+		});
 
-		switch(active) {
+		size_t active_nics = 0;
+		for(Interface & interface : interfaces) {
+			if(interface.active) {
+				active_nics++;
+			}
+		}
+
+		debug("Detected nics: ",interfaces.size(), " Active nics: ", active_nics);
+
+		switch(active_nics) {
 		case 0:
 			return set(NIC_STATE_OFFLINE);
 
 		case 1:
 			return set(NIC_STATE_SINGLE);
 
-		case 2:
+		default:
 			return set(NIC_STATE_MULTIPLE);
 
 		}

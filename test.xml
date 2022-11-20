@@ -6,6 +6,15 @@
 	<module name='civetweb' required='no' />
 	<module name='information' required='no' />
 
+	<network-interface name='nic' update-timer='60'>
+
+		<state name='undefined' value='0' level='error' summary='Network link state is undefined' />
+		<state name='offline' value='1' level='warning' summary='System is offline' />
+		<state name='single' value='2' level='ready' summary='Single network link' />
+		<state name='multiple' value='3' level='ready' summary='Multiple network links' />
+
+	</network-interface>
+
 	<network-host name='localhost' host='localhost' dns='true' icmp='true' update-timer='60' icmp-timeout='10'>
 	
 		<!-- Valid range for this host -->

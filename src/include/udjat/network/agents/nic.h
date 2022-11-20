@@ -24,7 +24,7 @@
  #include <udjat/agent.h>
  #include <udjat/agent/state.h>
  #include <sys/socket.h>
- #include <vector>
+ #include <list>
 
  namespace Udjat {
 
@@ -49,25 +49,20 @@
 			/// @brief Network interfaces.
 			struct Interface {
 				std::string name;
-				bool up = false;
+				bool active = false;
 
 				Interface(const char *n) : name{n} {
 				}
 
 			};
 
-			std::vector<Interface> interfaces;
+			std::list<Interface> interfaces;
 
 			/// @brief Find interface by name, insert one if needed.
 			struct Interface & find_interface(const char *name);
 
 			/// @brief Agent states.
 			std::vector<std::shared_ptr<State>> states;
-
-		protected:
-
-			/// @brief If the agent has no states load the default ones.
-			// void checkStates();
 
 		public:
 

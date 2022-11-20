@@ -21,6 +21,7 @@
  #include <private/module.h>
  #include <udjat/module.h>
  #include <udjat/network/agents/host.h>
+ #include <udjat/network/agents/nic.h>
  #include <unistd.h>
  #include <sys/types.h>
  #include <linux/capability.h>
@@ -36,7 +37,8 @@
 
 	class Module : public Udjat::Module {
 	private:
-		Network::HostAgent::Factory agentFactory;
+		Network::HostAgent::Factory hostFactory;
+		Network::NICAgent::Factory 	nicFactory;
 
 	public:
 
