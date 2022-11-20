@@ -222,7 +222,7 @@
 	void Udjat::Network::HostAgent::set(const Udjat::Network::ICMPResponse response) {
 
 #ifdef DEBUG
-		trace() << "********************* Setting ICMP response to " << response << endl;
+		trace() << "Setting ICMP response to " << response << endl;
 #endif // DEBUG
 
 		for(auto state : states) {
