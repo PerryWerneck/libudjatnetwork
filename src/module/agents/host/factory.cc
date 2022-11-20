@@ -129,13 +129,9 @@
 					set(this->addr);
 				}
 
-				//
-				// Set current state.
-				//
+				// Only set state if it's not empty, otherwise keep the last one.
 				if(selected) {
 					super::set(selected);
-				} else {
-					super::set(super::computeState());
 				}
 
 				return true;

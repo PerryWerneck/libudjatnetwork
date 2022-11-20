@@ -221,20 +221,24 @@
 
 	void Udjat::Network::HostAgent::set(const Udjat::Network::ICMPResponse response) {
 
+#ifdef DEBUG
+		trace() << "********************* Setting ICMP response to " << response << endl;
+#endif // DEBUG
+
 		for(auto state : states) {
 
 			State * st = dynamic_cast<State *>(state.get());
 
 			if(st && (!selected || st->level() >= selected->level())) {
 				if(st->isValid(response)) {
-					selected = state;
+					this->selected = state;
 				}
 			}
 
 		}
 
-		if(selected) {
-			super::set(selected);
+		if(this->selected) {
+			this->super::set(selected);
 		}
 
 	}

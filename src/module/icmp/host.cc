@@ -39,7 +39,9 @@
 
 	bool Network::HostAgent::Controller::Host::onTimer() {
 
-		time_t now = time(0);
+		cout << "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" << endl;
+
+ 		time_t now = time(0);
 
 		if(now > timeout) {
 			agent->set(ICMPResponse::timeout);
