@@ -177,8 +177,6 @@
 				//
 				if(selected) {
 					super::set(selected);
-				} else {
-					super::set(super::computeState());
 				}
 
 				return true;
