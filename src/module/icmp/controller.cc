@@ -55,6 +55,18 @@
 		return instance;
 	}
 
+	uint64_t Network::HostAgent::Controller::getCurrentTime() noexcept {
+
+			struct timespec tm;
+			clock_gettime(CLOCK_MONOTONIC_RAW, &tm);
+
+			uint64_t time = tm.tv_sec;
+			time *= 1000000;
+			time += tm.tv_nsec;
+
+			return time;
+	}
+
 	void Network::HostAgent::Controller::stop() {
 
 		this->Handler::disable();
@@ -246,34 +258,43 @@
 			throw runtime_error("ICMP Controller is not available");
 		}
 
-		// TODO: Add IPV6 support.
-
-		if(addr.ss_family != AF_INET) {
-			throw runtime_error("Unsupported family");
-		}
-
-		Logger::String(
-			"Sending ICMP ", payload.id ,".", payload.seq, " to ", std::to_string(addr)
+		switch(addr.ss_family) {
+		case AF_INET:
+			{
+				Logger::String(
+					"Sending ICMP ", payload.id ,".", payload.seq, " to ", std::to_string(addr)
 #ifdef DEBUG
-			, " on socket ", fd
+					, " on socket ", fd
 #endif // DEBUG
-		).write(Logger::Debug,"ICMP");
+				).write(Logger::Debug,"ICMP");
 
-		// Send package
-		Packet packet;
+				// Send package
+				Packet packet;
 
-		memset(&packet,0,sizeof(packet));
-		packet.payload = payload;
+				memset(&packet,0,sizeof(packet));
+				packet.payload = payload;
 
-		static uint16_t seq = 0;
-		packet.icmp.icmp_type = ICMP_ECHO;
-		packet.icmp.icmp_seq = htons(++seq);
-		packet.icmp.icmp_id = htons(getpid());
-		packet.icmp.icmp_cksum = in_chksum((unsigned short *) &packet, sizeof(packet));
+				static uint16_t seq = 0;
+				packet.icmp.icmp_type = ICMP_ECHO;
+				packet.icmp.icmp_seq = htons(++seq);
+				packet.icmp.icmp_id = htons(getpid());
+				packet.icmp.icmp_cksum = in_chksum((unsigned short *) &packet, sizeof(packet));
 
-		if(sendto(fd, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
-			throw std::system_error(errno, std::system_category(), "Can't send ICMP packet");
+				if(sendto(fd, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
+					throw std::system_error(errno, std::system_category(), "Can't send ICMP packet");
+				}
+			}
+			break;
+
+		case AF_INET6:
+			// TODO: Add IPV6 support.
+			throw std::system_error(ENOTSUP, std::system_category(), "Unable to send IPV6 ICMP request");
+			break;
+
+		default:
+			throw runtime_error(string{"Unsupported family: "} + std::to_string((int) addr.ss_family));
 		}
+
 
 	}
 

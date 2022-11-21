@@ -46,7 +46,6 @@
 		<Unit filename="src/include/udjat/network/agents/host.h" />
 		<Unit filename="src/include/udjat/network/agents/nic.h" />
 		<Unit filename="src/include/udjat/network/ipaddress.h" />
-		<Unit filename="src/include/udjat/network/ipagent.h" />
 		<Unit filename="src/include/udjat/network/resolver.h" />
 		<Unit filename="src/include/udjat/tools/inet.h" />
 		<Unit filename="src/library/ip/address.cc">

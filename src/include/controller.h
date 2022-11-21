@@ -44,6 +44,7 @@
 		};
 		#pragma pack()
 
+		static uint64_t getCurrentTime() noexcept;
 
 	private:
 

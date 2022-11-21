@@ -53,6 +53,7 @@
 				bool check = true;		///< @brief Do ICMP check.
 				time_t interval = 1;	///< @brief ICMP packet interval.
 				time_t timeout = 5;		///< @brief ICMP timeout.
+				uint64_t time = 0;		///< @brief Time of last response.
 			} icmp;
 
 			/// @brief Agent states.
@@ -86,7 +87,13 @@
 
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 
-			void set(ICMPResponse response);
+			void set(ICMPResponse response, uint64_t time = 0);
+
+			std::string to_string() const noexcept override;
+
+			Udjat::Value & get(Udjat::Value &value) const;
+
+			Value & getProperties(Value &response) const noexcept override;
 
  		};
 

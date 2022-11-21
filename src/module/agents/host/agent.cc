@@ -28,6 +28,8 @@
  #include <sys/socket.h>
  #include <ifaddrs.h>
  #include <udjat/tools/intl.h>
+ #include <sstream>
+ #include <iomanip>
 
  namespace Udjat {
 
@@ -219,11 +221,46 @@
 		return addr;
 	}
 
-	void Udjat::Network::HostAgent::set(const Udjat::Network::ICMPResponse response) {
+	std::string Udjat::Network::HostAgent::to_string() const noexcept {
+
+		if(!icmp.time) {
+			return "";
+		}
+
+		float value = ((float) icmp.time) / ((float) 1000000);
+
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(2) << value << " ms";
+
+		return stream.str();
+
+	}
+
+	Udjat::Value & Udjat::Network::HostAgent::get(Udjat::Value &value) const {
+
+		if(icmp.time) {
+			value.set(((float) icmp.time) / ((float) 1000000));
+		}
+
+		return value;
+	}
+
+	Udjat::Value & Udjat::Network::HostAgent::getProperties(Udjat::Value &response) const noexcept {
+		super::getProperties(response);
+		response["pingtime"] = to_string();
+		return response;
+	}
+
+	void Udjat::Network::HostAgent::set(const Udjat::Network::ICMPResponse response, uint64_t time) {
 
 #ifdef DEBUG
-		trace() << "Setting ICMP response to " << response << endl;
+		{
+			float value = ((float) time) / ((float) 1000000);
+			trace() << "Setting ICMP response to " << response << " with time=" << value << " ms" << endl;
+		}
 #endif // DEBUG
+
+		icmp.time = time;
 
 		for(auto state : states) {
 

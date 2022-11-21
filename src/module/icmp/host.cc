@@ -66,17 +66,22 @@
 				return false;
 
 			case ICMP_ECHOREPLY: // Echo Reply
-				agent->info() << "Got response from " << std::to_string(addr) << endl;
-				agent->set(ICMPResponse::echo_reply);
+				{
+					uint64_t time = Network::HostAgent::Controller::getCurrentTime() - payload.time;
+					agent->trace()	<< "Got response from " << std::to_string(addr)
+									<< " (time: " << time << ")"
+									<< endl;
+					agent->set(ICMPResponse::echo_reply,time);
+				}
 				break;
 
 			case ICMP_DEST_UNREACH: // Destination Unreachable
-				agent->error() << "Received 'Destination Unreachable' from " << std::to_string(addr) << endl;
+				agent->trace() << "Received 'Destination Unreachable' from " << std::to_string(addr) << endl;
 				agent->set(ICMPResponse::destination_unreachable);
 				break;
 
 			case ICMP_TIME_EXCEEDED: // Time Exceeded
-				agent->error() << "Received 'Time Exceeded' from " << std::to_string(addr) << endl;
+				agent->trace() << "Received 'Time Exceeded' from " << std::to_string(addr) << endl;
 				agent->set(ICMPResponse::time_exceeded);
 				break;
 
@@ -103,13 +108,7 @@
 			memset(&packet,0,sizeof(packet));
 			packet.id 	= this->id;
 			packet.seq	= ++this->packets;
-
-			// Get current time
-			struct timespec tm;
-			clock_gettime(CLOCK_MONOTONIC_RAW, &tm);
-			packet.time = tm.tv_sec;
-			packet.time *= 1000000;
-			packet.time += tm.tv_nsec;
+			packet.time = getCurrentTime();
 
 			Controller::getInstance().send(addr,packet);
 

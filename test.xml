@@ -43,7 +43,7 @@
 	</network-host>
 	-->
 	
-	<network-host name='srv' ip='192.168.0.11' icmp='true' update-timer='60' icmp-timeout='60'>
+	<network-host name='srv' ip='192.168.0.11' icmp='true' update-timer='60' icmp-timeout='30'>
 
 		<state name='active' icmp-response='echo-reply' level='ready' summary='Server is active' />
 		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='Server is not reachable' />
@@ -52,5 +52,17 @@
 	
 	</network-host>
 
+	<!--
+	<network-host name='not-found' ip='192.168.1.11' icmp='true' update-timer='60' icmp-timeout='30'>
+
+		<state name='active' icmp-response='echo-reply' level='ready' summary='192.168.1.11 is active' />
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='192.168.1.11 is not reachable' />
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='192.168.1.11 is not available (time-exceeded)' />
+		<state name='timeout' icmp-response='timeout' level='error' summary='192.168.1.11 is not available (timeout)' />
+	
+	</network-host>
+	-->
+	
 </config>
+
 
