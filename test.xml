@@ -19,7 +19,6 @@
 
 	</network-interface>
 
-	<!--
 	<network-host name='localhost' host='localhost' dns='true' icmp='true' update-timer='60' icmp-timeout='10'>
 	
 		<state name='local' same-network='yes' level='ready' summary='localhost is local' />
@@ -41,7 +40,6 @@
 		<state name='timeout' icmp-response='timeout' level='error' summary='Gateway is not available' />
 	
 	</network-host>
-	-->
 	
 	<network-host name='srv' ip='192.168.0.11' icmp='true' update-timer='60' icmp-timeout='30'>
 

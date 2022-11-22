@@ -247,7 +247,7 @@
 		super::getProperties(response);
 
 		if(states.addr) {
-			auto &state = response["ip"];
+			auto &state = response["host"];
 			states.addr->getProperties(state);
 		}
 
