@@ -108,20 +108,26 @@
 			}
 
 			if(rc != sizeof(in)) {
-#ifdef DEBUG
-				cout << "ICMP\tIgnoring packet with invalid size" << endl;
-#endif // DEBUG
+				Logger::String{
+					"Ignoring packet with invalid size, got ",
+					rc,
+					" expecting ",
+					sizeof(in)
+				}.write(Logger::Debug,"ICMP");
 				return;
 			}
 
-			if(in.packet.icmp.icmp_id != htons((uint16_t) getpid())) {
-				cout << "ICMP\tIgnoring packet with invalid id" << endl;
+			if(htons(in.packet.icmp.icmp_id) != (uint16_t) getpid()) {
+				Logger::String{
+					"Ignoring packet with invalid id, got ",
+					htons(in.packet.icmp.icmp_id),
+					" expecting ",
+					((uint16_t) getpid())
+				}.write(Logger::Trace,"ICMP");
 				return;
 			}
 
-#ifdef DEBUG
-			cout << "ICMP\tReceived packet " << htons(in.packet.icmp.icmp_seq) << " from " << std::to_string(addr) << endl;
-#endif // DEBUG
+			debug("Response ",htons(in.packet.icmp.icmp_seq)," from ",std::to_string(addr));
 
 			hosts.remove_if([&in,&addr](Host &host) {
 				return host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload);
