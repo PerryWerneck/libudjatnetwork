@@ -74,7 +74,15 @@
 
 			case ICMP_ECHOREPLY: // Echo Reply
 				{
-					uint64_t time = Network::HostAgent::Controller::getCurrentTime() - payload.time;
+					uint64_t now = Network::HostAgent::Controller::getCurrentTime();
+					uint64_t time;
+
+					if(payload.time >= now) {
+						time = (payload.time - now);
+					} else {
+						time = (now - payload.time);
+					}
+
 					agent->trace()	<< "Got response " << payload.seq << " from " << std::to_string(addr)
 									<< " (time: " << time << ")"
 									<< endl;
