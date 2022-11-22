@@ -33,24 +33,6 @@
 
  namespace Udjat {
 
-	/// @brief ICMP Response state.
-	class ICMPResponseState : public Network::HostAgent::State {
-	private:
-		Network::ICMPResponse id;
-
-	public:
-		ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const Network::ICMPResponse i) : Network::HostAgent::State(name,level,summary,body), id(i) {
-		}
-
-		ICMPResponseState(const pugi::xml_node &node, const Network::ICMPResponse i) : Network::HostAgent::State(node), id(i) {
-		}
-
-		bool isValid(const Network::ICMPResponse response) const noexcept override {
-			return response == id;
-		}
-
-	};
-
 	Network::HostAgent::HostAgent(const pugi::xml_node &node) : Abstract::Agent(node) {
 
 		// Do an ICMP check?
@@ -163,7 +145,7 @@
 				throw runtime_error("Can't use 'icmp-response' states without icmp='true' attribute on the agent definition");
 			}
 
-			ICMPResponse id = (ICMPResponse) Attribute(node,"icmp-response").select("echo-reply", "destination-unreachable", "time-exceeded", "timeout", nullptr);
+			ICMPResponse id = ICMPResponseFactory(node.attribute("icmp-response").as_string("undefined"));
 
 			auto state = make_shared<ICMPResponseState>(node,id);
 			states.push_back(state);
@@ -251,76 +233,10 @@
 		return response;
 	}
 
-	void Udjat::Network::HostAgent::set(const Udjat::Network::ICMPResponse response, uint64_t time) {
-
-#ifdef DEBUG
-		{
-			float value = ((float) time) / ((float) 1000000);
-			trace() << "Setting ICMP response to " << response << " with time=" << value << " ms" << endl;
-		}
-#endif // DEBUG
-
-		icmp.time = time;
-
-		for(auto state : states) {
-
-			State * st = dynamic_cast<State *>(state.get());
-
-			if(st && (!selected || st->level() >= selected->level())) {
-				if(st->isValid(response)) {
-					this->selected = state;
-				}
-			}
-
-		}
-
-		if(this->selected) {
-			this->super::set(selected);
-		}
-
-	}
-
+	/*
 	void Network::HostAgent::checkStates() {
 
 		if(states.empty() && icmp.check) {
-
-			static const struct {
-				const char *name;
-				const ICMPResponse id;
-				const Level level;
-				const char *summary;
-				const char *body;
-			} responses[] = {
-				{
-					"active",
-					ICMPResponse::echo_reply,
-					Level::ready,
-					N_("${name} is active"),
-					N_("Got ICMP echo reply from host.")
-				},
-				{
-					"unreachable",
-					ICMPResponse::destination_unreachable,
-					Level::error,
-					N_("${name} is not reachable"),
-					N_("Destination Unreachable. The gateway doesnt know how to get to the defined network.")
-				},
-				{
-					"time-exceeded",
-					ICMPResponse::time_exceeded,
-					Level::error,
-					N_("${name} is not acessible"),
-					N_("Time Exceeded. The ICMP request has been discarded because it was 'out of time'.")
-				},
-				{
-					"timeout",
-					ICMPResponse::timeout,
-					Level::error,
-					N_("${name} is not available"),
-					N_("No ICMP response from host.")
-				}
-
-			};
 
 			info() << "Loading standard ICMP states" << endl;
 
@@ -344,5 +260,6 @@
 		}
 
 	}
+	*/
 
  }

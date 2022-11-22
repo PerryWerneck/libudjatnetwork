@@ -113,9 +113,6 @@
 
 				}
 
-
-				checkStates();
-
 			}
 
 			bool refresh() override {
@@ -158,8 +155,6 @@
 				if(!icmp.check) {
 					throw runtime_error("Gateway agent requires icmp='true'");
 				}
-
-				checkStates();
 
 			}
 

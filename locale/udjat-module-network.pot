@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-29 09:37-0300\n"
+"POT-Creation-Date: 2022-11-22 07:45-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,58 +17,66 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/module/agent.cc:258
+#: src/module/icmp/state.cc:42
+msgid "${name} address is invalid"
+msgstr ""
+
+#: src/module/icmp/state.cc:49
 msgid "${name} is active"
 msgstr ""
 
-#: src/module/agent.cc:272
+#: src/module/icmp/state.cc:63
 msgid "${name} is not acessible"
 msgstr ""
 
-#: src/module/agent.cc:279
+#: src/module/icmp/state.cc:70
 msgid "${name} is not available"
 msgstr ""
 
-#: src/module/agent.cc:265
+#: src/module/icmp/state.cc:56
 msgid "${name} is not reachable"
 msgstr ""
 
-#: src/tools/defaultgateway.cc:62
+#: src/library/os/linux/defaultgateway.cc:63
 msgid "Cant get netlink socket"
 msgstr ""
 
-#: src/tools/defaultgateway.cc:100
+#: src/library/os/linux/defaultgateway.cc:101
 msgid "Cant receive netlink response"
 msgstr ""
 
-#: src/tools/defaultgateway.cc:86
+#: src/library/os/linux/defaultgateway.cc:87
 msgid "Cant send netlink message"
 msgstr ""
 
-#: src/module/agent.cc:266
+#: src/module/icmp/state.cc:57
 msgid ""
 "Destination Unreachable. The gateway doesnt know how to get to the defined "
 "network."
 msgstr ""
 
-#: src/tools/defaultgateway.cc:107
+#: src/library/os/linux/defaultgateway.cc:108
 msgid "Error in received packet"
 msgstr ""
 
-#: src/module/agent.cc:259
+#: src/module/icmp/state.cc:50
 msgid "Got ICMP echo reply from host."
 msgstr ""
 
-#: src/tools/defaultgateway.cc:156
+#: src/library/os/linux/defaultgateway.cc:158
 msgid "Invalid size on RTA_GATEWAY"
 msgstr ""
 
-#: src/module/agent.cc:280
+#: src/module/icmp/state.cc:71
 msgid "No ICMP response from host."
 msgstr ""
 
-#: src/module/agent.cc:273
+#: src/module/icmp/state.cc:64
 msgid ""
 "Time Exceeded. The ICMP request has been discarded because it was 'out of "
 "time'."
+msgstr ""
+
+#: src/module/icmp/state.cc:43
+msgid "Unable to get a valid IP address for ${name}."
 msgstr ""

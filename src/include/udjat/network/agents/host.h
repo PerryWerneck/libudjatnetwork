@@ -30,11 +30,14 @@
 	namespace Network {
 
 		enum ICMPResponse : uint8_t {
+			invalid,
 			echo_reply,
 			destination_unreachable,
 			time_exceeded,
 			timeout
 		};
+
+		ICMPResponse ICMPResponseFactory(const char *name);
 
 		/// @brief Agent to check for DNS resolution and ICMP test.
 		class UDJAT_API HostAgent : public Udjat::Abstract::Agent {
@@ -61,16 +64,11 @@
 
 		protected:
 
-			/// @brief If the agent has no states load the default ones.
-			void checkStates();
-
 			/// @brief Set address (do an ICMP check if necessary).
 			void set(const sockaddr_storage &addr);
 
 			/// @brief Do a DNS check.
 			static sockaddr_storage resolv(sockaddr_storage &dnssrv, const char *hostname);
-
-			//std::shared_ptr<Abstract::State> stateFromValue() const override;
 
 		public:
 

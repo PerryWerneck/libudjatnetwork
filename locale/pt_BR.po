@@ -1,55 +1,82 @@
-#: src/module/agent.cc:258
+#
+# Perry Werneck <perry.werneck@gmail.com>, 2022.
+#
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Project-Id-Version: unnamed project\n"
+"Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
+"Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
+"Language: pt_BR\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"PO-Revision-Date: 2022-11-22 07:49-0300\n"
+"X-Generator: Gtranslator 3.38.0\n"
+
+#: src/module/icmp/state.cc:42
+msgid "${name} address is invalid"
+msgstr "Endereço de ${name} e inválido"
+
+#: src/module/icmp/state.cc:49
 msgid "${name} is active"
-msgstr ""
+msgstr "${name} está ativo"
 
-#: src/module/agent.cc:272
+#: src/module/icmp/state.cc:63
 msgid "${name} is not acessible"
-msgstr ""
+msgstr "${name} não está acessível"
 
-#: src/module/agent.cc:279
+#: src/module/icmp/state.cc:70
 msgid "${name} is not available"
-msgstr ""
+msgstr "${name} não está disponível"
 
-#: src/module/agent.cc:265
+#: src/module/icmp/state.cc:56
 msgid "${name} is not reachable"
-msgstr ""
+msgstr "Não foi possível alcançar ${name}"
 
-#: src/tools/defaultgateway.cc:62
+#: src/library/os/linux/defaultgateway.cc:63
 msgid "Cant get netlink socket"
-msgstr ""
+msgstr "Não foi possível obter o socket netlink"
 
-#: src/tools/defaultgateway.cc:100
+#: src/library/os/linux/defaultgateway.cc:101
 msgid "Cant receive netlink response"
-msgstr ""
+msgstr "Não foi possível receber resposta netlink"
 
-#: src/tools/defaultgateway.cc:86
+#: src/library/os/linux/defaultgateway.cc:87
 msgid "Cant send netlink message"
-msgstr ""
+msgstr "Não foi possível enviar dados netlink"
 
-#: src/module/agent.cc:266
+#: src/module/icmp/state.cc:57
 msgid ""
 "Destination Unreachable. The gateway doesnt know how to get to the defined "
 "network."
 msgstr ""
+"Destino indisponível. O roteador não sabe como chegar até a rede definida."
 
-#: src/tools/defaultgateway.cc:107
+#: src/library/os/linux/defaultgateway.cc:108
 msgid "Error in received packet"
-msgstr ""
+msgstr "Erro no pacote recebido"
 
-#: src/module/agent.cc:259
+#: src/module/icmp/state.cc:50
 msgid "Got ICMP echo reply from host."
-msgstr ""
+msgstr "Obtive resposta ICMP do host"
 
-#: src/tools/defaultgateway.cc:156
+#: src/library/os/linux/defaultgateway.cc:158
 msgid "Invalid size on RTA_GATEWAY"
-msgstr ""
+msgstr "Tamanho inválido em RTA_GATEWAY"
 
-#: src/module/agent.cc:280
+#: src/module/icmp/state.cc:71
 msgid "No ICMP response from host."
-msgstr ""
+msgstr "Nenhuma resposta ICMP do host."
 
-#: src/module/agent.cc:273
+#: src/module/icmp/state.cc:64
 msgid ""
 "Time Exceeded. The ICMP request has been discarded because it was 'out of "
 "time'."
 msgstr ""
+"Tempo excedido. A requisição ICMP foi descartada porque estava 'fora de "
+"tempo'."
+
+#: src/module/icmp/state.cc:43
+msgid "Unable to get a valid IP address for ${name}."
+msgstr "Incapaz de obter um endereço IP válido para ${name}"

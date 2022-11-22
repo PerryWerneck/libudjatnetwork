@@ -81,6 +81,25 @@
 
 		};
 
+		/// @brief ICMP Response state.
+		class ICMPResponseState : public Network::HostAgent::State {
+		private:
+			Network::ICMPResponse id;
+
+		public:
+			ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const Network::ICMPResponse i) : Network::HostAgent::State(name,level,summary,body), id(i) {
+			}
+
+			ICMPResponseState(const pugi::xml_node &node, const Network::ICMPResponse i) : Network::HostAgent::State(node), id(i) {
+			}
+
+			bool isValid(const Network::ICMPResponse response) const noexcept override {
+				return response == id;
+			}
+
+		};
+
+
 	}
 
 
