@@ -117,18 +117,10 @@
 
 			bool refresh() override {
 
-				// Start with a clean state.
-				selected.reset();
-
 				if(dns.check) {
 					set(resolv(this->addr,hostname));
 				} else {
 					set(this->addr);
-				}
-
-				// Only set state if it's not empty, otherwise keep the last one.
-				if(selected) {
-					super::set(selected);
 				}
 
 				return true;
@@ -163,16 +155,7 @@
 				sockaddr_storage addr;
 				Network::DefaultGateway().refresh().get(addr);
 
-				selected.reset();
-
 				set(addr);
-
-				//
-				// Set current state.
-				//
-				if(selected) {
-					super::set(selected);
-				}
 
 				return true;
 

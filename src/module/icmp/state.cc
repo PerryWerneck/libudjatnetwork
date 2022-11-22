@@ -97,53 +97,66 @@
 #endif // DEBUG
 
 		icmp.time = time;
+		std::shared_ptr<State> detected;
 
-		for(auto state : states) {
+		for(auto state : states.available) {
 
 			State * st = dynamic_cast<State *>(state.get());
 
-			if(st && (!selected || st->level() >= selected->level())) {
-				if(st->isValid(response)) {
-					this->super::set(this->selected = state);
-					return;
-				}
+			if(st && st->isValid(response)) {
+				detected = state;
+				break;
 			}
 
 		}
 
-		// Scan for predefined state.
-		for(size_t ix = 0; ix < N_ELEMENTS(icmp_states); ix++) {
+		if(!detected) {
 
-			if(icmp_states[ix].id == response) {
+			// Scan for predefined states.
+			for(size_t ix = 0; ix < N_ELEMENTS(icmp_states); ix++) {
 
-				warning() << "Creating default state for '" << icmp_states[ix].name << "'" << endl;
+				if(icmp_states[ix].id == response) {
 
-#ifdef GETTEXT_PACKAGE
-				Udjat::String summary{dgettext(GETTEXT_PACKAGE,icmp_states[ix].summary)};
-				Udjat::String body{dgettext(GETTEXT_PACKAGE,icmp_states[ix].body)};
-#else
-				Udjat::String summary{icmp_states[ix].summary};
-				Udjat::String summary{icmp_states[ix].body};
-#endif // GETTEXT_PACKAGE
+					warning() << "Creating default state for '" << icmp_states[ix].name << "'" << endl;
 
-				summary.expand(*this);
-				body.expand(*this);
+	#ifdef GETTEXT_PACKAGE
+					Udjat::String summary{dgettext(GETTEXT_PACKAGE,icmp_states[ix].summary)};
+					Udjat::String body{dgettext(GETTEXT_PACKAGE,icmp_states[ix].body)};
+	#else
+					Udjat::String summary{icmp_states[ix].summary};
+					Udjat::String summary{icmp_states[ix].body};
+	#endif // GETTEXT_PACKAGE
 
-				auto state =
-					make_shared<ICMPResponseState>(
-							icmp_states[ix].name,
-							icmp_states[ix].level,
-							Quark{summary}.c_str(),
-							Quark{body}.c_str(),
-							icmp_states[ix].id
-						);
+					summary.expand(*this);
+					body.expand(*this);
 
-				states.push_back(state);
-				this->super::set(state);
-				return;
+					auto state =
+						make_shared<ICMPResponseState>(
+								icmp_states[ix].name,
+								icmp_states[ix].level,
+								Quark{summary}.c_str(),
+								Quark{body}.c_str(),
+								icmp_states[ix].id
+							);
+
+					states.available.push_back(state);
+					detected = state;
+					break;
+
+				}
 
 			}
 
+		}
+
+		if(detected) {
+			states.icmp = detected;
+		} else {
+			states.icmp = Abstract::Agent::computeState();
+		}
+
+		if(!states.addr || states.icmp->level() > states.addr->level()) {
+			super::set(states.icmp);
 		}
 
 	}

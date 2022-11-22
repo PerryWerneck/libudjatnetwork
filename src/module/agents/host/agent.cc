@@ -39,6 +39,8 @@
 		icmp.check = getAttribute(node,"icmp",icmp.check);
 		icmp.timeout = getAttribute(node,"icmp-timeout", (unsigned int) icmp.timeout);
 
+		states.icmp = states.addr = Abstract::Agent::computeState();
+
 	}
 
 	Network::HostAgent::~HostAgent() {
@@ -126,7 +128,7 @@
 		if(node.attribute("range")) {
 
 			auto state = make_shared<Range>(node);
-			states.push_back(state);
+			states.available.push_back(state);
 			return state;
 
 		}
@@ -134,7 +136,7 @@
 		if(node.attribute("same-network")) {
 
 			auto state = make_shared<SameNetwork>(node);
-			states.push_back(state);
+			states.available.push_back(state);
 			return state;
 
 		}
@@ -148,7 +150,7 @@
 			ICMPResponse id = ICMPResponseFactory(node.attribute("icmp-response").as_string("undefined"));
 
 			auto state = make_shared<ICMPResponseState>(node,id);
-			states.push_back(state);
+			states.available.push_back(state);
 			return state;
 
 		}
@@ -159,24 +161,37 @@
 	void Network::HostAgent::set(const sockaddr_storage &addr) {
 
 		// Check states.
-		for(auto state : states) {
+		std::shared_ptr<State> detected;
+		for(auto state : states.available) {
 
 			State * st = dynamic_cast<State *>(state.get());
 
-			if(st && (!selected || st->level() > selected->level())) {
-				if(st->isValid(addr)) {
-					selected = state;
-				}
-#ifdef DEBUG
-				else {
-					trace() << "State " << st->name() << " was rejected" << endl;
-				}
-#endif // DEBUG
+			if(st && st->isValid(addr)) {
+				detected = state;
+				break;
 			}
+
 		}
 
-		if(icmp.check) {
+		if(detected) {
+			states.addr = detected;
+		} else {
+			states.icmp = Abstract::Agent::computeState();
+		}
+
+		if(!icmp.check) {
+			super::set(states.addr);
+			return;
+		}
+
+		if(!states.icmp || states.addr->level() > states.icmp->level()) {
+			super::set(states.addr);
+		}
+
+		if(addr.ss_family) {
 			Controller::getInstance().insert(this,addr);
+		} else {
+			set(ICMPResponse::invalid);
 		}
 
 	}
@@ -228,38 +243,22 @@
 	}
 
 	Udjat::Value & Udjat::Network::HostAgent::getProperties(Udjat::Value &response) const noexcept {
+
 		super::getProperties(response);
-		response["pingtime"] = to_string();
+
+		if(states.addr) {
+			auto &state = response["ip"];
+			states.addr->getProperties(state);
+		}
+
+		if(states.icmp) {
+			auto &state = response["icmp"];
+			states.icmp->getProperties(state);
+			state["time"] = to_string();
+		}
+
 		return response;
 	}
 
-	/*
-	void Network::HostAgent::checkStates() {
-
-		if(states.empty() && icmp.check) {
-
-			info() << "Loading standard ICMP states" << endl;
-
-			for(size_t ix = 0; ix < (sizeof(responses)/sizeof(responses[0])); ix++) {
-
-				states.push_back(make_shared<ICMPResponseState>(
-										responses[ix].name,
-										responses[ix].level,
-#ifdef GETTEXT_PACKAGE
-										Quark(expand(dgettext(GETTEXT_PACKAGE,responses[ix].summary))).c_str(),
-#else
-										Quark(expand(responses[ix].summary)).c_str(),
-#endif // GETTEXT_PACKAGE
-										responses[ix].body,
-										responses[ix].id
-									)
-								);
-
-			}
-
-		}
-
-	}
-	*/
 
  }

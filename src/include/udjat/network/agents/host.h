@@ -46,8 +46,17 @@
 
 		private:
 
-			/// @brief Internal agent state.
-			std::shared_ptr<Abstract::State> selected;
+			struct {
+				/// @brief The state from IP addr.
+				std::shared_ptr<Abstract::State> addr;
+
+				/// @brief The state from ICMP.
+				std::shared_ptr<Abstract::State> icmp;
+
+				/// @brief Agent states.
+				std::vector<std::shared_ptr<State>> available;
+
+			} states;
 
 			class Controller;
 			friend class Controller;
@@ -58,9 +67,6 @@
 				time_t timeout = 5;		///< @brief ICMP timeout.
 				uint64_t time = 0;		///< @brief Time of last response.
 			} icmp;
-
-			/// @brief Agent states.
-			std::vector<std::shared_ptr<State>> states;
 
 		protected:
 
