@@ -24,6 +24,7 @@
  #include <sys/types.h>
  #include <unistd.h>
  #include <udjat/network/agents/host.h>
+ #include <udjat/tools/logger.h>
  #include <netinet/ip_icmp.h>
 
  namespace Udjat {
@@ -55,7 +56,13 @@
 
 	bool Network::HostAgent::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
 
+		debug("id=",payload.id, " expecting ", this->id, " pid=", payload.pid, " expecting ", getpid());
 		if(payload.id != this->id) {
+			return false;
+		}
+
+		if(payload.pid != getpid()) {
+			debug("Rejecting packet with invalid PID, got ", payload.pid, " expecting ", getpid());
 			return false;
 		}
 
@@ -68,7 +75,7 @@
 			case ICMP_ECHOREPLY: // Echo Reply
 				{
 					uint64_t time = Network::HostAgent::Controller::getCurrentTime() - payload.time;
-					agent->trace()	<< "Got response from " << std::to_string(addr)
+					agent->trace()	<< "Got response " << payload.seq << " from " << std::to_string(addr)
 									<< " (time: " << time << ")"
 									<< endl;
 					agent->set(ICMPResponse::echo_reply,time);
@@ -107,6 +114,7 @@
 
 			memset(&packet,0,sizeof(packet));
 			packet.id 	= this->id;
+			packet.pid	= getpid();
 			packet.seq	= ++this->packets;
 			packet.time = getCurrentTime();
 

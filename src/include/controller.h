@@ -39,6 +39,7 @@
 		/// @brief ICMP payload.
 		struct Payload {
 			uint16_t	id;
+			pid_t		pid;
 			uint16_t	seq;
 			uint64_t	time;
 		};
