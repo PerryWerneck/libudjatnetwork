@@ -42,10 +42,12 @@
 		};
 
 		NIC_STATE NicStateFactory(const char *name);
+		NIC_STATE NicStateFactory(const pugi::xml_node &node);
 
 		namespace Agent {
 
-			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node);
+			/// @brief Test if interface has an active link.
+			bool has_link(const char *name);
 
 			/// @brief Network agent factory.
 			class UDJAT_API Factory : public Udjat::Factory {
@@ -96,7 +98,7 @@
 				Interfaces(const pugi::xml_node &node);
 				virtual ~Interfaces();
 
-				// std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+				std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 
 				bool refresh() override;
 

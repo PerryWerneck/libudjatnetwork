@@ -23,8 +23,6 @@
  #include <udjat/tools/logger.h>
  #include <iostream>
  #include <cstdio>
- #include <unistd.h>
- #include <fcntl.h>
  #include <unordered_set>
 
  using namespace std;
@@ -66,6 +64,10 @@
 
 	}
 
+	std::shared_ptr<Abstract::State> Network::Agent::Interfaces::StateFactory(const pugi::xml_node &node) {
+		return super::StateFactory(node,NicStateFactory(node));
+	}
+
 	bool Network::Agent::Interfaces::refresh() {
 
 		unordered_set<string> nics;
@@ -77,30 +79,7 @@
 
 				Interface &state = find_interface(intf.name());
 
-				bool active = intf.up();
-				if(active) {
-
-					// Check link
-					string path{"/sys/class/net/"};
-					path += intf.name();
-					path += "/carrier";
-
-					if(access(path.c_str(),R_OK)) {
-						error() << "Can't acess " << path << endl;
-					} else {
-						FILE *in = fopen(path.c_str(),"r");
-						if(in) {
-							if(fgetc(in) == '0') {
-								if(state.active) {
-									warning() << "No carrier on interface " << intf.name() << endl;
-								}
-								active = false;
-							}
-							fclose(in);
-						}
-					}
-
-				}
+				bool active = intf.up() && has_link(intf.name());
 
 				if(state.active != active) {
 					info() << "Interface " << state.name << " is now " << (intf.up() ? "ACTIVE" : "INACTIVE") << endl;

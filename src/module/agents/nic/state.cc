@@ -20,7 +20,10 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/network/agents/nic.h>
+ #include <udjat/tools/object.h>
  #include <string>
+ #include <unistd.h>
+ #include <fcntl.h>
 
  using namespace std;
 
@@ -47,5 +50,60 @@
 
 	}
 
+	Network::NIC_STATE Network::NicStateFactory(const pugi::xml_node &node) {
+
+		static const char * names[] = {
+			"network-state",
+			"interface-state",
+			"state-name",
+			"name"
+		};
+
+		// First check for 'value=' attribute for compatibility.
+		pugi::xml_attribute attr = node.attribute("value");
+		if(attr) {
+			unsigned short value = attr.as_uint();
+			if(value > N_ELEMENTS(names)) {
+				clog << "Unexpected state value '" << value << "'" << endl;
+			}
+			return (NIC_STATE) value;
+		}
+
+		// Then check for other attributes.
+		for(size_t ix = 0; ix < N_ELEMENTS(names); ix++) {
+			attr = Object::getAttribute(node,names[ix],false);
+			if(attr) {
+				return NicStateFactory(attr.as_string("undefined"));
+			}
+		}
+
+		return NIC_STATE_UNDEFINED;
+
+	}
+
+	bool Network::Agent::has_link(const char *name) {
+
+		// Check link
+		string path{"/sys/class/net/"};
+		path += name;
+		path += "/carrier";
+
+		bool link = false;
+
+		if(access(path.c_str(),R_OK)) {
+			cerr << "Can't access " << path << endl;
+		} else {
+			FILE *in = fopen(path.c_str(),"r");
+			if(in) {
+				if(fgetc(in) != '0') {
+					link = true;
+				}
+				fclose(in);
+			}
+		}
+
+		return link;
+
+	}
 
  }
