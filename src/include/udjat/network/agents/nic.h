@@ -23,6 +23,7 @@
  #include <udjat/factory.h>
  #include <udjat/agent.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/net/nic.h>
  #include <sys/socket.h>
  #include <list>
 
@@ -31,58 +32,79 @@
 	namespace Network {
 
 		enum NIC_STATE : unsigned short {
+
 			NIC_STATE_UNDEFINED,	///< @brief Undefined state.
 
 			NIC_STATE_OFFLINE,		///< @brief No active interface.
-			NIC_STATE_SINGLE,		///< @brief Just one active interface.
+			NIC_STATE_ONLINE,		///< @brief Just one active interface.
 			NIC_STATE_MULTIPLE,		///< @brief More than one active interface.
 
 		};
 
-		/// @brief Agent to check network interface.
-		class UDJAT_API NICAgent : public Udjat::Agent<unsigned short> {
-		public:
-			class State;
+		NIC_STATE NicStateFactory(const char *name);
 
-		private:
+		namespace Agent {
 
-			/// @brief Network interfaces.
-			struct Interface {
-				std::string name;
-				bool active = false;
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node);
 
-				Interface(const char *n) : name{n} {
-				}
-
-			};
-
-			std::list<Interface> interfaces;
-
-			/// @brief Find interface by name, insert one if needed.
-			struct Interface & find_interface(const char *name);
-
-			/// @brief Agent states.
-			std::vector<std::shared_ptr<State>> states;
-
-		public:
-
-			class Factory : public Udjat::Factory {
+			/// @brief Network agent factory.
+			class UDJAT_API Factory : public Udjat::Factory {
 			public:
 				Factory();
 				std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const override;
 			};
 
-			NICAgent(const pugi::xml_node &node);
-			virtual ~NICAgent();
+			/// @brief State of one single interface.
+			class UDJAT_API Interface : public Udjat::Agent<unsigned short> {
+			private:
+				const char * interface_name;
 
-			// std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+			public:
 
-			bool refresh() override;
+				Interface(const pugi::xml_node &node);
+				virtual ~Interface();
 
-			bool getProperty(const char *key, std::string &value) const noexcept override;
+				// std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 
- 		};
+				bool refresh() override;
 
+				bool getProperty(const char *key, std::string &value) const noexcept override;
+
+			};
+
+			/// @brief State of ALL network interfaces (except loopback).
+			class UDJAT_API Interfaces : public Udjat::Agent<unsigned short> {
+			private:
+
+				/// @brief Network interfaces.
+				struct Interface {
+					std::string name;
+					bool active = false;
+
+					Interface(const char *n) : name{n} {
+					}
+
+				};
+
+				std::list<Interface> interfaces;
+
+				/// @brief Find interface by name, insert one if needed.
+				struct Interface & find_interface(const char *name);
+
+			public:
+
+				Interfaces(const pugi::xml_node &node);
+				virtual ~Interfaces();
+
+				// std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+
+				bool refresh() override;
+
+				bool getProperty(const char *key, std::string &value) const noexcept override;
+
+			};
+
+		}
 
 	}
 

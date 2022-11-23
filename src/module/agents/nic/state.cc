@@ -18,16 +18,34 @@
  */
 
  #include <config.h>
- #include <private/module.h>
+ #include <udjat/defs.h>
  #include <udjat/network/agents/nic.h>
+ #include <string>
+
+ using namespace std;
 
  namespace Udjat {
 
- 	Network::Agent::Factory::Factory() : Udjat::Factory("network-interface",moduleinfo) {
+	Network::NIC_STATE Network::NicStateFactory(const char *name) {
+
+		static const char *names[] = {
+			"undefined",
+			"offline",
+			"online",
+			"multiple",
+		};
+
+		for(size_t ix = 0; ix < N_ELEMENTS(names);ix++) {
+
+			if(!strcasecmp(name,names[ix])) {
+				return (NIC_STATE) ix;
+			}
+
+		}
+
+		throw runtime_error(string{"Invalid Network state name '"} + name + "'");
+
 	}
 
-	std::shared_ptr<Abstract::Agent> Network::Agent::Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) const {
-		return make_shared<Network::Agent::Interfaces>(node);
-	}
 
  }

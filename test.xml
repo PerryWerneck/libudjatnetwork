@@ -19,6 +19,15 @@
 
 	</network-interface>
 
+	<network-interface name='vpn' interface-name='tunsnx' update-timer='60'>
+
+		<state name='undefined' value='0' level='error' summary='VPN link state is undefined' />
+		<state name='offline' value='1' level='warning' summary='VPN is offline' />
+		<state name='online' value='2' level='ready' summary='VPN is online' />
+		<state name='not-found' value='3' level='unimportant' summary='VPN is not available' />
+
+	</network-interface>
+	
 	<network-host name='localhost' host='localhost' dns='true' icmp='true' update-timer='60' icmp-timeout='10'>
 	
 		<state name='local' same-network='yes' level='ready' summary='localhost is local' />

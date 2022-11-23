@@ -31,13 +31,13 @@
 
  namespace Udjat {
 
-	Network::NICAgent::NICAgent(const pugi::xml_node &node) : Udjat::Agent<unsigned short>(node,NIC_STATE_UNDEFINED) {
+	Network::Agent::Interfaces::Interfaces(const pugi::xml_node &node) : Udjat::Agent<unsigned short>(node,NIC_STATE_UNDEFINED) {
 	}
 
-	Network::NICAgent::~NICAgent() {
+	Network::Agent::Interfaces::~Interfaces() {
 	}
 
-	bool Network::NICAgent::getProperty(const char *key, std::string &value) const noexcept {
+	bool Network::Agent::Interfaces::getProperty(const char *key, std::string &value) const noexcept {
 
 		if(!strcasecmp(key,"active-nic")) {
 			// Find first active nic.
@@ -66,7 +66,7 @@
 
 	}
 
-	bool Network::NICAgent::refresh() {
+	bool Network::Agent::Interfaces::refresh() {
 
 		unordered_set<string> nics;
 
@@ -137,7 +137,7 @@
 			return set(NIC_STATE_OFFLINE);
 
 		case 1:
-			return set(NIC_STATE_SINGLE);
+			return set(NIC_STATE_ONLINE);
 
 		default:
 			return set(NIC_STATE_MULTIPLE);
@@ -147,7 +147,7 @@
 		return set(NIC_STATE_UNDEFINED);
 	}
 
-	Network::NICAgent::Interface & Network::NICAgent::find_interface(const char *name) {
+	Network::Agent::Interfaces::Interface & Network::Agent::Interfaces::find_interface(const char *name) {
 
 		for(Interface &interface : interfaces) {
 			if(strcasecmp(interface.name.c_str(),name) == 0) {
