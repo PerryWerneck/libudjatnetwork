@@ -36,6 +36,7 @@
 			"offline",
 			"online",
 			"multiple",
+			"not-found"
 		};
 
 		for(size_t ix = 0; ix < N_ELEMENTS(names);ix++) {

@@ -60,7 +60,7 @@
 			return true;
 		}
 
-		return false;
+		return super::getProperty(key,value);
 
 	}
 

@@ -21,10 +21,10 @@
 
 	<network-interface name='vpn' interface-name='tunsnx' update-timer='60'>
 
-		<state name='undefined' value='0' level='error' summary='VPN link state is undefined' />
-		<state name='offline' value='1' level='warning' summary='VPN is offline' />
-		<state name='online' value='2' level='ready' summary='VPN is online' />
-		<state name='not-found' value='3' level='unimportant' summary='VPN is not available' />
+		<state name='undefined' level='error' summary='VPN link state is undefined' />
+		<state name='offline' level='warning' summary='VPN is offline' forward-to-children='yes' />
+		<state name='online' level='ready' summary='VPN is online' />
+		<state name='not-found' level='unimportant' summary='VPN is not available' forward-to-children='yes' />
 
 	</network-interface>
 	

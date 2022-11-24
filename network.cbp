@@ -59,6 +59,7 @@
 		<Unit filename="src/module/agents/host/factory.cc" />
 		<Unit filename="src/module/agents/host/state.cc" />
 		<Unit filename="src/module/agents/nic/factory.cc" />
+		<Unit filename="src/module/agents/nic/interface.cc" />
 		<Unit filename="src/module/agents/nic/interfaces.cc" />
 		<Unit filename="src/module/agents/nic/state.cc" />
 		<Unit filename="src/module/dns/record.cc" />

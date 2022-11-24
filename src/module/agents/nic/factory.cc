@@ -27,7 +27,13 @@
 	}
 
 	std::shared_ptr<Abstract::Agent> Network::Agent::Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) const {
+
+		if(node.attribute("interface-name")) {
+			return make_shared<Network::Agent::Interface>(node);
+		}
+
 		return make_shared<Network::Agent::Interfaces>(node);
+
 	}
 
  }

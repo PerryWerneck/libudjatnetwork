@@ -38,6 +38,7 @@
 			NIC_STATE_OFFLINE,		///< @brief No active interface.
 			NIC_STATE_ONLINE,		///< @brief Just one active interface.
 			NIC_STATE_MULTIPLE,		///< @brief More than one active interface.
+			NIC_STATE_NOT_FOUND,	///< @brief NIC was not found.
 
 		};
 
@@ -59,18 +60,18 @@
 			/// @brief State of one single interface.
 			class UDJAT_API Interface : public Udjat::Agent<unsigned short> {
 			private:
-				const char * interface_name;
+				std::shared_ptr<Udjat::Network::Interface> intf;
 
 			public:
 
 				Interface(const pugi::xml_node &node);
 				virtual ~Interface();
 
-				// std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+				std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 
 				bool refresh() override;
 
-				bool getProperty(const char *key, std::string &value) const noexcept override;
+				std::string to_string() const noexcept override;
 
 			};
 
