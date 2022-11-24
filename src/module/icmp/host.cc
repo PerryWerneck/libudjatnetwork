@@ -56,13 +56,8 @@
 
 	bool Network::HostAgent::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
 
-		debug("id=",payload.id, " expecting ", this->id, " pid=", payload.pid, " expecting ", getpid());
+		debug("id=",payload.id, " expecting ", this->id);
 		if(payload.id != this->id) {
-			return false;
-		}
-
-		if(payload.pid != getpid()) {
-			debug("Rejecting packet with invalid PID, got ", payload.pid, " expecting ", getpid());
 			return false;
 		}
 
@@ -122,7 +117,6 @@
 
 			memset(&packet,0,sizeof(packet));
 			packet.id 	= this->id;
-			packet.pid	= getpid();
 			packet.seq	= ++this->packets;
 			packet.time = getCurrentTime();
 
