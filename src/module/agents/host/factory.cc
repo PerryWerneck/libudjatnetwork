@@ -20,6 +20,7 @@
  #include <private/module.h>
  #include <udjat/network/resolver.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/string.h>
 
  namespace Udjat {
 
@@ -163,7 +164,8 @@
 
 		};
 
-		auto type = Attribute(node,"type");
+		String type{node.attribute("type").as_string("default")};
+
 		switch(type.select("default","default-gateway",nullptr)) {
 		case standard_host:
 			return make_shared<StandardAgent>(node);

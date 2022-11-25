@@ -48,10 +48,10 @@ int main(int argc, char **argv) {
 			if(Module::find("httpd")) {
 
 				if(Module::find("information")) {
-					cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
-					cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
-					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
-					cout << "http://localhost:8989/api/1.0/info/services.xml" << endl;
+					cout << "http://localhost:8989/api/1.0/info/modules.html" << endl;
+					cout << "http://localhost:8989/api/1.0/info/workers.html" << endl;
+					cout << "http://localhost:8989/api/1.0/info/factories.html" << endl;
+					cout << "http://localhost:8989/api/1.0/info/services.html" << endl;
 				}
 
 			}
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 			auto root = Abstract::Agent::root();
 			if(root) {
 				for(auto agent : *root) {
-					cout << "http://localhost:8989/api/1.0/agent/" << agent->name() << ".xml" << endl;
+					cout << "http://localhost:8989/api/1.0/agent/" << agent->name() << ".html" << endl;
 				}
 			}
 
