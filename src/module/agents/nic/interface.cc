@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/network/agents/nic.h>
+ #include <udjat/agent/abstract.h>
  #include <udjat/tools/net/nic.h>
  #include <udjat/tools/logger.h>
  #include <iostream>
@@ -56,18 +57,28 @@
 		return super::StateFactory(node,NicStateFactory(node));
 	}
 
-	bool Network::Agent::Interface::refresh() {
+	static unsigned short interface_state(std::shared_ptr<Udjat::Network::Interface> intf) {
 
 		if(!intf->found()) {
-			return set(NIC_STATE_NOT_FOUND);
+			debug("Interface '",intf->name(),"' not found");
+			return Network::NIC_STATE_NOT_FOUND;
 		}
 
-		if(intf->up() && has_link(intf->name())) {
-			return set(NIC_STATE_ONLINE);
+		if(intf->up() && Network::Agent::has_link(intf->name())) {
+			debug("Interface '",intf->name(),"' is online");
+			return Network::NIC_STATE_ONLINE;
 		}
 
-		return set(NIC_STATE_OFFLINE);
+		debug("Interface '",intf->name(),"' is offline");
+		return Network::NIC_STATE_OFFLINE;
+	}
 
+	void Network::Agent::Interface::start() {
+		super::start(interface_state(intf));
+	}
+
+	bool Network::Agent::Interface::refresh() {
+		return set(interface_state(intf));
 	}
 
 	std::string Network::Agent::Interface::to_string() const noexcept {

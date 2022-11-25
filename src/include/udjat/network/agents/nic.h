@@ -73,6 +73,8 @@
 
 				std::string to_string() const noexcept override;
 
+				void start() override;
+
 			};
 
 			/// @brief State of ALL network interfaces (except loopback).
