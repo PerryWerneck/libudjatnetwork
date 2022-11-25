@@ -68,7 +68,7 @@
 		return super::StateFactory(node,NicStateFactory(node));
 	}
 
-	bool Network::Agent::Interfaces::refresh() {
+	unsigned short Network::Agent::Interfaces::count() {
 
 		unordered_set<string> nics;
 
@@ -111,19 +111,33 @@
 
 		debug("Detected nics: ",interfaces.size(), " Active nics: ", active_nics);
 
-		switch(active_nics) {
+		return active_nics;
+
+	}
+
+	void Network::Agent::Interfaces::start() {
+		super::start(computeValue());
+	}
+
+	bool Network::Agent::Interfaces::refresh() {
+		return set(computeValue());
+	}
+
+	Network::NIC_STATE Network::Agent::Interfaces::computeValue() {
+
+		switch(count()) {
 		case 0:
-			return set(NIC_STATE_OFFLINE);
+			return NIC_STATE_OFFLINE;
 
 		case 1:
-			return set(NIC_STATE_ONLINE);
+			return NIC_STATE_ONLINE;
 
 		default:
-			return set(NIC_STATE_MULTIPLE);
+			return NIC_STATE_MULTIPLE;
 
 		}
 
-		return set(NIC_STATE_UNDEFINED);
+		return NIC_STATE_UNDEFINED;
 	}
 
 	Network::Agent::Interfaces::Interface & Network::Agent::Interfaces::find_interface(const char *name) {

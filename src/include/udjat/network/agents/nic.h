@@ -96,6 +96,11 @@
 				/// @brief Find interface by name, insert one if needed.
 				struct Interface & find_interface(const char *name);
 
+				/// @brief Count active nics.
+				unsigned short count();
+
+				NIC_STATE computeValue();
+
 			public:
 
 				Interfaces(const pugi::xml_node &node);
@@ -106,6 +111,8 @@
 				bool refresh() override;
 
 				bool getProperty(const char *key, std::string &value) const noexcept override;
+
+				void start() override;
 
 			};
 
