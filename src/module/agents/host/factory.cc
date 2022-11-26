@@ -181,21 +181,7 @@
 			}
 
 			bool refresh() override {
-
-				int value = 0;
-
-				try {
-
-					value = Udjat::URL{this->url}.test();
-
-				} catch(const system_error &e) {
-
-					error() << e.what() << endl;
-					value = e.code().value();
-
-				}
-
-				return set(value);
+				return set(Udjat::URL{this->url}.test());
 			}
 
 		};
