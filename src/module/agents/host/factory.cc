@@ -21,6 +21,7 @@
  #include <udjat/network/resolver.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/url.h>
 
  namespace Udjat {
 
@@ -164,10 +165,48 @@
 
 		};
 
+
+		class URLAgent : public Udjat::Agent<int> {
+		private:
+			const char *url;
+
+		public:
+			URLAgent(const pugi::xml_node &node) : super(node,0), url(Quark(node,"url").c_str()) {
+
+				if(!url[0]) {
+					throw runtime_error("Required attribute 'url' is missing");
+				}
+
+
+			}
+
+			bool refresh() override {
+
+				int value = 0;
+
+				try {
+
+					value = Udjat::URL{this->url}.test();
+
+				} catch(const system_error &e) {
+
+					error() << e.what() << endl;
+					value = e.code().value();
+
+				}
+
+				return set(value);
+			}
+
+		};
+
 		String type{node.attribute("type").as_string("default")};
 
 		switch(type.select("default","default-gateway",nullptr)) {
 		case standard_host:
+			if(node.attribute("url")) {
+				return make_shared<URLAgent>(node);
+			}
 			return make_shared<StandardAgent>(node);
 
 		case default_gateway:

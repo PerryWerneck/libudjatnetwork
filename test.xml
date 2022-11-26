@@ -56,7 +56,13 @@
 			<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='Server is not reachable' />
 			<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='Server is not available' />
 			<state name='timeout' icmp-response='timeout' level='error' summary='Server is not available' />
-		
+
+			<!--
+			<network-host name='httpd' url='http://192.168.0.11'  update-timer='60'>
+
+			</network-host>
+			-->
+
 		</network-host>
 	
 	</network-host>
