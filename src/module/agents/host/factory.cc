@@ -22,6 +22,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/method.h>
 
  namespace Udjat {
 
@@ -169,9 +170,10 @@
 		class URLAgent : public Udjat::Agent<int> {
 		private:
 			const char *url;
+			HTTP::Method method;
 
 		public:
-			URLAgent(const pugi::xml_node &node) : super(node,0), url(Quark(node,"url").c_str()) {
+			URLAgent(const pugi::xml_node &node) : super(node,0), url(Quark(node,"url").c_str()), method(HTTP::MethodFactory(node.attribute("http-method").as_string("head"))) {
 
 				if(!url[0]) {
 					throw runtime_error("Required attribute 'url' is missing");
@@ -181,7 +183,9 @@
 			}
 
 			bool refresh() override {
-				return set(Udjat::URL{this->url}.test());
+				int value = Udjat::URL{this->url}.test(method);
+				debug("--------------------> ",value);
+				return set(value);
 			}
 
 		};

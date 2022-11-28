@@ -48,14 +48,14 @@
 		<state name='active' icmp-response='echo-reply' level='ready' summary='Gateway is active' />
 		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='Gateway is not reachable' forward-to-children='yes' />
 		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='Gateway is not available' forward-to-children='yes' />
-		<state name='timeout' icmp-response='timeout' level='error' summary='Timeout searching for gateway' forward-to-children='yes' />
+		<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from gateway' forward-to-children='yes' />
 
 		<network-host name='srv' ip='192.168.0.11' icmp='true' update-timer='60' icmp-timeout='30'>
 
 			<state name='active' icmp-response='echo-reply' level='ready' summary='Server is active' />
-			<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='Server is not reachable' />
-			<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='Server is not available' />
-			<state name='timeout' icmp-response='timeout' level='error' summary='Server is not available' />
+			<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='HTTP server is not reachable' forward-to-children='yes' />
+			<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='HTTP server is not available' forward-to-children='yes' />
+			<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from HTTP server' forward-to-children='yes' />
 
 			<network-host name='httpd' url='http://192.168.0.11'  update-timer='60'>
 
