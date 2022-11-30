@@ -1,5 +1,5 @@
 #
-# spec file for package libudjat
+# spec file for package udjat-module-network
 #
 # Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
 # Copyright (C) <2008> <Banco do Brasil S.A.>
@@ -28,6 +28,10 @@ URL:			https://github.com/PerryWerneck/udjat-module-network
 Group:			Development/Libraries/C and C++
 BuildRoot:		/var/tmp/%{name}-%{version}
 
+%define MAJOR_VERSION %(echo %{version} | cut -d. -f1)
+%define MINOR_VERSION %(echo %{version} | cut -d. -f2 | cut -d+ -f1)
+%define _libvrs %{MAJOR_VERSION}_%{MINOR_VERSION}
+
 BuildRequires:	autoconf >= 2.61
 BuildRequires:	automake
 BuildRequires:	libtool
@@ -43,6 +47,27 @@ Network module for udjat.
 
 Add factory for udjat network validation and check agents.
 
+#---[ Library ]-------------------------------------------------------------------------------------------------------
+
+%package -n libudjatnetw%{_libvrs}
+Summary:	UDJat network library
+
+%description -n libudjatnetw%{_libvrs}
+Network abstraction library for udjat
+
+#---[ Development ]---------------------------------------------------------------------------------------------------
+
+%package -n udjat-network-devel
+Summary:	Development files for %{name}
+Requires:	pkgconfig(libudjat)
+Requires:	libudjatnetw%{_libvrs} = %{version}
+
+%description -n udjat-network-devel
+
+Development files for Udjat's network abstraction library.
+
+%lang_package
+
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
 %prep
@@ -51,17 +76,37 @@ Add factory for udjat network validation and check agents.
 NOCONFIGURE=1 \
 	./autogen.sh
 
-%configure --disable-static
+%configure
 
 %build
 make all
 
 %install
 %makeinstall
+%find_lang libudjatnetw-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
 %files
 %defattr(-,root,root)
-%{_libdir}/udjat-modules/*.so
+%{_libdir}/udjat-modules/*/*.so
+
+%files -n libudjatnetw%{_libvrs}
+%defattr(-,root,root)
+%{_libdir}/libudjatnetw.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
+
+%files lang -f langfiles
+
+%files -n udjat-network-devel
+%defattr(-,root,root)
+%{_includedir}/udjat/tools/net/*.h
+%{_libdir}/*.so
+%{_libdir}/*.a
+%{_libdir}/pkgconfig/*.pc
+
+%pre -n libudjatnetw%{_libvrs} -p /sbin/ldconfig
+
+%post -n libudjatnetw%{_libvrs} -p /sbin/ldconfig
+
+%postun -n libudjatnetw%{_libvrs} -p /sbin/ldconfig
 
 %changelog
 

@@ -336,6 +336,7 @@ Debug: \
 
 $(BINDBG)/udjat@EXEEXT@: \
 	$(BINDBG)/$(PACKAGE_NAME)@LIBEXT@ \
+	$(BINDBG)/$(SONAME) \
 	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o)
 
 	@$(MKDIR) $(@D)

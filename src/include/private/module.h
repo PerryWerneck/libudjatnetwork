@@ -35,7 +35,7 @@
 	namespace Network {
 
 		/// @brief Abstract network agent state.
-		class HostAgent::State : public Abstract::State {
+		class UDJAT_API HostAgent::State : public Abstract::State {
 		protected:
 			bool revert = false;
 
@@ -61,7 +61,7 @@
 		};
 
 		/// @brief Network range state.
-		class Range : public Network::HostAgent::State {
+		class UDJAT_API Range : public Network::HostAgent::State {
 		protected:
 			/// @brief Teste an IPV4 address range.
 			bool inRange(const sockaddr_in &ip, const sockaddr_in &addr, const sockaddr_in &netmask) const;
@@ -82,7 +82,7 @@
 		};
 
 		/// @brief ICMP Response state.
-		class ICMPResponseState : public Network::HostAgent::State {
+		class UDJAT_API ICMPResponseState : public Network::HostAgent::State {
 		private:
 			ICMP::Response id;
 
