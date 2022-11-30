@@ -76,6 +76,9 @@
 			/// @return true if the response was processed and host can be removed.
 			bool onResponse(int icmp_type, const sockaddr_storage &addr, const Controller::Payload &payload) noexcept;
 
+			/// @brief Process ICMP error
+			bool onError(int code, const Controller::Payload &payload);
+
 		};
 
 		list<Host> hosts;

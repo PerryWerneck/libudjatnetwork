@@ -29,7 +29,8 @@
 	"echo-reply",
 	"destination-unreachable",
 	"time-exceeded",
-	"timeout"
+	"timeout",
+	"network-unreachable"
  };
 
  using namespace std;

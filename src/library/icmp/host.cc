@@ -62,9 +62,27 @@
 		return true;
 	}
 
+	bool ICMP::Host::Controller::Host::onError(int code, const Controller::Payload &payload) {
+
+		if(payload.id == this->id) {
+
+			switch(code) {
+			case ENETUNREACH:	// Network is unreachable
+				host->set(Response::network_unreachable,host->addr);
+				return true;
+
+			default:
+				cerr << "icmp\tError '" << strerror(code) << "' searching " << host->addr << endl;
+
+			}
+
+		}
+
+		return false;
+	}
+
 	bool ICMP::Host::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
 
-		debug("id=",payload.id, " expecting ", this->id);
 		if(payload.id != this->id) {
 			return false;
 		}

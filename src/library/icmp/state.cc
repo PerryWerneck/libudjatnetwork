@@ -71,7 +71,14 @@
 			Level::error,
 			N_("${name} is not available"),
 			N_("No ICMP response from host.")
-		}
+		},
+		{
+			"network-unreachable",
+			ICMP::Response::network_unreachable,
+			Level::error,
+			N_("Network is not reachable"),
+			N_("The entire network is unreachable.")
+		},
 
 	};
 

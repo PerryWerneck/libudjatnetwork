@@ -32,7 +32,8 @@
 			echo_reply,
 			destination_unreachable,
 			time_exceeded,
-			timeout
+			timeout,
+			network_unreachable
 		};
 
 		UDJAT_API Response ResponseFactory(const char *name);

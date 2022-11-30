@@ -286,7 +286,25 @@
 				packet.icmp.icmp_cksum = in_chksum((unsigned short *) &packet, sizeof(packet));
 
 				if(sendto(fd, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
-					throw std::system_error(errno, std::system_category(), "Can't send ICMP packet");
+
+					int code = errno;
+
+					hosts.remove_if([code,&packet](Host &host) {
+						return host.onError(code,packet.payload);
+					});
+
+					/*
+					if(errno = ENETUNREACH) {
+
+						// Network is unreachable
+
+					} else {
+
+						throw std::system_error(errno, std::system_category(), string{"Can't send ICMP packet (errno="} + std::to_string(errno) + ")");
+
+					}
+					*/
+
 				}
 			}
 			break;
