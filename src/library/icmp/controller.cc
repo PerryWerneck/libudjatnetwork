@@ -80,10 +80,6 @@
 
 	void ICMP::Host::Controller::handle_event(const Event event) {
 
-#ifdef DEBUG
-		cout << "*** EVENT on ICMP listener" << endl;
-#endif // DEBUG
-
 		lock_guard<recursive_mutex> lock(guard);
 
 		if(event & MainLoop::Handler::oninput) {
@@ -109,12 +105,14 @@
 			}
 
 			if(rc != sizeof(in)) {
-				Logger::String{
-					"Ignoring packet with invalid size, got ",
-					rc,
-					" expecting ",
-					sizeof(in)
-				}.write(Logger::Debug,"ICMP");
+				if(Logger::enabled(Logger::Trace)) {
+					Logger::String{
+						"Ignoring packet with invalid size, got ",
+						rc,
+						" expecting ",
+						sizeof(in)
+					}.write(Logger::Trace,"ICMP");
+				}
 				return;
 			}
 
