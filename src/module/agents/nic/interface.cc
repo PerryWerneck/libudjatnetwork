@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/network/agents/nic.h>
+ #include <private/agents/nic.h>
  #include <udjat/agent.h>
  #include <udjat/tools/net/nic.h>
  #include <udjat/tools/logger.h>

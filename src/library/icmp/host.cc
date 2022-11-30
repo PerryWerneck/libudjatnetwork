@@ -18,32 +18,40 @@
  */
 
  #include <controller.h>
- #include <udjat/tools/inet.h>
+ #include <udjat/tools/ip.h>
  #include <udjat/tools/threadpool.h>
  #include <cstring>
  #include <sys/types.h>
  #include <unistd.h>
- #include <udjat/network/agents/host.h>
+ #include <private/agents/host.h>
  #include <udjat/tools/logger.h>
  #include <netinet/ip_icmp.h>
 
  namespace Udjat {
 
-	Network::HostAgent::Controller::Host::Host(Network::HostAgent *a, const sockaddr_storage &i) : agent(a), addr(i) {
+	ICMP::Host::Host() {
+		memset(&addr,0,sizeof(addr));
+	}
+
+	void ICMP::Host::start() {
+		Controller::getInstance().insert(this);
+	}
+
+	ICMP::Host::Controller::Host::Host(ICMP::Host *h) : host{h} {
 
 		static unsigned short id = 0;
 
 		this->id = id++;
-		timeout = time(0) + agent->icmp.timeout;
+		timeout = ::time(0) + host->timeout;
 		send();
 	}
 
-	bool Network::HostAgent::Controller::Host::onTimer() {
+	bool ICMP::Host::Controller::Host::onTimer() {
 
- 		time_t now = time(0);
+ 		time_t now = ::time(0);
 
 		if(now > timeout) {
-			agent->set(ICMPResponse::timeout);
+			host->set(Response::timeout,host->addr);
 			return false;
 		}
 
@@ -54,7 +62,7 @@
 		return true;
 	}
 
-	bool Network::HostAgent::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
+	bool ICMP::Host::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
 
 		debug("id=",payload.id, " expecting ", this->id);
 		if(payload.id != this->id) {
@@ -69,37 +77,35 @@
 
 			case ICMP_ECHOREPLY: // Echo Reply
 				{
-					uint64_t now = Network::HostAgent::Controller::getCurrentTime();
-					uint64_t time;
+					uint64_t now = ICMP::Host::Controller::getCurrentTime();
 
 					if(payload.time >= now) {
-						time = (payload.time - now);
+						host->time = (payload.time - now);
 					} else {
-						time = (now - payload.time);
+						host->time = (now - payload.time);
 					}
 
-					agent->trace()	<< "Got response " << payload.seq << " from " << std::to_string(addr)
-									<< " (time: " << time << ")"
-									<< endl;
-					agent->set(ICMPResponse::echo_reply,time);
+					host->set(Response::echo_reply,addr);
 				}
 				break;
 
 			case ICMP_DEST_UNREACH: // Destination Unreachable
-				agent->trace() << "Received 'Destination Unreachable' from " << std::to_string(addr) << endl;
-				agent->set(ICMPResponse::destination_unreachable);
+				host->time = (uint64_t) -1;
+				host->set(Response::destination_unreachable,addr);
 				break;
 
 			case ICMP_TIME_EXCEEDED: // Time Exceeded
-				agent->trace() << "Received 'Time Exceeded' from " << std::to_string(addr) << endl;
-				agent->set(ICMPResponse::time_exceeded);
+				host->time = (uint64_t) -1;
+				host->set(Response::time_exceeded,addr);
 				break;
 
+			default:
+				clog << "Unexpected ICMP response '" << ((int) icmp_type) << "' from " << addr << endl;
 			}
 
 		} catch(const exception &e) {
 
-			agent->failed("Error processing ICMP response", e);
+			cerr << "Error processing ICMP response from " << addr << ": " << e.what() << endl;
 
 		}
 
@@ -107,24 +113,24 @@
 
 	}
 
-	void Network::HostAgent::Controller::Host::send() noexcept {
+	void ICMP::Host::Controller::Host::send() noexcept {
 
 		try {
 
 			Payload packet;
 
-			next = time(0) + agent->icmp.interval;
+			next = ::time(0) + host->interval;
 
 			memset(&packet,0,sizeof(packet));
 			packet.id 	= this->id;
 			packet.seq	= ++this->packets;
 			packet.time = getCurrentTime();
 
-			Controller::getInstance().send(addr,packet);
+			Controller::getInstance().send(host->addr,packet);
 
 		} catch(const exception &e) {
 
-			agent->failed("Error sending ICMP",e);
+			cerr << "Error sending ICMP: " << e.what() << endl;
 
 		}
 

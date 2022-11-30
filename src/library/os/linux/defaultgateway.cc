@@ -38,7 +38,7 @@
  #include <stdexcept>
  #include <system_error>
 
- #include <udjat/tools/inet.h>
+ #include <udjat/tools/net/gateway.h>
 
  #define BUFFER_SIZE 4096
 

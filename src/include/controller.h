@@ -20,9 +20,10 @@
  #pragma once
 
  #include <config.h>
- #include <udjat/network/agents/host.h>
+ #include <private/agents/host.h>
  #include <udjat/tools/timer.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/net/icmp.h>
  #include <mutex>
  #include <memory>
  #include <iostream>
@@ -32,7 +33,7 @@
 
  namespace Udjat {
 
- 	class Network::HostAgent::Controller : private MainLoop::Timer, private MainLoop::Handler {
+ 	class ICMP::Host::Controller : private MainLoop::Timer, private MainLoop::Handler {
 	public:
 
 		#pragma pack(1)
@@ -53,23 +54,22 @@
 		class Host {
 		private:
 
-			Network::HostAgent *agent;
-			sockaddr_storage addr;
+			ICMP::Host *host;
 
-			uint16_t id;
+			uint16_t id = 0;
 			uint16_t packets = 0;
 			time_t timeout;
 			time_t next = 0;
 
 		public:
 
-			Host(Network::HostAgent *agent, const sockaddr_storage &addr);
+			Host(ICMP::Host *host);
 
 			bool onTimer();
 			void send() noexcept;
 
-			inline bool operator ==(const Network::HostAgent *agent) const noexcept {
-				return agent == this->agent;
+			inline bool operator ==(const ICMP::Host *host) const noexcept {
+				return host == this->host;
 			}
 
 			bool onResponse(int icmp_type, const sockaddr_storage &addr, const Controller::Payload &payload) noexcept;
@@ -93,8 +93,8 @@
 
 		~Controller();
 
-		void insert(Network::HostAgent *agent, const sockaddr_storage &addr);
-		void remove(Network::HostAgent *agent);
+		void insert(ICMP::Host *host);
+		void remove(ICMP::Host *host);
 
 		void send(const sockaddr_storage &addr, const Payload &payload);
 

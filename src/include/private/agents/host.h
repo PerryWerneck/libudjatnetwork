@@ -23,24 +23,15 @@
  #include <udjat/factory.h>
  #include <udjat/agent.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/net/icmp.h>
  #include <sys/socket.h>
 
  namespace Udjat {
 
 	namespace Network {
 
-		enum ICMPResponse : uint8_t {
-			invalid,
-			echo_reply,
-			destination_unreachable,
-			time_exceeded,
-			timeout
-		};
-
-		ICMPResponse ICMPResponseFactory(const char *name);
-
 		/// @brief Agent to check for DNS resolution and ICMP test.
-		class UDJAT_API HostAgent : public Udjat::Abstract::Agent {
+		class UDJAT_API HostAgent : public Udjat::Abstract::Agent, private ICMP::Host {
 		public:
 			class State;
 
@@ -58,14 +49,8 @@
 
 			} states;
 
-			class Controller;
-			friend class Controller;
-
 			struct {
 				bool check = true;		///< @brief Do ICMP check.
-				time_t interval = 1;	///< @brief ICMP packet interval.
-				time_t timeout = 5;		///< @brief ICMP timeout.
-				uint64_t time = 0;		///< @brief Time of last response.
 			} icmp;
 
 		protected:
@@ -75,6 +60,8 @@
 
 			/// @brief Do a DNS check.
 			static sockaddr_storage resolv(sockaddr_storage &dnssrv, const char *hostname);
+
+			void set(const ICMP::Response response, const sockaddr_storage &from) override;
 
 		public:
 
@@ -90,8 +77,6 @@
 			virtual ~HostAgent();
 
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
-
-			void set(ICMPResponse response, uint64_t time = 0);
 
 			std::string to_string() const noexcept override;
 

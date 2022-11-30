@@ -19,10 +19,10 @@
 
  #include <config.h>
  #include <private/module.h>
- #include <udjat/network/agents/host.h>
+ #include <private/agents/host.h>
  #include <controller.h>
  #include <udjat/tools/xml.h>
- #include <udjat/network/resolver.h>
+ #include <udjat/tools/net/dns.h>
  #include <cstring>
  #include <sys/types.h>
  #include <sys/socket.h>
@@ -30,6 +30,7 @@
  #include <udjat/tools/intl.h>
  #include <sstream>
  #include <iomanip>
+ #include <udjat/tools/ip.h>
 
  namespace Udjat {
 
@@ -37,7 +38,7 @@
 
 		// Do an ICMP check?
 		icmp.check = getAttribute(node,"icmp",icmp.check);
-		icmp.timeout = getAttribute(node,"icmp-timeout", (unsigned int) icmp.timeout);
+		ICMP::Host::timeout = getAttribute(node,"icmp-timeout", (unsigned int) ICMP::Host::timeout);
 
 		states.icmp = states.addr = Abstract::Agent::computeState();
 
@@ -147,7 +148,7 @@
 				throw runtime_error("Can't use 'icmp-response' states without icmp='true' attribute on the agent definition");
 			}
 
-			ICMPResponse id = ICMPResponseFactory(node.attribute("icmp-response").as_string("undefined"));
+			ICMP::Response id = ICMP::ResponseFactory(node.attribute("icmp-response").as_string("undefined"));
 
 			auto state = make_shared<ICMPResponseState>(node,id);
 			states.available.push_back(state);
@@ -189,9 +190,10 @@
 		}
 
 		if(addr.ss_family) {
-			Controller::getInstance().insert(this,addr);
+			ICMP::Host::set(addr);
+			ICMP::Host::start();
 		} else {
-			set(ICMPResponse::invalid);
+			set(ICMP::Response::invalid,addr);
 		}
 
 	}
@@ -220,11 +222,11 @@
 
 	std::string Udjat::Network::HostAgent::to_string() const noexcept {
 
-		if(!icmp.time) {
+		if(ICMP::Host::time == ((uint64_t) -1)) {
 			return "";
 		}
 
-		float value = ((float) icmp.time) / ((float) 1000000);
+		float value = ((float) ICMP::Host::time) / ((float) 1000000);
 
 		std::stringstream stream;
 		stream << std::fixed << std::setprecision(2) << value << " ms";
@@ -235,8 +237,8 @@
 
 	Udjat::Value & Udjat::Network::HostAgent::get(Udjat::Value &value) const {
 
-		if(icmp.time) {
-			value.set(((float) icmp.time) / ((float) 1000000));
+		if(ICMP::Host::time != ((uint64_t) -1)) {
+			value.set(((float) ICMP::Host::time) / ((float) 1000000));
 		}
 
 		return value;

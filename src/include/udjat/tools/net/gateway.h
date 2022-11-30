@@ -17,25 +17,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <private/module.h>
+ #pragma once
+
+ #include <udjat/defs.h>
+ #include <udjat/network/ipaddress.h>
+ #include <netdb.h>
+ #include <string>
 
  namespace Udjat {
 
-	bool Network::HostAgent::State::test(const sockaddr_storage &addr) const {
-		return false;
-	}
+	namespace Network {
 
-	bool Network::HostAgent::State::isValid(const ICMP::Response response) const noexcept {
-		return false;
-	}
+		class UDJAT_API DefaultGateway : public IP::Address {
+		private:
+			std::string interface;
 
-	bool Network::HostAgent::State::isValid(const sockaddr_storage &addr) const noexcept {
-		bool rc = test(addr);
-		if(revert)
-			return !rc;
-		return rc;
-	}
+		public:
+			DefaultGateway();
 
+			const DefaultGateway & refresh();
+
+		};
+
+	}
 
  }
 

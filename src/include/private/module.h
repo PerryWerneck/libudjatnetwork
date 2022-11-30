@@ -21,9 +21,9 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/network/agents/host.h>
+ #include <private/agents/host.h>
  #include <iostream>
- #include <udjat/tools/inet.h>
+// #include <udjat/tools/inet.h>
  #include <arpa/inet.h>
 
  using namespace std;
@@ -56,7 +56,7 @@
 			bool isValid(const sockaddr_storage &addr) const noexcept;
 
 			/// @brief True if the response can be used.
-			virtual bool isValid(const ICMPResponse response) const noexcept;
+			virtual bool isValid(const ICMP::Response response) const noexcept;
 
 		};
 
@@ -84,16 +84,16 @@
 		/// @brief ICMP Response state.
 		class ICMPResponseState : public Network::HostAgent::State {
 		private:
-			Network::ICMPResponse id;
+			ICMP::Response id;
 
 		public:
-			ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const Network::ICMPResponse i) : Network::HostAgent::State(name,level,summary,body), id(i) {
+			ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const ICMP::Response i) : Network::HostAgent::State(name,level,summary,body), id(i) {
 			}
 
-			ICMPResponseState(const pugi::xml_node &node, const Network::ICMPResponse i) : Network::HostAgent::State(node), id(i) {
+			ICMPResponseState(const pugi::xml_node &node, const ICMP::Response i) : Network::HostAgent::State(node), id(i) {
 			}
 
-			bool isValid(const Network::ICMPResponse response) const noexcept override {
+			bool isValid(const ICMP::Response response) const noexcept override {
 				return response == id;
 			}
 

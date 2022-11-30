@@ -18,11 +18,11 @@
  */
 
  #include <config.h>
- #include <udjat/network/resolver.h>
+ #include <udjat/tools/net/dns.h>
  #include <cstring>
  #include <netdb.h>
  #include <iostream>
- #include <udjat/tools/inet.h>
+// #include <udjat/tools/inet.h>
 
  using namespace std;
 

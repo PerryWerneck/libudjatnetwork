@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <private/module.h>
- #include <udjat/network/agents/nic.h>
+ #include <private/agents/nic.h>
 
  namespace Udjat {
 

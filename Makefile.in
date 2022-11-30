@@ -3,17 +3,23 @@
 
 PACKAGE_NAME=@PACKAGE_NAME@
 
-MAIN_SOURCES= \
+LIBRARY_SOURCES= \
 	$(wildcard src/library/*.cc) \
 	$(wildcard src/library/ip/*.cc) \
 	$(wildcard src/library/os/@OSNAME@/*.cc) \
+	$(wildcard src/library/icmp/*.cc) \
+	$(wildcard src/library/dns/*.cc)
+
+MODULE_SOURCES= \
 	$(wildcard src/module/*.cc) \
 	$(wildcard src/tools/*.cc) \
 	$(wildcard src/module/agents/host/*.cc) \
-	$(wildcard src/module/agents/nic/*.cc) \
-	$(wildcard src/module/dns/*.cc) \
-	$(wildcard src/module/icmp/*.cc)
-	
+	$(wildcard src/module/agents/nic/*.cc)
+
+MAIN_SOURCES= \
+	$(LIBRARY_SOURCES) \
+	$(MODULE_SOURCES)
+		
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
 

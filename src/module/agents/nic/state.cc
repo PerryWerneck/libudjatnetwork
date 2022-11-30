@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/network/agents/nic.h>
+ #include <private/agents/nic.h>
  #include <udjat/tools/object.h>
  #include <string>
  #include <unistd.h>

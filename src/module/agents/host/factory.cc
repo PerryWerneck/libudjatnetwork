@@ -18,11 +18,12 @@
  */
 
  #include <private/module.h>
- #include <udjat/network/resolver.h>
+ #include <udjat/tools/net/dns.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/method.h>
+ #include <udjat/tools/net/gateway.h>
 
  namespace Udjat {
 

@@ -20,7 +20,9 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/intl.h>
- #include <udjat/network/agents/host.h>
+ #include <udjat/tools/net/icmp.h>
+ #include <udjat/tools/ip.h>
+ #include <private/agents/host.h>
  #include <iostream>
  #include <private/module.h>
 
@@ -30,42 +32,42 @@
 
 	static const struct {
 		const char *name;
-		const Udjat::Network::ICMPResponse id;
+		const ICMP::Response id;
 		const Level level;
 		const char *summary;
 		const char *body;
 	} icmp_states[] = {
 		{
 			"invalid",
-			Udjat::Network::ICMPResponse::invalid,
+			ICMP::Response::invalid,
 			Level::error,
 			N_("${name} address is invalid"),
 			N_("Unable to get a valid IP address for ${name}.")
 		},
 		{
 			"echo-reply",
-			Udjat::Network::ICMPResponse::echo_reply,
+			ICMP::Response::echo_reply,
 			Level::ready,
 			N_("${name} is active"),
 			N_("Got ICMP echo reply from host.")
 		},
 		{
 			"destination-unreachable",
-			Udjat::Network::ICMPResponse::destination_unreachable,
+			ICMP::Response::destination_unreachable,
 			Level::error,
 			N_("${name} is not reachable"),
 			N_("Destination Unreachable. The gateway doesnt know how to get to the defined network.")
 		},
 		{
 			"time-exceeded",
-			Udjat::Network::ICMPResponse::time_exceeded,
+			ICMP::Response::time_exceeded,
 			Level::error,
 			N_("${name} is not acessible"),
 			N_("Time Exceeded. The ICMP request has been discarded because it was 'out of time'.")
 		},
 		{
 			"timeout",
-			Udjat::Network::ICMPResponse::timeout,
+			ICMP::Response::timeout,
 			Level::error,
 			N_("${name} is not available"),
 			N_("No ICMP response from host.")
@@ -73,30 +75,19 @@
 
 	};
 
-	Network::ICMPResponse Network::ICMPResponseFactory(const char *name) {
+	void Udjat::Network::HostAgent::set(const ICMP::Response response, const sockaddr_storage &from) {
 
-		for(size_t ix = 0; ix < N_ELEMENTS(icmp_states); ix++) {
+		trace() << "Got response '" << response << "' from " << from << endl;
 
-			if(!strcasecmp(name,icmp_states[ix].name)) {
-				return icmp_states[ix].id;
-			}
-
-		}
-
-		throw runtime_error(string{"Invalid ICMP response id: "} + name);
-	}
-
-
-	void Udjat::Network::HostAgent::set(const Udjat::Network::ICMPResponse response, uint64_t time) {
-
+		/*
 #ifdef DEBUG
 		{
 			float value = ((float) time) / ((float) 1000000);
 			trace() << "Setting ICMP response to " << response << " with time=" << value << " ms" << endl;
 		}
 #endif // DEBUG
+		*/
 
-		icmp.time = time;
 		std::shared_ptr<State> detected;
 
 		for(auto state : states.available) {

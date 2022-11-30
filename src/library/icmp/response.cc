@@ -17,42 +17,50 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
+ #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/network/ipaddress.h>
- #include <netdb.h>
+ #include <udjat/tools/net/icmp.h>
+ #include <cstring>
  #include <string>
+ #include <stdexcept>
+
+ static const char *names[] = {
+	"invalid",
+	"echo-reply",
+	"destination-unreachable",
+	"time-exceeded",
+	"timeout"
+ };
+
+ using namespace std;
 
  namespace Udjat {
 
-	namespace Network {
+	ICMP::Response ICMP::ResponseFactory(const char *name) {
 
-		class UDJAT_API DefaultGateway : public IP::Address {
-		private:
-			std::string interface;
+		for(size_t ix = 0; ix < N_ELEMENTS(names); ix++) {
 
-		public:
-			DefaultGateway();
+			if(!strcasecmp(name,names[ix])) {
+				return (ICMP::Response) ix;
+			}
 
-			const DefaultGateway & refresh();
+		}
 
-		};
-
+		throw runtime_error(string{"Invalid ICMP response id: "} + name);
 	}
+
 
  }
 
  namespace std {
 
-	UDJAT_API string to_string(const sockaddr_storage &addr, bool port = false);
-	UDJAT_API string to_string(const struct sockaddr_in &addr, bool port = false);
-	UDJAT_API string to_string(const struct sockaddr_in6 &addr, bool port = false);
-	UDJAT_API string to_string(const struct in_addr &addr);
+	UDJAT_API const char * to_string(const Udjat::ICMP::Response response) {
 
-	inline ostream& operator<< (ostream& os, const sockaddr_storage &addr) {
-		return os << to_string(addr);
+		if( ((size_t) response) > N_ELEMENTS(names)) {
+			return "invalid";
+		}
+
+		return names[response];
 	}
 
  }
-

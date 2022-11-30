@@ -27,7 +27,8 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/inet.h>
+ #include <udjat/tools/net/icmp.h>
+ #include <udjat/tools/ip.h>
  #include <netinet/ip_icmp.h>
 
  namespace Udjat {
@@ -35,27 +36,27 @@
 	#pragma pack(1)
 	struct Packet {
 		struct icmp icmp;
-		struct Network::HostAgent::Controller::Payload payload;
+		struct ICMP::Host::Controller::Payload payload;
 	};
 	#pragma pack()
 
-	recursive_mutex Network::HostAgent::Controller::guard;
+	recursive_mutex ICMP::Host::Controller::guard;
 
-	Network::HostAgent::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
+	ICMP::Host::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
 	}
 
-	Network::HostAgent::Controller::~Controller() {
+	ICMP::Host::Controller::~Controller() {
 		lock_guard<recursive_mutex> lock(guard);
 	 	stop();
 	}
 
-	Network::HostAgent::Controller & Network::HostAgent::Controller::getInstance() {
+	ICMP::Host::Controller & ICMP::Host::Controller::getInstance() {
 		lock_guard<recursive_mutex> lock(guard);
 		static Controller instance;
 		return instance;
 	}
 
-	uint64_t Network::HostAgent::Controller::getCurrentTime() noexcept {
+	uint64_t ICMP::Host::Controller::getCurrentTime() noexcept {
 
 			struct timespec tm;
 			clock_gettime(CLOCK_MONOTONIC_RAW, &tm);
@@ -67,7 +68,7 @@
 			return time;
 	}
 
-	void Network::HostAgent::Controller::stop() {
+	void ICMP::Host::Controller::stop() {
 
 		this->Handler::disable();
 		this->Timer::disable();
@@ -77,7 +78,7 @@
 
 	}
 
-	void Network::HostAgent::Controller::handle_event(const Event event) {
+	void ICMP::Host::Controller::handle_event(const Event event) {
 
 #ifdef DEBUG
 		cout << "*** EVENT on ICMP listener" << endl;
@@ -138,7 +139,7 @@
 
 	}
 
-	void Network::HostAgent::Controller::on_timer() {
+	void ICMP::Host::Controller::on_timer() {
 
 		ThreadPool::getInstance().push([this]() {
 
@@ -158,7 +159,7 @@
 
 	}
 
-	void Network::HostAgent::Controller::start() {
+	void ICMP::Host::Controller::start() {
 
 		try {
 
@@ -212,21 +213,21 @@
 
 	}
 
-	void Network::HostAgent::Controller::insert(Network::HostAgent *agent, const sockaddr_storage &addr) {
+	void ICMP::Host::Controller::insert(ICMP::Host *host) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
 		start();
-		hosts.emplace_back(agent,addr);
+		hosts.emplace_back(host);
 
 	}
 
-	void Network::HostAgent::Controller::remove(Network::HostAgent *agent) {
+	void ICMP::Host::Controller::remove(ICMP::Host *host) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
-		hosts.remove_if([agent](Host &h) {
-			return h == agent;
+		hosts.remove_if([host](Host &h) {
+			return h == host;
 		});
 
 		if(hosts.empty()) {
@@ -258,7 +259,7 @@
 		return ans;
 	}
 
-	void Network::HostAgent::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
+	void ICMP::Host::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
 
 		if(fd < 0) {
 			throw runtime_error("ICMP Controller is not available");
