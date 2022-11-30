@@ -74,7 +74,7 @@
 		this->Timer::disable();
 		this->Handler::close();
 
-		Logger::String{"ICMP listener disabled"}.write(Logger::Trace,"ICMP");
+		Logger::String{"Listener disabled"}.write(Logger::Debug,"ICMP");
 
 	}
 
@@ -149,7 +149,7 @@
 			});
 
 			if(hosts.empty()) {
-				Logger::String{"No more hosts, disabling ICMP listener"}.write(Logger::Trace,"ICMP");
+				Logger::String{"No more hosts, disabling listener"}.write(Logger::Trace,"ICMP");
 				stop();
 			}
 
@@ -161,7 +161,7 @@
 
 		try {
 
-			Logger::String{"Starting ICMP Listener"}.write(Logger::Trace,"ICMP");
+			Logger::String{"Starting Listener"}.write(Logger::Trace,"ICMP");
 
 			// Create socket
 			if(fd <= 0) {
@@ -197,7 +197,7 @@
 			}
 
 			if(!this->Handler::enabled()) {
-				Logger::String{"Enabling ICMP listener"}.write(Logger::Trace,"ICMP");
+				Logger::String{"Enabling listener"}.write(Logger::Debug,"ICMP");
 				this->Handler::enable();
 			}
 
