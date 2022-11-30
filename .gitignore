@@ -60,6 +60,7 @@ valgrind.suppression
 
 ABOUT-NLS
 intl
+*.pc
 m4
 po
 vgcore.*

@@ -2,6 +2,8 @@
 #---[ Library configuration ]------------------------------------------------------------
 
 PACKAGE_NAME=@PACKAGE_NAME@
+LIBRARY_NAME="netw"
+SONAME=@SONAME@
 
 LIBRARY_SOURCES= \
 	$(wildcard src/library/*.cc) \
@@ -16,10 +18,6 @@ MODULE_SOURCES= \
 	$(wildcard src/module/agents/host/*.cc) \
 	$(wildcard src/module/agents/nic/*.cc)
 
-MAIN_SOURCES= \
-	$(LIBRARY_SOURCES) \
-	$(MODULE_SOURCES)
-		
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
 
@@ -53,12 +51,13 @@ docdir=@docdir@
 sysconfdir=/etc
 
 BASEDIR=@BASEDIR@
+DLL_LDFLAGS=@DLL_LDFLAGS@
 
-OBJDIR=.obj/@OSNAME@
+OBJDIR=.obj
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
 
-BINDIR=.bin
+BINDIR=$(BASEDIR)/.bin
 BINDBG=$(BINDIR)/Debug
 BINRLS=$(BINDIR)/Release
 
@@ -67,8 +66,7 @@ POTDIR=.pot
 #---[ Rules ]----------------------------------------------------------------------------
 
 DEPENDS= \
-	Makefile \
-	src/include/*.h
+	Makefile
 
 CFLAGS= \
 	@CXXFLAGS@ \
@@ -140,8 +138,6 @@ $(OBJRLS)/%.o: \
 	@$(MKDIR) $(@D)
 	@$(WINDRES) $< -O coff -o $@
 
-#---[ Misc Rules ]-----------------------------------------------------------------------
-
 $(POTDIR)/%.pot: \
 	%.cc
 
@@ -172,30 +168,14 @@ install-%: \
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
-	$(BINRLS)/$(PACKAGE_NAME).so \
+	$(BINRLS)/$(PACKAGE_NAME)@LIBEXT@ \
 	locale/$(PACKAGE_NAME).pot
-
 
 Release: \
-	$(BINRLS)/$(PACKAGE_NAME).so \
-	locale/$(PACKAGE_NAME).pot
-
-$(BINRLS)/$(PACKAGE_NAME).so: \
-	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o)
-
-	@$(MKDIR) $(@D)
-	@echo $< ...
-	@$(LD) \
-		-shared \
-		-Wl,-soname,$(@F) \
-		-o $@ \
-		$(LDFLAGS) \
-		$^ \
-		$(LIBS)
-
+	$(BINRLS)/$(PACKAGE_NAME)@LIBEXT@
 
 locale/$(PACKAGE_NAME).pot: \
-	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(POTDIR)/$(SRC).pot)
+	$(foreach SRC, $(basename $(LIBRARY_SOURCES) $(MODULE_SOURCES)), $(POTDIR)/$(SRC).pot)
 
 	@rm -f $@
 	@$(MKDIR) $(dir $@)
@@ -204,33 +184,150 @@ locale/$(PACKAGE_NAME).pot: \
 locale: \
 	locale/$(PACKAGE_NAME).pot
 
+$(BINRLS)/$(SONAME): \
+	$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJRLS)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		$(DLL_LDFLAGS) \
+		-Wl,-soname,$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$^ \
+		$(LIBS)
+
+$(BINRLS)/libudjat$(LIBRARY_NAME).a: \
+	$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJRLS)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(AR) rcs $@ $^
+
+$(BINRLS)/$(PACKAGE_NAME)@LIBEXT@: \
+	$(foreach SRC, $(basename $(MODULE_SOURCES)), $(OBJRLS)/$(SRC).o) \
+	$(BINRLS)/$(SONAME)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		-shared \
+		-o $@ \
+		$(LDFLAGS) \
+		$^ \
+		$(LIBS)
+
+
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
-	install-linux-module \
-	locale/$(PACKAGE_NAME).pot
+	install-@OSNAME@ \
+	install-module \
+	install-dev \
+	install-locale
 
-install-linux-module: \
-	$(BINRLS)/$(PACKAGE_NAME).so
+install-linux: \
+	$(BINRLS)/$(SONAME)
+
+	# Install library
+	@$(MKDIR) $(DESTDIR)$(libdir)
+
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/$(SONAME) \
+		$(DESTDIR)$(libdir)/$(SONAME)
+		
+install-windows: \
+	$(BINRLS)/@SONAME@
+
+	@$(MKDIR) \
+		$(DESTDIR)$(bindir)
+
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/@SONAME@ \
+		$(DESTDIR)$(bindir)/@SONAME@
+		
+install-module: \
+	$(BINRLS)/$(PACKAGE_NAME)@LIBEXT@
 
 	@$(MKDIR) \
 		$(DESTDIR)@MODULE_PATH@
 
 	@$(INSTALL_PROGRAM) \
-		$(BINRLS)/$(PACKAGE_NAME).so \
-		$(DESTDIR)@MODULE_PATH@/$(PACKAGE_NAME).so
+		$(BINRLS)/$(PACKAGE_NAME)@LIBEXT@ \
+		$(DESTDIR)@MODULE_PATH@/$(PACKAGE_NAME)@LIBEXT@
+
+install-dev: \
+	install-@OSNAME@-dev \
+	install-@OSNAME@-static 
+	
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/net
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/tools/net/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/net
+
+	# Install PKG-CONFIG files
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)/pkgconfig
+
+	@$(INSTALL_DATA) \
+		sdk/@OSNAME@/dynamic.pc \
+		$(DESTDIR)$(libdir)/pkgconfig/udjat-$(LIBRARY_NAME).pc
+
+	@$(INSTALL_DATA) \
+		sdk/@OSNAME@/static.pc \
+		$(DESTDIR)$(libdir)/pkgconfig/udjat-$(LIBRARY_NAME)-static.pc
+
+install-linux-static: \
+	$(BINRLS)/libudjat$(LIBRARY_NAME).a
+
+	# Install static library
+	@$(MKDIR) $(DESTDIR)$(libdir)
+	@$(INSTALL_DATA) \
+		$(BINRLS)/libudjat$(LIBRARY_NAME).a \
+		$(DESTDIR)$(libdir)/libudjat$(LIBRARY_NAME).static.a
+
+install-windows-static: \
+	$(BINRLS)/libudjat$(LIBRARY_NAME).a
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/libudjat$(LIBRARY_NAME).a \
+		$(DESTDIR)$(libdir)/libudjat$(LIBRARY_NAME).a
+
+install-linux-dev:
+
+	# Install linux SDK
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(LN_S) \
+		$(SONAME) \
+		$(DESTDIR)$(libdir)/libudjat$(LIBRARY_NAME).so
+
+install-windows-dev:
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(DLLTOOL) \
+		--input-def $(BINRLS)/udjat$(LIBRARY_NAME).def \
+		--dllname @SONAME@ \
+		--output-lib $(DESTDIR)$(libdir)/libudjat$(LIBRARY_NAME).dll.a
 		
-		
+	
 #---[ Uninstall Targets ]----------------------------------------------------------------
 
 uninstall: \
-	uninstall-linux-lib
+	uninstall-@OSNAME@
 
-uninstall-linux-lib:
+uninstall-linux:
 
 	@rm -f \
-		$(DESTDIR)@MODULE_PATH@/$(PACKAGE_NAME).so
-		
+		$(DESTDIR)@MODULE_PATH@/$(PACKAGE_NAME)@LIBEXT@
 
 #---[ Debug Targets ]--------------------------------------------------------------------
 
@@ -238,8 +335,8 @@ Debug: \
 	$(BINDBG)/udjat@EXEEXT@
 
 $(BINDBG)/udjat@EXEEXT@: \
-	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
-	$(BINDBG)/$(PACKAGE_NAME).so
+	$(BINDBG)/$(PACKAGE_NAME)@LIBEXT@ \
+	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...
@@ -252,14 +349,28 @@ $(BINDBG)/udjat@EXEEXT@: \
 		$(LIBS)
 
 
-$(BINDBG)/$(PACKAGE_NAME).so: \
-	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).o)
+$(BINDBG)/$(SONAME): \
+	$(foreach SRC, $(basename $(LIBRARY_SOURCES)), $(OBJDBG)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		$(DLL_LDFLAGS) \
+		-Wl,-soname,$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$^ \
+		$(LIBS)
+
+$(BINDBG)/$(PACKAGE_NAME)@LIBEXT@: \
+	$(foreach SRC, $(basename $(MODULE_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(BINDBG)/$(SONAME)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...
 	@$(LD) \
 		-shared \
-		-Wl,-soname,$(@F) \
+		-Wl,-rpath,$(BINDBG) \
 		-o $@ \
 		$(LDFLAGS) \
 		$^ \
@@ -302,8 +413,7 @@ clean: \
 	cleanDebug \
 	cleanRelease
 
-
--include $(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).d)
--include $(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).d)
+-include $(foreach SRC, $(basename $(LIBRARY_SOURCES) $(MODULE_SOURCES) $(TEST_SOURCES)), $(OBJDBG)/$(SRC).d)
+-include $(foreach SRC, $(basename $(LIBRARY_SOURCES) $(MODULE_SOURCES) $(TEST_SOURCES)), $(OBJRLS)/$(SRC).d)
 
 

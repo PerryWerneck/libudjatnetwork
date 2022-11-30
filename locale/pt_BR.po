@@ -3,34 +3,36 @@
 #
 msgid ""
 msgstr ""
-"MIME-Version: 1.0\n"
 "Project-Id-Version: unnamed project\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-11-30 12:30-0300\n"
+"PO-Revision-Date: 2022-11-22 07:49-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"PO-Revision-Date: 2022-11-22 07:49-0300\n"
 "X-Generator: Gtranslator 3.38.0\n"
 
-#: src/module/icmp/state.cc:42
+#: src/library/icmp/state.cc:44
 msgid "${name} address is invalid"
 msgstr "Endereço de ${name} e inválido"
 
-#: src/module/icmp/state.cc:49
+#: src/library/icmp/state.cc:51
 msgid "${name} is active"
 msgstr "${name} está ativo"
 
-#: src/module/icmp/state.cc:63
+#: src/library/icmp/state.cc:65
 msgid "${name} is not acessible"
 msgstr "${name} não está acessível"
 
-#: src/module/icmp/state.cc:70
+#: src/library/icmp/state.cc:72
 msgid "${name} is not available"
 msgstr "${name} não está disponível"
 
-#: src/module/icmp/state.cc:56
+#: src/library/icmp/state.cc:58
 msgid "${name} is not reachable"
 msgstr "Não foi possível alcançar ${name}"
 
@@ -46,7 +48,7 @@ msgstr "Não foi possível receber resposta netlink"
 msgid "Cant send netlink message"
 msgstr "Não foi possível enviar dados netlink"
 
-#: src/module/icmp/state.cc:57
+#: src/library/icmp/state.cc:59
 msgid ""
 "Destination Unreachable. The gateway doesnt know how to get to the defined "
 "network."
@@ -57,7 +59,7 @@ msgstr ""
 msgid "Error in received packet"
 msgstr "Erro no pacote recebido"
 
-#: src/module/icmp/state.cc:50
+#: src/library/icmp/state.cc:52
 msgid "Got ICMP echo reply from host."
 msgstr "Obtive resposta ICMP do host"
 
@@ -65,11 +67,11 @@ msgstr "Obtive resposta ICMP do host"
 msgid "Invalid size on RTA_GATEWAY"
 msgstr "Tamanho inválido em RTA_GATEWAY"
 
-#: src/module/icmp/state.cc:71
+#: src/library/icmp/state.cc:73
 msgid "No ICMP response from host."
 msgstr "Nenhuma resposta ICMP do host."
 
-#: src/module/icmp/state.cc:64
+#: src/library/icmp/state.cc:66
 msgid ""
 "Time Exceeded. The ICMP request has been discarded because it was 'out of "
 "time'."
@@ -77,6 +79,6 @@ msgstr ""
 "Tempo excedido. A requisição ICMP foi descartada porque estava 'fora de "
 "tempo'."
 
-#: src/module/icmp/state.cc:43
+#: src/library/icmp/state.cc:45
 msgid "Unable to get a valid IP address for ${name}."
 msgstr "Incapaz de obter um endereço IP válido para ${name}"
