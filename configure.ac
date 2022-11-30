@@ -167,6 +167,9 @@ dnl ---------------------------------------------------------------------------
 dnl Check for libintl
 dnl ---------------------------------------------------------------------------
 
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"libudjatnetw-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
+AC_SUBST(GETTEXT_PACKAGE,"libudjatnetw-$app_vrs_major.$app_vrs_minor")
+
 AC_PATH_TOOL([XGETTEXT], [xgettext], [true])
 AC_PATH_TOOL([MSGCAT], [msgcat], [true])
 AC_PATH_TOOL([MSGINIT], [msginit], [true])
@@ -191,9 +194,6 @@ AC_CHECK_HEADER(libintl.h, [
 ])
 
 AC_SUBST(INTL_LIBS)
-
-AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"udjat-module-network-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
-AC_SUBST(GETTEXT_PACKAGE,"udjat-module-network-$app_vrs_major.$app_vrs_minor")
 
 dnl ---------------------------------------------------------------------------
 dnl Check for libresolv
