@@ -66,7 +66,7 @@ Requires:	libudjatnetw%{_libvrs} = %{version}
 
 Development files for Udjat's network abstraction library.
 
-%lang_package
+%lang_package -n libudjatnetw%{_libvrs}
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
@@ -93,7 +93,7 @@ make all
 %defattr(-,root,root)
 %{_libdir}/libudjatnetw.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
-%files lang -f langfiles
+%files -n libudjatnetw%{_libvrs}-lang -f langfiles
 
 %files -n udjat-network-devel
 %defattr(-,root,root)

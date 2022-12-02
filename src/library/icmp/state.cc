@@ -25,6 +25,7 @@
  #include <private/agents/host.h>
  #include <iostream>
  #include <private/module.h>
+ #include <udjat/tools/string.h>
 
  using namespace std;
 
@@ -117,13 +118,13 @@
 
 					warning() << "Creating default state for '" << icmp_states[ix].name << "'" << endl;
 
-	#ifdef GETTEXT_PACKAGE
+#ifdef GETTEXT_PACKAGE
 					Udjat::String summary{dgettext(GETTEXT_PACKAGE,icmp_states[ix].summary)};
 					Udjat::String body{dgettext(GETTEXT_PACKAGE,icmp_states[ix].body)};
-	#else
+#else
 					Udjat::String summary{icmp_states[ix].summary};
 					Udjat::String summary{icmp_states[ix].body};
-	#endif // GETTEXT_PACKAGE
+#endif // GETTEXT_PACKAGE
 
 					summary.expand(*this);
 					body.expand(*this);
