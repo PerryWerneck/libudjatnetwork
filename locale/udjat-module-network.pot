@@ -6,6 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  defaultgateway.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-11-30 12:30-0300\n"
@@ -16,24 +17,35 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-12-04 00:48-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
 
-#: src/library/icmp/state.cc:44
+#: src/library/icmp/state.cc:45
 msgid "${name} address is invalid"
 msgstr ""
 
-#: src/library/icmp/state.cc:51
+#: src/library/icmp/state.cc:52
 msgid "${name} is active"
 msgstr ""
 
-#: src/library/icmp/state.cc:65
+#: src/library/icmp/state.cc:66
 msgid "${name} is not acessible"
 msgstr ""
 
-#: src/library/icmp/state.cc:72
+#: src/library/icmp/state.cc:73
 msgid "${name} is not available"
 msgstr ""
 
-#: src/library/icmp/state.cc:58
+#: src/library/icmp/state.cc:59
 msgid "${name} is not reachable"
 msgstr ""
 
@@ -49,7 +61,7 @@ msgstr ""
 msgid "Cant send netlink message"
 msgstr ""
 
-#: src/library/icmp/state.cc:59
+#: src/library/icmp/state.cc:60
 msgid ""
 "Destination Unreachable. The gateway doesnt know how to get to the defined "
 "network."
@@ -59,7 +71,7 @@ msgstr ""
 msgid "Error in received packet"
 msgstr ""
 
-#: src/library/icmp/state.cc:52
+#: src/library/icmp/state.cc:53
 msgid "Got ICMP echo reply from host."
 msgstr ""
 
@@ -67,16 +79,24 @@ msgstr ""
 msgid "Invalid size on RTA_GATEWAY"
 msgstr ""
 
-#: src/library/icmp/state.cc:73
+#: src/library/icmp/state.cc:80
+msgid "Network is not reachable"
+msgstr ""
+
+#: src/library/icmp/state.cc:74
 msgid "No ICMP response from host."
 msgstr ""
 
-#: src/library/icmp/state.cc:66
+#: src/library/icmp/state.cc:81
+msgid "The entire network is unreachable."
+msgstr ""
+
+#: src/library/icmp/state.cc:67
 msgid ""
 "Time Exceeded. The ICMP request has been discarded because it was 'out of "
 "time'."
 msgstr ""
 
-#: src/library/icmp/state.cc:45
+#: src/library/icmp/state.cc:46
 msgid "Unable to get a valid IP address for ${name}."
 msgstr ""
