@@ -87,15 +87,6 @@
 
 		trace() << "Got response '" << response << "' from " << from << endl;
 
-		/*
-#ifdef DEBUG
-		{
-			float value = ((float) time) / ((float) 1000000);
-			trace() << "Setting ICMP response to " << response << " with time=" << value << " ms" << endl;
-		}
-#endif // DEBUG
-		*/
-
 		std::shared_ptr<State> detected;
 
 		for(auto state : states.available) {
@@ -116,7 +107,7 @@
 
 				if(icmp_states[ix].id == response) {
 
-					warning() << "Creating default state for '" << icmp_states[ix].name << "'" << endl;
+					trace() << "Creating default state for '" << icmp_states[ix].name << "'" << endl;
 
 #ifdef GETTEXT_PACKAGE
 					Udjat::String summary{dgettext(GETTEXT_PACKAGE,icmp_states[ix].summary)};

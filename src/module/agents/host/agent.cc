@@ -37,7 +37,7 @@
 	Network::HostAgent::HostAgent(const pugi::xml_node &node) : Abstract::Agent(node) {
 
 		// Do an ICMP check?
-		icmp.check = getAttribute(node,"icmp",icmp.check);
+		check.icmp = getAttribute(node,"icmp",check.icmp);
 		ICMP::Host::timeout = getAttribute(node,"icmp-timeout", (unsigned int) ICMP::Host::timeout);
 
 		states.icmp = states.addr = Abstract::Agent::computeState();
@@ -144,7 +144,7 @@
 
 		if(node.attribute("icmp-response")) {
 
-			if(!icmp.check) {
+			if(!check.icmp) {
 				throw runtime_error("Can't use 'icmp-response' states without icmp='true' attribute on the agent definition");
 			}
 
@@ -177,10 +177,10 @@
 		if(detected) {
 			states.addr = detected;
 		} else {
-			states.icmp = Abstract::Agent::computeState();
+			states.addr = Abstract::Agent::computeState();
 		}
 
-		if(!icmp.check) {
+		if(!check.icmp) {
 			super::set(states.addr);
 			return;
 		}
@@ -248,13 +248,14 @@
 
 		super::getProperties(response);
 
-		if(states.addr) {
-			auto &state = response["host"];
-			states.addr->getProperties(state);
+		Udjat::Value &node = response["state"];
+
+		if(check.dns) {
+			states.addr->getProperties(node["dns"]);
 		}
 
-		if(states.icmp) {
-			auto &state = response["icmp"];
+		if(check.icmp) {
+			auto &state = node["icmp"];
 			states.icmp->getProperties(state);
 			state["time"] = to_string();
 		}

@@ -50,8 +50,9 @@
 			} states;
 
 			struct {
-				bool check = true;		///< @brief Do ICMP check.
-			} icmp;
+				bool dns = false;		///< @brief Do DNS check.
+				bool icmp = true;		///< @brief Do ICMP check.
+			} check;
 
 		protected:
 

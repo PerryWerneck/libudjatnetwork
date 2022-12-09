@@ -46,10 +46,6 @@
 			/// @brief DNS Addr if check.dns is true or host addr if check.dns is false.
 			sockaddr_storage addr;
 
-			struct {
-				bool check = true;	///< @brief Check DNS resolution.
-			} dns;
-
 		public:
 			StandardAgent(const pugi::xml_node &node) : Network::HostAgent(node) {
 
@@ -59,7 +55,7 @@
 				if(ipaddr) {
 
 					// Have an IP addr.
-					dns.check = false;
+					check.dns = false;
 
 					if(inet_pton(AF_INET,ipaddr.as_string(),&((sockaddr_in *) &addr)->sin_addr) != 0) {
 						addr.ss_family = AF_INET;
@@ -75,7 +71,7 @@
 
 					// Get dns-server.
 					const char *dnssrv = getAttribute(node, "dns-server").as_string();
-					dns.check = getAttribute(node,"network-host","dns",dnssrv[0] != 0);
+					check.dns = getAttribute(node,"network-host","dns",dnssrv[0] != 0);
 
 					// Host name to check.
 					hostname = getAttribute(node,"host","");
@@ -83,7 +79,7 @@
 						throw runtime_error("Missing required attribute 'host'");
 					}
 
-					if(dns.check) {
+					if(check.dns) {
 
 						// Will check DNS resolution, get the DNS server addr.
 						if(dnssrv[0]) {
@@ -121,7 +117,7 @@
 
 			bool refresh() override {
 
-				if(dns.check) {
+				if(check.dns) {
 					set(resolv(this->addr,hostname));
 				} else {
 					set(this->addr);
@@ -148,7 +144,7 @@
 		public:
 			GatewayAgent(const pugi::xml_node &node) : Network::HostAgent(node) {
 
-				if(!icmp.check) {
+				if(!check.icmp) {
 					throw runtime_error("Gateway agent requires icmp='true'");
 				}
 
@@ -185,7 +181,6 @@
 
 			bool refresh() override {
 				int value = Udjat::URL{this->url}.test(method);
-				debug("--------------------> ",value);
 				return set(value);
 			}
 

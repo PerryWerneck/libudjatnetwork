@@ -16,7 +16,11 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-Summary:		Network module for udjat 
+%define product_name %(pkg-config --variable=product_name libudjat)
+%define module_path %(pkg-config --variable=module_path libudjat)
+
+
+Summary:		Network module for %{product_name} 
 Name:			udjat-module-network
 Version:		1.0
 Release:		0
@@ -45,7 +49,7 @@ BuildRequires:	pkgconfig(pugixml)
 %description
 Network module for udjat.
 
-Add factory for udjat network validation and check agents.
+Add factory for %{product_name} network validation and check agents.
 
 #---[ Library ]-------------------------------------------------------------------------------------------------------
 
@@ -53,7 +57,7 @@ Add factory for udjat network validation and check agents.
 Summary:	UDJat network library
 
 %description -n libudjatnetw%{_libvrs}
-Network abstraction library for udjat
+Network abstraction library for %{product_name}
 
 #---[ Development ]---------------------------------------------------------------------------------------------------
 
@@ -87,7 +91,7 @@ make all
 
 %files
 %defattr(-,root,root)
-%{_libdir}/udjat-modules/*/*.so
+%{module_path}/*.so
 
 %files -n libudjatnetw%{_libvrs}
 %defattr(-,root,root)
