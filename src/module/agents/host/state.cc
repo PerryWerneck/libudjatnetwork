@@ -17,15 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <udjat/defs.h>
  #include <private/module.h>
 
  namespace Udjat {
 
-	bool Network::HostAgent::State::test(const sockaddr_storage &addr) const {
+	bool Network::HostAgent::State::test(const sockaddr_storage UDJAT_UNUSED(&addr)) const {
 		return false;
 	}
 
-	bool Network::HostAgent::State::isValid(const ICMP::Response response) const noexcept {
+	bool Network::HostAgent::State::isValid(const ICMP::Response UDJAT_UNUSED(response)) const noexcept {
 		return false;
 	}
 

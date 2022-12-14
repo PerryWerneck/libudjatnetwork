@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <pugixml.hpp>
  #include <sys/socket.h>
+ #include <iostream>
 
  namespace Udjat {
 
@@ -46,7 +47,7 @@
 
 		protected:
 
-			sockaddr_storage addr;	///< @brief ICMP host to check.
+			sockaddr_storage addr;		///< @brief ICMP host to check.
 			time_t interval = 1;		///< @brief ICMP packet interval.
 			time_t timeout = 5;			///< @brief ICMP timeout.
 			uint64_t time = 0;			///< @brief Time of last response.
@@ -66,7 +67,6 @@
 				addr = a;
 			}
 
-
 		};
 
 	}
@@ -78,7 +78,7 @@
 	UDJAT_API const char * to_string(const Udjat::ICMP::Response response);
 
 	inline ostream & operator<< (ostream& os, const Udjat::ICMP::Response response) {
-			return os << to_string(response);
+		return os << ((const char *) to_string(response));
 	}
 
  }
