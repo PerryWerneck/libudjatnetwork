@@ -107,7 +107,7 @@
 
 				if(icmp_states[ix].id == response) {
 
-					trace() << "Creating default state for '" << icmp_states[ix].name << "'" << endl;
+					trace() << "Adding default state for '" << icmp_states[ix].name << "'" << endl;
 
 #ifdef GETTEXT_PACKAGE
 					Udjat::String summary{dgettext(GETTEXT_PACKAGE,icmp_states[ix].summary)};

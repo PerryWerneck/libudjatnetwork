@@ -82,7 +82,7 @@
 				bool active = intf.up() && has_link(intf.name());
 
 				if(state.active != active) {
-					info() << "Interface " << state.name << " is now " << (intf.up() ? "ACTIVE" : "INACTIVE") << endl;
+					info() << "Interface " << state.name << " is now " << (intf.up() ? "UP" : "DOWN") << endl;
 					state.active = active;
 				}
 
