@@ -49,6 +49,7 @@ stamp-h1
 *.depend
 .bin
 .obj
+.pot
 *.bak
 
 Makefile
@@ -59,6 +60,7 @@ valgrind.suppression
 
 ABOUT-NLS
 intl
+*.pc
 m4
 po
 vgcore.*

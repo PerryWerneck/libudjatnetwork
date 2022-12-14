@@ -17,8 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <udjat/tools/inet.h>
+ #include <private/module.h>
+ #include <udjat/tools/ip.h>
+// #include <udjat/tools/inet.h>
 
  namespace Udjat {
 

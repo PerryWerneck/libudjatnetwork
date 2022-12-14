@@ -17,39 +17,75 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat/module.h>
+ #include <config.h>
+
+ #include <udjat/tools/systemservice.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/tools/http/client.h>
+// #include <udjat/tools/inet.h>
+ #include <udjat/agent.h>
  #include <udjat/factory.h>
- #include <udjat/tools/inet.h>
- #include <udjat/tools/mainloop.h>
- #include <unistd.h>
+ #include <udjat/module.h>
  #include <iostream>
+ #include <memory>
 
  using namespace std;
  using namespace Udjat;
 
- static void mainloop() {
+//---[ Implement ]------------------------------------------------------------------------------------------
 
-	auto module = udjat_module_init();
-	auto agent = Udjat::init("test.xml");
+int main(int argc, char **argv) {
 
-	Udjat::MainLoop::getInstance().run();
+	class Service : public SystemService {
+	protected:
+		/// @brief Initialize service.
+		void init() override {
 
-	Abstract::Agent::deinit();
+			udjat_module_init();
 
-	cout << "Removing module" << endl;
+			SystemService::init();
 
-	delete module;
-	Module::unload();
+			if(Module::find("httpd")) {
 
- }
+				if(Module::find("information")) {
+					cout << "http://localhost:8989/api/1.0/info/modules.html" << endl;
+					cout << "http://localhost:8989/api/1.0/info/workers.html" << endl;
+					cout << "http://localhost:8989/api/1.0/info/factories.html" << endl;
+					cout << "http://localhost:8989/api/1.0/info/services.html" << endl;
+				}
 
- int main(int argc, char **argv) {
+			}
 
-	setlocale( LC_ALL, "" );
+			auto root = Abstract::Agent::root();
+			if(root) {
+				for(auto agent : *root) {
+					cout << "http://localhost:8989/api/1.0/agent/" << agent->name() << ".html" << endl;
+				}
+			}
 
-	Logger::redirect(nullptr,true);
 
-	mainloop();
+		}
+
+		/// @brief Deinitialize service.
+		void deinit() override {
+			cout << Application::Name() << "\t**** Deinitializing" << endl;
+			Udjat::Module::unload();
+		}
+
+	public:
+		Service() : SystemService{"./test.xml"} {
+		}
+
+
+	};
+
+
+	// cout << "------------> " << Udjat::Network::DefaultGateway() << endl;
+
+	Service().run(argc,argv);
+
+	cout << "*** Test program finished" << endl;
 
 	return 0;
+
 }

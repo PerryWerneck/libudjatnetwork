@@ -2,24 +2,81 @@
 
 <config>
 
+	<!-- module name='http' required='no' / -->
+	<module name='civetweb' required='no' />
+	<module name='information' required='no' />
+
+	<attribute name='alert-type' value='file' />
+	<attribute name='alert-filename' value='/tmp/netwatcher.log' />
+	<attribute name='alert-payload' value='${timestamp} ${summary}' />
+
+	<!--
+	<network-interface name='nic' update-timer='60'>
+
+		<state name='undefined' value='0' level='error' summary='Network link state is undefined' />
+		<state name='offline' value='1' level='warning' summary='System is offline' />
+		<state name='single' value='2' level='ready' summary='Single network link' />
+		<state name='multiple' value='3' level='ready' summary='Multiple network links' />
+
+	</network-interface>
+
+	<network-interface name='vpn' interface-name='tunsnx' update-timer='60'>
+
+		<state name='undefined' level='error' summary='VPN link state is undefined' />
+		<state name='offline' level='warning' summary='VPN is offline' forward-to-children='yes' />
+		<state name='online' level='ready' summary='VPN is online' />
+		<state name='not-found' level='unimportant' summary='VPN is not available' forward-to-children='yes' />
+
+	</network-interface>
+	
 	<network-host name='localhost' host='localhost' dns='true' icmp='true' update-timer='60' icmp-timeout='10'>
 	
-		<!-- Valid range for this host -->
-		<!-- state name='local' range='127.0.0.0/24' level='ready' summary='${host} is local' / -->
-		<state name='local' same-network='yes' level='ready' summary='${host} is local' />
+		<state name='local' same-network='yes' level='ready' summary='localhost is local' />
 		
-		<!-- All other ranges are invalid -->
-		<!-- state name='remote' range='!127.0.0.0/24' level='warning' summary='${host} is NOT local' / -->
-		<state name='remote' same-network='no' level='warning' summary='${host} is NOT local' />
+		<state name='remote' same-network='no' level='warning' summary='localhost is NOT local' />
 		
-		<state name='active' icmp-response='echo-reply' level='ready' summary='${host} is active' />
-		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='${host} is not reachable' />
-		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='${host} is not available' />
-		<state name='timeout' icmp-response='timeout' level='error' summary='${host} is not available' />
+		<state name='active' icmp-response='echo-reply' level='ready' summary='localhost is active' />
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='localhost is not reachable' />
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='localhost is not available' />
+		<state name='timeout' icmp-response='timeout' level='error' summary='localhost is not available' />
+
+	</network-host>
+	-->
+	
+	<network-host name='gateway' type='default-gateway' icmp='true' update-timer='60' icmp-timeout='60'>
+
+		<state name='active' icmp-response='echo-reply' level='ready' summary='Gateway is active' />
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='Gateway is not reachable' forward-to-children='yes' />
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='Gateway is not available' forward-to-children='yes' />
+		<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from gateway' forward-to-children='yes' />
+
+		<network-host name='srv' ip='192.168.0.11' icmp='true' update-timer='60' icmp-timeout='30'>
+
+			<state name='active' icmp-response='echo-reply' level='ready' summary='Server is active' />
+			<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='HTTP server is not reachable' forward-to-children='yes' />
+			<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='HTTP server is not available' forward-to-children='yes' />
+			<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from HTTP server' forward-to-children='yes' />
+
+			<network-host name='httpd' url='http://192.168.0.11'  update-timer='60'>
+
+			</network-host>
+
+		</network-host>
 
 	</network-host>
 	
-	<network-host name='gateway' type='default-gateway' update-timer='60' icmp-timeout='60' />
 
+	<!--
+	<network-host name='not-found' ip='192.168.1.11' icmp='true' update-timer='60' icmp-timeout='30'>
+
+		<state name='active' icmp-response='echo-reply' level='ready' summary='192.168.1.11 is active' />
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='192.168.1.11 is not reachable' />
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='192.168.1.11 is not available (time-exceeded)' />
+		<state name='timeout' icmp-response='timeout' level='error' summary='192.168.1.11 is not available (timeout)' />
+	
+	</network-host>
+	-->
+	
 </config>
+
 

@@ -21,9 +21,9 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/network/agent.h>
+ #include <private/agents/host.h>
  #include <iostream>
- #include <udjat/tools/inet.h>
+// #include <udjat/tools/inet.h>
  #include <arpa/inet.h>
 
  using namespace std;
@@ -35,7 +35,7 @@
 	namespace Network {
 
 		/// @brief Abstract network agent state.
-		class Agent::State : public Abstract::State {
+		class UDJAT_API HostAgent::State : public Abstract::State {
 		protected:
 			bool revert = false;
 
@@ -56,12 +56,12 @@
 			bool isValid(const sockaddr_storage &addr) const noexcept;
 
 			/// @brief True if the response can be used.
-			virtual bool isValid(const ICMPResponse response) const noexcept;
+			virtual bool isValid(const ICMP::Response response) const noexcept;
 
 		};
 
 		/// @brief Network range state.
-		class Range : public Network::Agent::State {
+		class UDJAT_API Range : public Network::HostAgent::State {
 		protected:
 			/// @brief Teste an IPV4 address range.
 			bool inRange(const sockaddr_in &ip, const sockaddr_in &addr, const sockaddr_in &netmask) const;
@@ -80,6 +80,25 @@
 			virtual ~Range();
 
 		};
+
+		/// @brief ICMP Response state.
+		class UDJAT_API ICMPResponseState : public Network::HostAgent::State {
+		private:
+			ICMP::Response id;
+
+		public:
+			ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const ICMP::Response i) : Network::HostAgent::State(name,level,summary,body), id(i) {
+			}
+
+			ICMPResponseState(const pugi::xml_node &node, const ICMP::Response i) : Network::HostAgent::State(node), id(i) {
+			}
+
+			bool isValid(const ICMP::Response response) const noexcept override {
+				return response == id;
+			}
+
+		};
+
 
 	}
 

@@ -18,11 +18,11 @@
  */
 
  #include <config.h>
- #include <udjat/network/resolver.h>
+ #include <udjat/tools/net/dns.h>
  #include <cstring>
  #include <netdb.h>
  #include <iostream>
- #include <udjat/tools/inet.h>
+// #include <udjat/tools/inet.h>
 
  using namespace std;
 
@@ -74,6 +74,10 @@
 
 	/// @brief Run DNS query.
 	void Network::DNSResolver::query(ns_class cls, ns_type type, const char *name) {
+
+		if(!(name && *name)) {
+			throw runtime_error("Cant resolve an empty hostname");
+		}
 
 		std::lock_guard<std::mutex> lock(guard);
 

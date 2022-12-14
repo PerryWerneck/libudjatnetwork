@@ -17,26 +17,51 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/net/icmp.h>
+ #include <cstring>
+ #include <string>
+ #include <stdexcept>
+
+ static const char *names[] = {
+	"invalid",
+	"echo-reply",
+	"destination-unreachable",
+	"time-exceeded",
+	"timeout",
+	"network-unreachable"
+ };
+
+ using namespace std;
 
  namespace Udjat {
 
-	bool Network::Agent::State::test(const sockaddr_storage &addr) const {
-		return false;
-	}
+	ICMP::Response ICMP::ResponseFactory(const char *name) {
 
-	bool Network::Agent::State::isValid(const ICMPResponse response) const noexcept {
-		return false;
-	}
+		for(size_t ix = 0; ix < N_ELEMENTS(names); ix++) {
 
-	bool Network::Agent::State::isValid(const sockaddr_storage &addr) const noexcept {
-		bool rc = test(addr);
-		if(revert)
-			return !rc;
-		return rc;
+			if(!strcasecmp(name,names[ix])) {
+				return (ICMP::Response) ix;
+			}
+
+		}
+
+		throw runtime_error(string{"Invalid ICMP response id: "} + name);
 	}
 
 
  }
 
+ namespace std {
 
+	UDJAT_API const char * to_string(const Udjat::ICMP::Response response) {
+
+		if( ((size_t) response) > N_ELEMENTS(names)) {
+			return "invalid";
+		}
+
+		return names[response];
+	}
+
+ }

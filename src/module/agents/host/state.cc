@@ -17,42 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
- #include <udjat/defs.h>
- #include <netdb.h>
- #include <string>
+ #include <private/module.h>
 
  namespace Udjat {
 
-	namespace Network {
-
-		class UDJAT_API DefaultGateway {
-		private:
-			sockaddr_storage address;
-			std::string interface;
-
-		public:
-			DefaultGateway();
-
-			const sockaddr_storage & refresh();
-
-		};
-
+	bool Network::HostAgent::State::test(const sockaddr_storage &addr) const {
+		return false;
 	}
+
+	bool Network::HostAgent::State::isValid(const ICMP::Response response) const noexcept {
+		return false;
+	}
+
+	bool Network::HostAgent::State::isValid(const sockaddr_storage &addr) const noexcept {
+		bool rc = test(addr);
+		if(revert)
+			return !rc;
+		return rc;
+	}
+
 
  }
 
- namespace std {
-
-	UDJAT_API string to_string(const sockaddr_storage &addr, bool port = false);
-	UDJAT_API string to_string(const struct sockaddr_in &addr, bool port = false);
-	UDJAT_API string to_string(const struct sockaddr_in6 &addr, bool port = false);
-	UDJAT_API string to_string(const struct in_addr &addr);
-
-	inline ostream& operator<< (ostream& os, const sockaddr_storage &addr) {
-		return os << to_string(addr);
-	}
-
- }
 

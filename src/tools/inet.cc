@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat/tools/inet.h>
+// #include <udjat/tools/inet.h>
  #include <arpa/inet.h>
  #include <system_error>
 
@@ -25,11 +25,13 @@
 
  namespace std {
 
+	/*
 	string to_string(const struct sockaddr_in &addr, bool port) {
 
 		string rc;
 
 #ifdef _WIN32
+
 		char ipaddr[INET_ADDRSTRLEN+1];
 		sockaddr_in in;
 
@@ -99,7 +101,7 @@
 
 		return string(rc);
 	}
-
+	*/
 
  }
 

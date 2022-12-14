@@ -17,34 +17,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/module.h>
  #include <udjat/module.h>
- #include <udjat/network/agent.h>
+ #include <private/agents/host.h>
+ #include <private/agents/nic.h>
  #include <unistd.h>
  #include <sys/types.h>
  #include <linux/capability.h>
  #include <sys/syscall.h>
+ #include <udjat/moduleinfo.h>
 
  using namespace Udjat;
 
- const ModuleInfo moduleinfo{
-	PACKAGE_NAME,								// The module name.
-	"UDJat Network module", 					// The module description.
-	PACKAGE_VERSION, 							// The module version.
-	PACKAGE_URL, 								// The package URL.
-	PACKAGE_BUGREPORT 							// The bug report address.
- };
+ const ModuleInfo moduleinfo{ "Network monitor" };
 
  /// @brief Register udjat module.
  Udjat::Module * udjat_module_init() {
 
 	class Module : public Udjat::Module {
 	private:
-		Network::Agent::Factory agentFactory;
+		Network::HostAgent::Factory hostFactory;
+		Network::Agent::Factory 	nicFactory;
 
 	public:
 
-		Module() : Udjat::Module("network",&moduleinfo) {
+		Module() : Udjat::Module("network",moduleinfo) {
 		};
 
 		~Module() {
@@ -70,7 +68,11 @@
 
 			} else {
 
+#ifdef DEBUG
+				cerr << "module\tThis module requires root privileges or CAP_NET_RAW capability." << endl;
+#else
 				throw runtime_error("This module requires root privileges or CAP_NET_RAW capability.");
+#endif // DEBUG
 			}
 
 		}

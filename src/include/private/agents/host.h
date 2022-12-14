@@ -22,51 +22,47 @@
  #include <udjat/defs.h>
  #include <udjat/factory.h>
  #include <udjat/agent.h>
- #include <udjat/state.h>
+ #include <udjat/agent/state.h>
+ #include <udjat/tools/net/icmp.h>
  #include <sys/socket.h>
 
  namespace Udjat {
 
 	namespace Network {
 
-		enum ICMPResponse : uint8_t {
-			echo_reply,
-			destination_unreachable,
-			time_exceeded,
-			timeout
-		};
-
-		class UDJAT_API Agent : public Udjat::Abstract::Agent {
+		/// @brief Agent to check for DNS resolution and ICMP test.
+		class UDJAT_API HostAgent : public Udjat::Abstract::Agent, private ICMP::Host {
 		public:
 			class State;
 
 		private:
 
-			/// @brief Internal agent state.
-			std::shared_ptr<Abstract::State> selected;
+			struct {
+				/// @brief The state from IP addr.
+				std::shared_ptr<Abstract::State> addr;
 
-			class Controller;
-			friend class Controller;
+				/// @brief The state from ICMP.
+				std::shared_ptr<Abstract::State> icmp;
+
+				/// @brief Agent states.
+				std::vector<std::shared_ptr<State>> available;
+
+			} states;
 
 			struct {
-				bool check = true;		///< @brief Do ICMP check.
-				time_t interval = 1;	///< @brief ICMP packet interval.
-				time_t timeout = 5;		///< @brief ICMP timeout.
-			} icmp;
-
-			/// @brief Agent states.
-			std::vector<std::shared_ptr<State>> states;
+				bool dns = false;		///< @brief Do DNS check.
+				bool icmp = true;		///< @brief Do ICMP check.
+			} check;
 
 		protected:
-
-			/// @brief If the agent has no states load the default ones.
-			void checkStates();
 
 			/// @brief Set address (do an ICMP check if necessary).
 			void set(const sockaddr_storage &addr);
 
 			/// @brief Do a DNS check.
 			static sockaddr_storage resolv(sockaddr_storage &dnssrv, const char *hostname);
+
+			void set(const ICMP::Response response, const sockaddr_storage &from) override;
 
 		public:
 
@@ -75,18 +71,21 @@
 			class Factory : public Udjat::Factory {
 			public:
 				Factory();
-				bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
+				std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const override;
 			};
 
-			Agent(const pugi::xml_node &node);
-			virtual ~Agent();
+			HostAgent(const pugi::xml_node &node);
+			virtual ~HostAgent();
 
-			bool hasStates() const noexcept override;
-			void append_state(const pugi::xml_node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 
-			void set(ICMPResponse response);
+			std::string to_string() const noexcept override;
 
-		};
+			Udjat::Value & get(Udjat::Value &value) const;
+
+			Value & getProperties(Value &response) const noexcept override;
+
+ 		};
 
 
 	}

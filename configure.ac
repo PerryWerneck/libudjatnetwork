@@ -56,25 +56,37 @@ CFLAGS="$CFLAGS -I$ac_pwd/src/include"
 case "$host" in
 	*-mingw32)
 		LDFLAGS="$LDFLAGS -pthread"
+		DLL_LDFLAGS="-shared -Wl,--output-def,\$(@D)/udjatnetw.def"
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(OSNAME,windows)
+		AC_SUBST(SONAME,udjatnetw.dll)
+		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
+		AC_CONFIG_FILES(sdk/windows/static.pc)
 		;;
 
  	*)
 		CFLAGS="$CFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread"
+		DLL_LDFLAGS="-shared"
 		AC_SUBST(LIBEXT,.so)
 		AC_SUBST(EXEEXT)
 		AC_SUBST(OSNAME,linux)
+		AC_SUBST(SONAME,libudjatnetw.so.$app_vrs_major.$app_vrs_minor)
+		AC_CONFIG_FILES(sdk/linux/dynamic.pc)
+		AC_CONFIG_FILES(sdk/linux/static.pc)
 
 esac
+
+AC_SUBST(DLL_LDFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for tools
 dnl ---------------------------------------------------------------------------
 
 AC_PATH_TOOL([VALGRIND], [valgrind], [no])
+AC_PATH_TOOL([AR], [ar], [no])
+AC_PATH_TOOL([DLLTOOL], [dlltool], [true])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for C++ 2017 support
@@ -151,6 +163,37 @@ dnl Libraries
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_EXISTS
 
+dnl ---------------------------------------------------------------------------
+dnl Check for libintl
+dnl ---------------------------------------------------------------------------
+
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"libudjatnetw-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
+AC_SUBST(GETTEXT_PACKAGE,"libudjatnetw-$app_vrs_major.$app_vrs_minor")
+
+AC_PATH_TOOL([XGETTEXT], [xgettext], [true])
+AC_PATH_TOOL([MSGCAT], [msgcat], [true])
+AC_PATH_TOOL([MSGINIT], [msginit], [true])
+AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
+AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
+
+AC_CHECK_HEADER(libintl.h, [
+        AC_DEFINE(HAVE_LIBINTL, 1, [Libintl is available])
+
+        case "$host" in
+        *-mingw32|*-pc-msys)
+            LIBS="$LIBS -lintl"
+            ;;
+
+        *)
+			AC_MSG_NOTICE([No need for libintl])
+
+        esac
+
+], [
+        AC_MSG_ERROR([Can't find required file libintl.h])
+])
+
+AC_SUBST(INTL_LIBS)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for libresolv
@@ -192,5 +235,7 @@ AC_SUBST(BASEDIR,$ac_pwd)
 AC_SUBST(LIBS)
 
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(locale/Makefile)
+
 AC_OUTPUT
 

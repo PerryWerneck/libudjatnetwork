@@ -20,7 +20,10 @@
  #pragma once
 
  #include <config.h>
- #include <udjat/network/agent.h>
+ #include <private/agents/host.h>
+ #include <udjat/tools/timer.h>
+ #include <udjat/tools/handler.h>
+ #include <udjat/tools/net/icmp.h>
  #include <mutex>
  #include <memory>
  #include <iostream>
@@ -30,7 +33,7 @@
 
  namespace Udjat {
 
- 	class Network::Agent::Controller {
+ 	class ICMP::Host::Controller : private MainLoop::Timer, private MainLoop::Handler {
 	public:
 
 		#pragma pack(1)
@@ -42,6 +45,7 @@
 		};
 		#pragma pack()
 
+		static uint64_t getCurrentTime() noexcept;
 
 	private:
 
@@ -50,30 +54,32 @@
 		class Host {
 		private:
 
-			Network::Agent *agent;
-			sockaddr_storage addr;
+			ICMP::Host *host;
 
-			uint16_t id;
+			uint16_t id = 0;
 			uint16_t packets = 0;
 			time_t timeout;
 			time_t next = 0;
 
 		public:
 
-			Host(Network::Agent *agent, const sockaddr_storage &addr);
+			Host(ICMP::Host *host);
 
 			bool onTimer();
 			void send() noexcept;
 
-			inline bool operator ==(const Network::Agent *agent) const noexcept {
-				return agent == this->agent;
+			inline bool operator ==(const ICMP::Host *host) const noexcept {
+				return host == this->host;
 			}
 
+			/// @brief Process response.
+			/// @return true if the response was processed and host can be removed.
 			bool onResponse(int icmp_type, const sockaddr_storage &addr, const Controller::Payload &payload) noexcept;
 
-		};
+			/// @brief Process ICMP error
+			bool onError(int code, const Controller::Payload &payload);
 
-		int sock = -1;
+		};
 
 		list<Host> hosts;
 
@@ -82,14 +88,18 @@
 		void start();
 		void stop();
 
+		void on_timer() override;
+		void handle_event(const Event event) override;
+
+
 	public:
 
 		static Controller & getInstance();
 
 		~Controller();
 
-		void insert(Network::Agent *agent, const sockaddr_storage &addr);
-		void remove(Network::Agent *agent);
+		void insert(ICMP::Host *host);
+		void remove(ICMP::Host *host);
 
 		void send(const sockaddr_storage &addr, const Payload &payload);
 
