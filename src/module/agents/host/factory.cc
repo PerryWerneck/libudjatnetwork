@@ -18,12 +18,18 @@
  */
 
  #include <private/module.h>
- #include <udjat/tools/net/dns.h>
+
+ #ifdef _WIN32
+ #else
+	#include <udjat/linux/dns.h>
+ #endif // _WIN32
+
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/method.h>
  #include <udjat/tools/net/gateway.h>
+ #include <udjat/tools/net/ip.h>
 
  namespace Udjat {
 
@@ -44,7 +50,7 @@
 			const char * hostname = nullptr;
 
 			/// @brief DNS Addr if check.dns is true or host addr if check.dns is false.
-			sockaddr_storage addr;
+			IP::Address addr;
 
 		public:
 			StandardAgent(const pugi::xml_node &node) : Network::HostAgent(node) {
@@ -56,16 +62,7 @@
 
 					// Have an IP addr.
 					check.dns = false;
-
-					if(inet_pton(AF_INET,ipaddr.as_string(),&((sockaddr_in *) &addr)->sin_addr) != 0) {
-						addr.ss_family = AF_INET;
-						debug(ipaddr.as_string()," is an IPV4 address");
-					} else if(inet_pton(AF_INET6,ipaddr.as_string(),&((sockaddr_in6 *) &addr)->sin6_addr) != 0) {
-						addr.ss_family = AF_INET6;
-						debug(ipaddr.as_string()," is an IPV6 address");
-					} else {
-						throw std::system_error(errno, std::system_category(), ipaddr.as_string());
-					}
+					addr = ipaddr.as_string();
 
 				} else {
 

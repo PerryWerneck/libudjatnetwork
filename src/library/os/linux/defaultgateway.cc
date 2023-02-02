@@ -51,8 +51,7 @@
 
 	const Network::DefaultGateway & Network::DefaultGateway::refresh() {
 
-		ss_family = 0;
-		// clear();
+		clear();
 
 		int msgseq = 0;
 		int received_bytes;
@@ -149,7 +148,7 @@
 						{
 							char interface[IF_NAMESIZE];
 							if_indextoname(*(int *)RTA_DATA(route_attribute), interface);
-							this->interface = interface;
+							this->intf = interface;
 						}
 						break;
 

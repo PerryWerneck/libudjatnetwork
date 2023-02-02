@@ -21,8 +21,8 @@
 
  #include <udjat/defs.h>
  #include <pugixml.hpp>
- #include <sys/socket.h>
  #include <iostream>
+ #include <udjat/tools/net/ip.h>
 
  namespace Udjat {
 
@@ -47,7 +47,7 @@
 
 		protected:
 
-			sockaddr_storage addr;		///< @brief ICMP host to check.
+			IP::Address addr;			///< @brief ICMP host to check.
 			time_t interval = 1;		///< @brief ICMP packet interval.
 			time_t timeout = 5;			///< @brief ICMP timeout.
 			uint64_t time = 0;			///< @brief Time of last response.

@@ -24,9 +24,12 @@
  #include <private/agents/nic.h>
  #include <unistd.h>
  #include <sys/types.h>
- #include <linux/capability.h>
- #include <sys/syscall.h>
  #include <udjat/moduleinfo.h>
+
+ #ifndef _WIN32
+	#include <linux/capability.h>
+	#include <sys/syscall.h>
+ #endif // _WIN32
 
  using namespace Udjat;
 
@@ -50,6 +53,7 @@
 
 	};
 
+#ifndef _WIN32
 	if(getuid()) {
 
 		// Non root, do we have CAP_NET_RAW
@@ -78,6 +82,7 @@
 		}
 
 	}
+#endif // _WIN32
 
 	return new Module();
  }

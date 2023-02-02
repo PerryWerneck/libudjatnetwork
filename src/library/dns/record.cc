@@ -18,10 +18,9 @@
  */
 
  #include <config.h>
- #include <udjat/tools/net/dns.h>
+ #include <udjat/linux/dns.h>
  #include <string>
  #include <cstring>
-// #include <udjat/tools/inet.h>
  #include <udjat/tools/net/ip.h>
 
  using namespace std;

@@ -24,7 +24,7 @@
  #include <udjat/agent.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/net/nic.h>
- #include <sys/socket.h>
+// #include <sys/socket.h>
  #include <list>
 
  namespace Udjat {

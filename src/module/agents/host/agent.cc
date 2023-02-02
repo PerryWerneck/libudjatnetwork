@@ -22,7 +22,6 @@
  #include <private/agents/host.h>
  #include <controller.h>
  #include <udjat/tools/xml.h>
- #include <udjat/tools/net/dns.h>
  #include <cstring>
  #include <sys/types.h>
  #include <sys/socket.h>
@@ -31,6 +30,10 @@
  #include <sstream>
  #include <iomanip>
  #include <udjat/tools/net/ip.h>
+
+ #ifndef _WIN32
+	#include <udjat/linux/dns.h>
+ #endif // _WIN32
 
  namespace Udjat {
 

@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/tools/net/dns.h>
+ #include <udjat/linux/dns.h>
  #include <cstring>
  #include <netdb.h>
  #include <iostream>

@@ -21,7 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/net/ip.h>
- #include <netdb.h>
+// #include <netdb.h>
  #include <string>
 
  namespace Udjat {
@@ -30,7 +30,7 @@
 
 		class UDJAT_API DefaultGateway : public IP::Address {
 		private:
-			std::string interface;
+			std::string intf;
 
 		public:
 			DefaultGateway();

@@ -24,7 +24,7 @@
  #include <udjat/agent.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/net/icmp.h>
- #include <sys/socket.h>
+ #include <udjat/tools/net/ip.h>
 
  namespace Udjat {
 
