@@ -46,6 +46,7 @@
 		<Unit filename="src/include/private/agents/nic.h" />
 		<Unit filename="src/include/private/module.h" />
 		<Unit filename="src/include/udjat/network/ipaddress.h" />
+		<Unit filename="src/include/udjat/network/ipagent.h" />
 		<Unit filename="src/include/udjat/tools/net/dns.h" />
 		<Unit filename="src/include/udjat/tools/net/gateway.h" />
 		<Unit filename="src/include/udjat/tools/net/icmp.h" />
@@ -59,6 +60,7 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
+		<Unit filename="src/library/ip/agent.cc" />
 		<Unit filename="src/library/os/linux/defaultgateway.cc" />
 		<Unit filename="src/library/os/linux/ipaddress.cc" />
 		<Unit filename="src/library/os/windows/ipaddress.cc" />

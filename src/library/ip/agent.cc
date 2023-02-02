@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,31 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
+ #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/network/ipagent.h>
- #include <string>
 
  namespace Udjat {
 
-	namespace IP {
+	IP::Agent::Agent(const char *name) : Abstract::Agent(name) {
+	}
 
-		/// @brief Agent for default gateway
-		class UDJAT_API Gateway : public Udjat::IP::Agent {
-		private:
-			std::string intf;
+	IP::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
+	}
 
-		public:
-			Gateway();
-			Gateway(const pugi::xml_node &node);
+	bool IP::Agent::refresh() {
 
-			bool refresh() override;
 
-		};
+		return false;
+	}
 
+	std::string IP::Agent::to_string() const noexcept {
+		return std::to_string((IP::Address) *this);
 	}
 
  }
-
-

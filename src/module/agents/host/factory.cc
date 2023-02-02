@@ -19,6 +19,7 @@
 
  #include <private/module.h>
 
+ /*
  #ifdef _WIN32
  #else
 	#include <udjat/linux/dns.h>
@@ -28,21 +29,33 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/method.h>
- #include <udjat/tools/net/gateway.h>
  #include <udjat/tools/net/ip.h>
+
+ */
+
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/net/gateway.h>
 
  namespace Udjat {
 
-	enum AgentType : uint8_t {
-		standard_host,
-		default_gateway,
-	};
-
- 	Network::HostAgent::Factory::Factory() : Udjat::Factory("network-host",moduleinfo) {
+	Network::HostAgent::Factory::Factory() : Udjat::Factory("network-host",moduleinfo) {
 	}
 
 	std::shared_ptr<Abstract::Agent> Network::HostAgent::Factory::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
 
+		switch(String{node,"type","default"}.select("default","default-gateway",nullptr)) {
+		case 0:	// Default IP based host
+			break;
+
+		case 1: // Default gateway
+			return make_shared<Udjat::IP::Gateway>(node);
+
+		}
+
+		return Udjat::Factory::AgentFactory(parent,node);
+
+
+		/*
 		/// @brief Standard agent.
 		class StandardAgent : public Network::HostAgent {
 		private:
@@ -198,7 +211,8 @@
 			Factory::error() << "Unexpected node type '" << type.c_str() << "'" << endl;
 		}
 
-		return Udjat::Factory::AgentFactory(parent,node);
+
+		*/
 
 	}
 
