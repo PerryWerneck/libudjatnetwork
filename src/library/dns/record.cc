@@ -22,7 +22,7 @@
  #include <string>
  #include <cstring>
 // #include <udjat/tools/inet.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
 
  using namespace std;
 

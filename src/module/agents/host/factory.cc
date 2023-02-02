@@ -152,8 +152,7 @@
 
 			bool refresh() override {
 
-				sockaddr_storage addr;
-				Network::DefaultGateway().refresh().get(addr);
+				sockaddr_storage addr = Network::DefaultGateway().refresh();
 
 				set(addr);
 

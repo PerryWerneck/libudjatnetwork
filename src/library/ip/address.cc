@@ -25,6 +25,7 @@
 
  using namespace std;
 
+ /*
  namespace Udjat {
 
 	/// @brief Resolve hostname and setup storage.
@@ -33,3 +34,4 @@
 
 
  }
+ */

@@ -29,6 +29,7 @@
 
  namespace Udjat {
 
+	/*
 	const string IP::Address::to_string(bool port) const {
 
 		unsigned int portnumber = 0;
@@ -81,5 +82,6 @@
 		return "";
 
 	}
+	*/
 
  }

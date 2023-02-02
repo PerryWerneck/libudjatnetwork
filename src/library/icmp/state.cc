@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/net/icmp.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
  #include <private/agents/host.h>
  #include <iostream>
  #include <private/module.h>

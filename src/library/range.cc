@@ -18,8 +18,7 @@
  */
 
  #include <private/module.h>
- #include <udjat/tools/ip.h>
-// #include <udjat/tools/inet.h>
+ #include <udjat/tools/net/ip.h>
 
  namespace Udjat {
 

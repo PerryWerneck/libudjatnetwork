@@ -19,6 +19,7 @@
 
  #pragma once
 
+ /*
  #include <udjat/defs.h>
  #include <netdb.h>
  #include <string>
@@ -87,3 +88,4 @@
 	}
 
  }
+ */

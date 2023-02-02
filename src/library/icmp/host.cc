@@ -18,7 +18,7 @@
  */
 
  #include <controller.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
  #include <udjat/tools/threadpool.h>
  #include <cstring>
  #include <sys/types.h>

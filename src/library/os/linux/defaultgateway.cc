@@ -51,7 +51,8 @@
 
 	const Network::DefaultGateway & Network::DefaultGateway::refresh() {
 
-		clear();
+		ss_family = 0;
+		// clear();
 
 		int msgseq = 0;
 		int received_bytes;
@@ -167,7 +168,7 @@
 
 							memcpy(&addr->sin_addr,RTA_DATA(route_attribute),sizeof(addr->sin_addr));
 
-							set(storage);
+							*((sockaddr_storage *) this) = storage;
 						}
 						break;
 

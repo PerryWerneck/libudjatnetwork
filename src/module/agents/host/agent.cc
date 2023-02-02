@@ -30,7 +30,7 @@
  #include <udjat/tools/intl.h>
  #include <sstream>
  #include <iomanip>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
 
  namespace Udjat {
 

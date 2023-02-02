@@ -20,7 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/network/ipaddress.h>
+ #include <udjat/tools/net/ip.h>
  #include <netdb.h>
  #include <string>
 
