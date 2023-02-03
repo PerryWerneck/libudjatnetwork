@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <private/agents/nic.h>
- #include <udjat/tools/net/nic.h>
+ #include <udjat/net/interface.h>
  #include <udjat/tools/logger.h>
  #include <iostream>
  #include <cstdio>

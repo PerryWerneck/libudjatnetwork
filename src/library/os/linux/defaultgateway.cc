@@ -26,7 +26,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/net/gateway.h>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
 
  #include <sys/socket.h>
  #include <stdlib.h>

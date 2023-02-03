@@ -30,7 +30,7 @@
  #include <udjat/tools/intl.h>
  #include <sstream>
  #include <iomanip>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
 
  #ifndef _WIN32
 	#include <udjat/linux/dns.h>

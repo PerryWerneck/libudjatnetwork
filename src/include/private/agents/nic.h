@@ -23,8 +23,7 @@
  #include <udjat/factory.h>
  #include <udjat/agent.h>
  #include <udjat/agent/state.h>
- #include <udjat/tools/net/nic.h>
-// #include <sys/socket.h>
+ #include <udjat/net/interface.h>
  #include <list>
 
  namespace Udjat {

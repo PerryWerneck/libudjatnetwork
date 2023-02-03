@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <udjat/net/icmp.h>
 
  namespace Udjat {

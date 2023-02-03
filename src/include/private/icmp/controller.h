@@ -22,7 +22,7 @@
  #include <config.h>
  #include <udjat/tools/timer.h>
  #include <udjat/tools/handler.h>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <udjat/net/icmp.h>
 
  /*

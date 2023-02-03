@@ -21,7 +21,7 @@
  #include <udjat/linux/dns.h>
  #include <string>
  #include <cstring>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
 
  using namespace std;
 

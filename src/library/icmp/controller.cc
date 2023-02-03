@@ -29,7 +29,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
  #include <udjat/net/icmp.h>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <netinet/ip_icmp.h>
 
  namespace Udjat {

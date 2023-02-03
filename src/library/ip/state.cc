@@ -23,7 +23,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/object.h>
  #include <pugixml.hpp>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <udjat/net/ip/state.h>
 
  using namespace std;
@@ -49,9 +49,9 @@
 		debug("bits=",bits);
 		debug("ip=",string{subnet,(size_t) (ptr-subnet) }.c_str());
 
-//		IP::Address::set(string{subnet,(size_t) (ptr-subnet) }.c_str());
+		IP::Address::set(string{subnet,(size_t) (ptr-subnet) }.c_str());
 
-//		debug("Subnet state '",to_string(),"' built");
+		debug("Subnet state '",to_string(),"' built");
 
 	}
 
@@ -95,6 +95,7 @@
 			netmask.sin_addr.s_addr >>= 1;
 			netmask.sin_addr.s_addr |= 0x80000000;
 		}
+		netmask.sin_addr.s_addr = htonl(netmask.sin_addr.s_addr);
 
 		debug("subnet=",std::to_string(subnet));
 		debug("netmask=",std::to_string(netmask));
@@ -102,6 +103,8 @@
 
 		in_addr_t net  = (addr.sin_addr.s_addr & netmask.sin_addr.s_addr);
 		in_addr_t base = (subnet.sin_addr.s_addr & netmask.sin_addr.s_addr);
+
+		debug("base==net: ", (base==net), "  (base|net)==net: ", ((base|net) == net))
 
 		return (base == net) && ((base|net) == net);
 

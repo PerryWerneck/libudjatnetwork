@@ -22,7 +22,7 @@
  #include <udjat/defs.h>
  #include <pugixml.hpp>
  #include <iostream>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <udjat/agent/state.h>
 
  namespace Udjat {
