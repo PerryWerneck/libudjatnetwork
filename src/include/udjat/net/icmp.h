@@ -23,6 +23,7 @@
  #include <pugixml.hpp>
  #include <iostream>
  #include <udjat/tools/net/ip.h>
+ #include <udjat/agent/state.h>
 
  namespace Udjat {
 
@@ -38,6 +39,22 @@
 		};
 
 		UDJAT_API Response ResponseFactory(const char *name);
+
+		class UDJAT_API State : public Abstract::State {
+		public:
+			const ICMP::Response id;
+
+			State(const pugi::xml_node &node, const ICMP::Response i) : Abstract::State{node}, id{i} {
+			}
+
+			State(const char *name, const Level level, const char *summary, const char *body, const ICMP::Response i)
+				: Abstract::State{name,level,summary,body}, id{i} {
+			}
+
+			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
+			static std::shared_ptr<State> Factory(const ICMP::Response id);
+
+		};
 
 		class Controller;
 

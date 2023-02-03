@@ -32,11 +32,11 @@
 
  namespace Udjat {
 
-	/*
-	static const struct {
+	static const struct icmp_state {
 		const char *name;
 		const ICMP::Response id;
 		const Level level;
+		const char *label;
 		const char *summary;
 		const char *body;
 	} icmp_states[] = {
@@ -44,6 +44,7 @@
 			"invalid",
 			ICMP::Response::invalid,
 			Level::error,
+			N_("Invalid IP"),
 			N_("${name} address is invalid"),
 			N_("Unable to get a valid IP address for ${name}.")
 		},
@@ -51,6 +52,7 @@
 			"echo-reply",
 			ICMP::Response::echo_reply,
 			Level::ready,
+			N_("Active"),
 			N_("${name} is active"),
 			N_("Got ICMP echo reply from host.")
 		},
@@ -58,6 +60,7 @@
 			"destination-unreachable",
 			ICMP::Response::destination_unreachable,
 			Level::error,
+			N_("Unreachable"),
 			N_("${name} is not reachable"),
 			N_("Destination Unreachable. The gateway doesnt know how to get to the defined network.")
 		},
@@ -65,6 +68,7 @@
 			"time-exceeded",
 			ICMP::Response::time_exceeded,
 			Level::error,
+			N_("Timeout"),
 			N_("${name} is not acessible"),
 			N_("Time Exceeded. The ICMP request has been discarded because it was 'out of time'.")
 		},
@@ -72,6 +76,7 @@
 			"timeout",
 			ICMP::Response::timeout,
 			Level::error,
+			N_("Unavailable"),
 			N_("${name} is not available"),
 			N_("No ICMP response from host.")
 		},
@@ -79,80 +84,106 @@
 			"network-unreachable",
 			ICMP::Response::network_unreachable,
 			Level::error,
+			N_("Unreachable"),
 			N_("Network is not reachable"),
 			N_("The entire network is unreachable.")
 		},
 
 	};
 
-	void Udjat::Network::HostAgent::set(const ICMP::Response response, const sockaddr_storage &from) {
+	std::shared_ptr<ICMP::State> ICMP::State::Factory(const pugi::xml_node &node) {
 
-		trace() << "Got response '" << response << "' from " << from << endl;
+		class State : public ICMP::State {
+		private:
+			Udjat::String summary;
+			Udjat::String body;
 
-		std::shared_ptr<State> detected;
+		public:
+			State(const pugi::xml_node &node, const icmp_state &state) : ICMP::State{node,state.id} {
 
-		for(auto state : states.available) {
-
-			State * st = dynamic_cast<State *>(state.get());
-
-			if(st && st->isValid(response)) {
-				detected = state;
-				break;
-			}
-
-		}
-
-		if(!detected) {
-
-			// Scan for predefined states.
-			for(size_t ix = 0; ix < N_ELEMENTS(icmp_states); ix++) {
-
-				if(icmp_states[ix].id == response) {
-
-					trace() << "Adding default state for '" << icmp_states[ix].name << "'" << endl;
-
+				if(!Object::properties.label[0]) {
 #ifdef GETTEXT_PACKAGE
-					Udjat::String summary{dgettext(GETTEXT_PACKAGE,icmp_states[ix].summary)};
-					Udjat::String body{dgettext(GETTEXT_PACKAGE,icmp_states[ix].body)};
+					Object::properties.label = dgettext(GETTEXT_PACKAGE,state.label);
 #else
-					Udjat::String summary{icmp_states[ix].summary};
-					Udjat::String summary{icmp_states[ix].body};
+					Object::properties.label = state.label;
 #endif // GETTEXT_PACKAGE
-
-					summary.expand(*this);
-					body.expand(*this);
-
-					auto state =
-						make_shared<ICMPResponseState>(
-								icmp_states[ix].name,
-								icmp_states[ix].level,
-								Quark{summary}.c_str(),
-								Quark{body}.c_str(),
-								icmp_states[ix].id
-							);
-
-					states.available.push_back(state);
-					detected = state;
-					break;
-
 				}
 
+				if(!properties.body[0]) {
+#ifdef GETTEXT_PACKAGE
+					body = dgettext(GETTEXT_PACKAGE,state.body);
+#else
+					body = state.body;
+#endif // GETTEXT_PACKAGE
+					properties.body = body.expand().c_str();
+				}
+
+				if(!Object::properties.summary[0]) {
+#ifdef GETTEXT_PACKAGE
+					summary = dgettext(GETTEXT_PACKAGE,state.summary);
+#else
+					summary = state.summary;
+#endif // GETTEXT_PACKAGE
+					Object::properties.summary = summary.expand().c_str();
+				}
+			}
+
+		};
+
+		ICMP::Response id{ResponseFactory(node.attribute("icmp-response").as_string())};
+
+		for(const icmp_state &st : icmp_states) {
+
+			if(st.id == id) {
+				return make_shared<State>(node,st);
 			}
 
 		}
 
-		if(detected) {
-			states.icmp = detected;
-		} else {
-			states.icmp = Abstract::Agent::computeState();
-		}
-
-		if(!states.addr || states.icmp->level() > states.addr->level()) {
-			super::set(states.icmp);
-		}
+		throw runtime_error("The required attribute 'icmp-response' is missing or invalid");
 
 	}
-	*/
+
+	std::shared_ptr<ICMP::State> ICMP::State::Factory(const ICMP::Response id) {
+
+		class State : public ICMP::State {
+		public:
+#ifdef GETTEXT_PACKAGE
+			State(const icmp_state &state) : ICMP::State{
+				dgettext(GETTEXT_PACKAGE,state.name),
+				state.level,
+				dgettext(GETTEXT_PACKAGE,state.summary),
+				dgettext(GETTEXT_PACKAGE,state.body),
+				state.id
+			} {
+				Object::properties.label = dgettext(GETTEXT_PACKAGE,state.label);
+			}
+#else
+			State(const icmp_state &state) : ICMP::State{
+				state.name,
+				state.level,
+				state.summary,
+				state.body,
+				state.id
+			} {
+				Object::properties.label = state.label;
+			}
+#endif // GETTEXT_PACKAGE
+
+		};
+
+		for(const icmp_state &st : icmp_states) {
+
+			if(st.id == id) {
+				return make_shared<State>(st);
+			}
+
+		}
+
+		throw runtime_error("The required attribute 'icmp-response' is missing or invalid");
+
+	}
+
 
  }
 

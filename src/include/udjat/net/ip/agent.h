@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/net/ip.h>
  #include <udjat/net/icmp.h>
 
@@ -27,17 +28,28 @@
 
 	namespace IP {
 
-		class Agent : public Udjat::IP::Address, public Abstract::Agent, private ICMP::Worker  {
+		class UDJAT_API Agent : public Udjat::IP::Address, public Abstract::Agent, private ICMP::Worker  {
 		private:
-			bool icmp = true;	// Is ICMP check enabled?
+
+			struct {
+				bool check = true;										// Is ICMP check enabled?
+				Udjat::ICMP::Response response = Udjat::ICMP::invalid;	// ICMP Response.
+				std::vector<std::shared_ptr<ICMP::State>> states;		// XML defined ICMP states.
+				std::shared_ptr<ICMP::State> state;						// ICMP state.
+			} icmp;
 
 		protected:
 
+			bool set(std::shared_ptr<Abstract::State> state) override;
+
 			virtual void set(const ICMP::Response response, const IP::Address &from) override;
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+			std::shared_ptr<Abstract::State> computeState() override;
 
 		public:
+
 			Agent(const char *name = "");
-			Agent(const pugi::xml_node &node);
+			Agent(const pugi::xml_node &node, const char *ipaddr = "");
 
 			/// @brief Do an ICMP check
 			/// @return true if the state has changed.

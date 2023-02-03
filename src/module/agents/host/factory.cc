@@ -34,14 +34,37 @@
  */
 
  #include <udjat/tools/string.h>
- #include <udjat/tools/net/gateway.h>
+ #include <udjat/net/gateway.h>
+ #include <udjat/net/ip/agent.h>
+ #include <udjat/tools/object.h>
+ #include <private/module.h>
 
  namespace Udjat {
 
+	HostFactory::HostFactory() : Udjat::Factory("network-host",moduleinfo) {
+	}
+
+	std::shared_ptr<Abstract::Agent> HostFactory::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
+
+		switch(String{node,"type","host"}.select("host","default-gateway",nullptr)) {
+		case 0:	// IP based host
+			{
+				auto ipaddr = Object::getAttribute(node,"host-ip");
+				if(ipaddr) {
+					return make_shared<IP::Agent>(node,ipaddr.as_string());
+				}
+			}
+			break;
+
+		case 1: // Default gateway
+			return make_shared<Udjat::IP::Gateway>(node);
+		}
+
+		throw runtime_error("Invalid network host type");
+
+	}
 
 		/*
-	Network::HostAgent::Factory::Factory() : Udjat::Factory("network-host",moduleinfo) {
-	}
 
 	std::shared_ptr<Abstract::Agent> Network::HostAgent::Factory::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
 

@@ -25,7 +25,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/net/gateway.h>
+ #include <udjat/net/gateway.h>
  #include <udjat/tools/net/ip.h>
 
  #include <sys/socket.h>
@@ -49,15 +49,7 @@
 
  namespace Udjat {
 
-	IP::Gateway::Gateway() : Udjat::IP::Agent("gateway") {
-		refresh();
-	}
-
-	IP::Gateway::Gateway(const pugi::xml_node &node) : Udjat::IP::Agent(node) {
-		refresh();
-	}
-
-	bool IP::Gateway::refresh() {
+	bool IP::Gateway::detect() {
 
 		sockaddr_storage gateway;
 		uint32_t msgseq = 0;

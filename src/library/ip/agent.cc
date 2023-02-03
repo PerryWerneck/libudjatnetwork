@@ -28,13 +28,67 @@
 	IP::Agent::Agent(const char *name) : Abstract::Agent(name) {
 	}
 
-	IP::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(node), ICMP::Worker(node) {
-		icmp = getAttribute(node,"icmp",icmp);
+	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : IP::Address{addr}, Abstract::Agent{node}, ICMP::Worker{node} {
+		icmp.check = getAttribute(node,"icmp",icmp.check);
+	}
+
+	bool IP::Agent::set(std::shared_ptr<Abstract::State> state) {
+
+		if(*icmp.state > *state) {
+			state = icmp.state;
+		}
+
+		return super::set(state);
 	}
 
 	void IP::Agent::set(const ICMP::Response response, const IP::Address &from) {
 
+		if(response == icmp.response) {
+			return;
+		}
+
+		icmp.response = response;
+
 		Logger::String{"Setting ICMP state to '",response,"'"}.trace(name());
+
+		if(!icmp.states.empty()) {
+
+			// Check for xml defined states.
+			for(auto state : icmp.states) {
+				if(state->id == response) {
+					set(icmp.state = state);
+					return;
+				}
+			}
+		}
+
+		// Use predefined state.
+		set(icmp.state = ICMP::State::Factory(response));
+
+	}
+
+	std::shared_ptr<Abstract::State> IP::Agent::computeState() {
+		auto state = super::computeState();
+
+		if(icmp.state && *icmp.state > *state) {
+			state = icmp.state;
+		}
+
+		return state;
+	}
+
+	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const pugi::xml_node &node) {
+
+		pugi::xml_attribute attr;
+
+		attr = Object::getAttribute(node,"icmp-response");
+		if(attr) {
+			auto state = ICMP::State::Factory(node);
+			icmp.states.push_back(state);
+			return state;
+		}
+
+		return super::StateFactory(node);
 
 	}
 
@@ -55,14 +109,11 @@
 
 	bool IP::Agent::refresh() {
 
-
-		if(icmp) {
+		if(icmp.check) {
 			ICMP::Worker::start(*this);
 		}
 
 		return false;
 	}
-
-
 
  }

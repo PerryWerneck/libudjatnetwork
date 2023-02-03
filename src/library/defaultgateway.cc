@@ -17,31 +17,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
+ // References:
+ //
+ // https://www.linuxquestions.org/questions/linux-networking-3/howto-find-gateway-address-through-code-397078/
+ // https://gist.github.com/javiermon/6272065#file-gateway_netlink-c
+ //
 
+ #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/net/ip/agent.h>
- #include <string>
+ #include <udjat/net/gateway.h>
+
+ using namespace std;
 
  namespace Udjat {
 
-	namespace IP {
+	IP::Gateway::Gateway() : Udjat::IP::Agent{"gateway"} {
+		detect();
+	}
 
-		/// @brief Agent for default gateway
-		class UDJAT_API Gateway : public Udjat::IP::Agent {
-		private:
-			std::string intf;
+	IP::Gateway::Gateway(const pugi::xml_node &node) : Udjat::IP::Agent{node} {
+		detect();
+	}
 
-		public:
-			Gateway();
-			Gateway(const pugi::xml_node &node);
+	bool IP::Gateway::refresh() {
 
-			bool refresh() override;
+		bool changed = detect();
 
-		};
+		if(IP::Agent::refresh()) {
+			changed = true;
+		}
 
+		return changed;
 	}
 
  }
-
-
