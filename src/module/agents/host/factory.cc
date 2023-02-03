@@ -38,6 +38,8 @@
 
  namespace Udjat {
 
+
+		/*
 	Network::HostAgent::Factory::Factory() : Udjat::Factory("network-host",moduleinfo) {
 	}
 
@@ -55,7 +57,6 @@
 		return Udjat::Factory::AgentFactory(parent,node);
 
 
-		/*
 		/// @brief Standard agent.
 		class StandardAgent : public Network::HostAgent {
 		private:
@@ -212,8 +213,8 @@
 		}
 
 
-		*/
 
 	}
+		*/
 
  }

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+	/*
  #include <config.h>
  #include <udjat/network/ipaddress.h>
  #include <exception>
@@ -29,7 +30,6 @@
 
  namespace Udjat {
 
-	/*
 	const string IP::Address::to_string(bool port) const {
 
 		unsigned int portnumber = 0;
@@ -82,6 +82,6 @@
 		return "";
 
 	}
-	*/
 
  }
+	*/

@@ -34,6 +34,7 @@
 
 	namespace Network {
 
+		/*
 		/// @brief Abstract network agent state.
 		class UDJAT_API HostAgent::State : public Abstract::State {
 		protected:
@@ -98,7 +99,7 @@
 			}
 
 		};
-
+		*/
 
 	}
 

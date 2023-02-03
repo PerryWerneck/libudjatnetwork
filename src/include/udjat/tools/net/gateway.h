@@ -20,7 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/network/ipagent.h>
+ #include <udjat/net/ip/agent.h>
  #include <string>
 
  namespace Udjat {

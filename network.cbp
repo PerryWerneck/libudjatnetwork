@@ -44,10 +44,10 @@
 		<Unit filename="src/include/controller.h" />
 		<Unit filename="src/include/private/agents/host.h" />
 		<Unit filename="src/include/private/agents/nic.h" />
+		<Unit filename="src/include/private/icmp/controller.h" />
 		<Unit filename="src/include/private/module.h" />
-		<Unit filename="src/include/udjat/network/ipaddress.h" />
-		<Unit filename="src/include/udjat/network/ipagent.h" />
-		<Unit filename="src/include/udjat/tools/net/dns.h" />
+		<Unit filename="src/include/udjat/linux/dns.h" />
+		<Unit filename="src/include/udjat/net/ip/agent.h" />
 		<Unit filename="src/include/udjat/tools/net/gateway.h" />
 		<Unit filename="src/include/udjat/tools/net/icmp.h" />
 		<Unit filename="src/library/dns/record.cc" />
@@ -56,6 +56,7 @@
 		<Unit filename="src/library/icmp/host.cc" />
 		<Unit filename="src/library/icmp/response.cc" />
 		<Unit filename="src/library/icmp/state.cc" />
+		<Unit filename="src/library/icmp/worker.cc" />
 		<Unit filename="src/library/ip/address.cc">
 			<Option compile="0" />
 			<Option link="0" />

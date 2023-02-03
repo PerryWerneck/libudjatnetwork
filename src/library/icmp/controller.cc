@@ -18,7 +18,8 @@
  */
 
  #include <config.h>
- #include <controller.h>
+ #include <private/icmp/controller.h>
+
  #include <unistd.h>
  #include <netdb.h>
  #include <fcntl.h>

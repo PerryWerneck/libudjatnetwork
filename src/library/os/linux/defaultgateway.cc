@@ -60,7 +60,7 @@
 	bool IP::Gateway::refresh() {
 
 		sockaddr_storage gateway;
-		int msgseq = 0;
+		uint32_t msgseq = 0;
 		int received_bytes;
 		struct nlmsghdr *nlh;
 
@@ -130,7 +130,7 @@
 					break;
 				}
 
-			} while ((nlmsg->nlmsg_seq != msgseq) || (nlmsg->nlmsg_pid != getpid()));
+			} while ((nlmsg->nlmsg_seq != msgseq) || (nlmsg->nlmsg_pid != (unsigned) getpid()));
 
 			// parse response
 			struct rtmsg *route_entry;
@@ -163,7 +163,7 @@
 
 					case RTA_GATEWAY:
 						{
-							if(route_attribute_len > sizeof(struct sockaddr_in)) {
+							if((unsigned) route_attribute_len > sizeof(struct sockaddr_in)) {
 								throw runtime_error(_("Invalid size on RTA_GATEWAY"));
 							}
 							struct sockaddr_in *addr = (struct sockaddr_in *) &gateway;

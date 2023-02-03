@@ -30,6 +30,7 @@
 
 	namespace Network {
 
+		/*
 		/// @brief Agent to check for DNS resolution and ICMP test.
 		class UDJAT_API HostAgent : public Udjat::Abstract::Agent, private ICMP::Host {
 		public:
@@ -86,7 +87,7 @@
 			Value & getProperties(Value &response) const noexcept override;
 
  		};
-
+		*/
 
 	}
 

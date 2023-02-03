@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /*
  #include <config.h>
  #include <udjat/network/ipaddress.h>
  #include <exception>
@@ -25,7 +26,6 @@
 
  using namespace std;
 
- /*
  namespace Udjat {
 
 	/// @brief Resolve hostname and setup storage.

@@ -17,32 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <controller.h>
- #include <udjat/tools/net/ip.h>
- #include <udjat/tools/threadpool.h>
- #include <cstring>
- #include <sys/types.h>
- #include <unistd.h>
- #include <private/agents/host.h>
- #include <udjat/tools/logger.h>
- #include <netinet/ip_icmp.h>
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <private/icmp/controller.h>
 
  namespace Udjat {
 
-	ICMP::Host::Host() {
-		memset(&addr,0,sizeof(addr));
-	}
-
-	void ICMP::Host::start() {
-		Controller::getInstance().insert(this);
-	}
-
-	ICMP::Host::Controller::Host::Host(ICMP::Host *h) : host{h} {
-
-		static unsigned short id = 0;
-
+	ICMP::Host::Controller::Host::Host(ICMP::Host &h, const IP::Address &a) : host{h}, address{a} {
+		static uint16_t id = 0;
 		this->id = id++;
-		timeout = ::time(0) + host->timeout;
+		timeout = time(0) + host.interval();
 		send();
 	}
 
@@ -68,11 +52,11 @@
 
 			switch(code) {
 			case ENETUNREACH:	// Network is unreachable
-				host->set(Response::network_unreachable,host->addr);
+				host.set(Response::network_unreachable,host->addr);
 				return true;
 
 			default:
-				cerr << "icmp\tError '" << strerror(code) << "' searching " << host->addr << endl;
+				cerr << "icmp\tError '" << strerror(code) << "' searching " << addr << endl;
 
 			}
 
@@ -108,13 +92,11 @@
 				break;
 
 			case ICMP_DEST_UNREACH: // Destination Unreachable
-				host->time = (uint64_t) -1;
-				host->set(Response::destination_unreachable,addr);
+				host.set(Response::destination_unreachable,addr);
 				break;
 
 			case ICMP_TIME_EXCEEDED: // Time Exceeded
-				host->time = (uint64_t) -1;
-				host->set(Response::time_exceeded,addr);
+				host.set(Response::time_exceeded,addr);
 				break;
 
 			default:
@@ -137,14 +119,14 @@
 
 			Payload packet;
 
-			next = ::time(0) + host->interval;
+			next = ::time(0) + host.interval;
 
 			memset(&packet,0,sizeof(packet));
 			packet.id 	= this->id;
 			packet.seq	= ++this->packets;
 			packet.time = getCurrentTime();
 
-			Controller::getInstance().send(host->addr,packet);
+			Controller::getInstance().send(address,packet);
 
 		} catch(const exception &e) {
 

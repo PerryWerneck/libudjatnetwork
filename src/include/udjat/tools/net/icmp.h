@@ -38,6 +38,47 @@
 		};
 
 		UDJAT_API Response ResponseFactory(const char *name);
+
+		class UDJAT_API Worker {
+		private:
+
+			class Controller;
+			friend class Controller;
+
+			struct Timers {
+				const time_t timeout;		///< @brief ICMP timeout.
+				const time_t interval;		///< @brief ICMP packet interval.
+
+				constexpr Timers(time_t t, time_t i) : timeout{t}, interval{i} {
+				}
+
+			} timers;
+
+			uint64_t time = 0;				///< @brief Time of last response.
+
+		protected:
+
+			virtual void set(const ICMP::Response response, const IP::Address &from) = 0;
+
+		public:
+			Worker(time_t timeout = 5, time_t interval = 1);
+			Worker(const pugi::xml_node &node);
+
+			virtual ~Worker();
+
+			inline time_t interval() const noexcept {
+				return timers.interval;
+			}
+
+			inline time_t timeout() const noexcept {
+				return timers.timeout;
+			}
+
+			void start(const IP::Address &addr);
+			void stop();
+		};
+
+		/*
 		// UDJAT_API Response ResponseFactory(const pugi::xml_node &node);
 
 		class UDJAT_API Host {
@@ -47,10 +88,6 @@
 
 		protected:
 
-			IP::Address addr;			///< @brief ICMP host to check.
-			time_t interval = 1;		///< @brief ICMP packet interval.
-			time_t timeout = 5;			///< @brief ICMP timeout.
-			uint64_t time = 0;			///< @brief Time of last response.
 
 			/// @brief Start ICMP check.
 			void start();
@@ -68,6 +105,7 @@
 			}
 
 		};
+		*/
 
 	}
 

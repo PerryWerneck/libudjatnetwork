@@ -19,27 +19,43 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <private/module.h>
+ #include <udjat/tools/net/icmp.h>
+ #include <private/icmp/controller.h>
+ #include <udjat/tools/object.h>
+
+ /*
+ #include <controller.h>
+ #include <udjat/tools/net/ip.h>
+ #include <udjat/tools/threadpool.h>
+ #include <cstring>
+ #include <sys/types.h>
+ #include <unistd.h>
+ #include <private/agents/host.h>
+ #include <udjat/tools/logger.h>
+ #include <netinet/ip_icmp.h>
+ */
 
  namespace Udjat {
 
-	/*
-	bool Network::HostAgent::State::test(const sockaddr_storage UDJAT_UNUSED(&addr)) const {
-		return false;
+	ICMP::Worker::Worker(time_t timeout, time_t interval) : timers{timeout,interval} {
 	}
 
-	bool Network::HostAgent::State::isValid(const ICMP::Response UDJAT_UNUSED(response)) const noexcept {
-		return false;
+	ICMP::Worker::Worker(const pugi::xml_node &node)
+		: Worker(Object::getAttribute(node,"icmp-timeout", 5),Object::getAttribute(node,"icmp-interval", interval)) {
 	}
 
-	bool Network::HostAgent::State::isValid(const sockaddr_storage &addr) const noexcept {
-		bool rc = test(addr);
-		if(revert)
-			return !rc;
-		return rc;
+	virtual ICMP::Worker::~Worker() {
+		stop();
 	}
-	*/
+
+	void ICMP::Worker::start(const IP::Address &addr) {
+		Controller::getInstance().insert(*this,addr);
+
+	}
+
+	void ICMP::Worker::stop() {
+		Controller::getInstance().remove(*this);
+	}
 
  }
-
 

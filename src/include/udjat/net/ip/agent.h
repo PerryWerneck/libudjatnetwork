@@ -20,13 +20,21 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/tools/net/ip.h>
- #include <udjat/agent.h>
+ #include <udjat/agent/abstract.h>
+ #include <udjat/tools/net/icmp.h>
 
  namespace Udjat {
 
 	namespace IP {
 
-		class Agent : public Udjat::IP::Address, public Abstract::Agent  {
+		class Agent : public Udjat::IP::Address, public Abstract::Agent, private ICMP::Worker  {
+		private:
+			bool icmp = true;	// Is ICMP check enabled?
+
+		protected:
+
+			virtual void set(const ICMP::Response response, const IP::Address &from) override;
+
 		public:
 			Agent(const char *name = "");
 			Agent(const pugi::xml_node &node);
@@ -36,6 +44,10 @@
 			bool refresh() override;
 
 			std::string to_string() const noexcept override;
+
+			Udjat::Value & get(Udjat::Value &value) const override;
+
+			Udjat::Value & getProperties(Value &value) const noexcept override;
 
 		};
 

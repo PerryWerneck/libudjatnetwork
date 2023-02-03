@@ -20,14 +20,18 @@
  #pragma once
 
  #include <config.h>
- #include <private/agents/host.h>
  #include <udjat/tools/timer.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/net/ip.h>
+
+ /*
+ #include <private/agents/host.h>
  #include <udjat/tools/net/icmp.h>
  #include <mutex>
  #include <memory>
  #include <iostream>
  #include <list>
+ */
 
  using namespace std;
 
@@ -54,16 +58,17 @@
 		class Host {
 		private:
 
-			ICMP::Host *host;
+			ICMP::Host &host;
+			const IP::Address address;
+			uint16_t id;
 
-			uint16_t id = 0;
-			uint16_t packets = 0;
 			time_t timeout;
+			uint16_t packets = 0;
 			time_t next = 0;
 
 		public:
 
-			Host(ICMP::Host *host);
+			Host(ICMP::Host &h, const IP::Address &a);
 
 			bool onTimer();
 			void send() noexcept;
@@ -98,8 +103,8 @@
 
 		~Controller();
 
-		void insert(ICMP::Host *host);
-		void remove(ICMP::Host *host);
+		void insert(ICMP::Host &host, const IP::Address &address);
+		void remove(ICMP::Host &host);
 
 		void send(const sockaddr_storage &addr, const Payload &payload);
 

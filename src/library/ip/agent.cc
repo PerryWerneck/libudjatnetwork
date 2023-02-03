@@ -19,14 +19,32 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/network/ipagent.h>
+ #include <udjat/net/ip/agent.h>
 
  namespace Udjat {
 
 	IP::Agent::Agent(const char *name) : Abstract::Agent(name) {
 	}
 
-	IP::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
+	IP::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(node), ICMP::Host(node) {
+
+		// icmp.check = getAttribute(node,"icmp",icmp.check);
+
+	}
+
+	std::string IP::Agent::to_string() const noexcept {
+		return std::to_string((IP::Address) *this);
+	}
+
+	Udjat::Value & IP::Agent::get(Udjat::Value &value) const {
+		value.set(std::to_string((IP::Address) *this));
+		return value;
+	}
+
+	Udjat::Value & IP::Agent::getProperties(Value &value) const noexcept {
+
+
+		return super::getProperties(value);
 	}
 
 	bool IP::Agent::refresh() {
@@ -35,8 +53,6 @@
 		return false;
 	}
 
-	std::string IP::Agent::to_string() const noexcept {
-		return std::to_string((IP::Address) *this);
-	}
+
 
  }
