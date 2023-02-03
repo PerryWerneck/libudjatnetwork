@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/net/ip.h>
  #include <pugixml.hpp>
 
  namespace Udjat {

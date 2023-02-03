@@ -45,10 +45,13 @@
 			throw runtime_error("Subnet should be in the format addr/mask");
 		}
 
-		IP::Address::set(string{subnet,(size_t) (ptr-subnet) }.c_str());
 		bits = stoi(ptr+1);
+		debug("bits=",bits);
+		debug("ip=",string{subnet,(size_t) (ptr-subnet) }.c_str());
 
-		debug("Subnet state '",to_string(),"' built");
+//		IP::Address::set(string{subnet,(size_t) (ptr-subnet) }.c_str());
+
+//		debug("Subnet state '",to_string(),"' built");
 
 	}
 
