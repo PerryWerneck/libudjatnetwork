@@ -19,16 +19,22 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <pugixml.hpp>
  #include <udjat/net/ip/agent.h>
+ #include <udjat/net/icmp.h>
 
  namespace Udjat {
 
 	IP::Agent::Agent(const char *name) : Abstract::Agent(name) {
 	}
 
-	IP::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(node), ICMP::Host(node) {
+	IP::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(node), ICMP::Worker(node) {
+		icmp = getAttribute(node,"icmp",icmp);
+	}
 
-		// icmp.check = getAttribute(node,"icmp",icmp.check);
+	void IP::Agent::set(const ICMP::Response response, const IP::Address &from) {
+
+		Logger::String{"Setting ICMP state to '",response,"'"}.trace(name());
 
 	}
 
@@ -49,6 +55,10 @@
 
 	bool IP::Agent::refresh() {
 
+
+		if(icmp) {
+			ICMP::Worker::start(*this);
+		}
 
 		return false;
 	}

@@ -28,7 +28,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/net/icmp.h>
+ #include <udjat/net/icmp.h>
  #include <udjat/tools/net/ip.h>
  #include <netinet/ip_icmp.h>
 
@@ -37,27 +37,27 @@
 	#pragma pack(1)
 	struct Packet {
 		struct icmp icmp;
-		struct ICMP::Host::Controller::Payload payload;
+		struct ICMP::Controller::Payload payload;
 	};
 	#pragma pack()
 
-	recursive_mutex ICMP::Host::Controller::guard;
+	recursive_mutex ICMP::Controller::guard;
 
-	ICMP::Host::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
+	ICMP::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
 	}
 
-	ICMP::Host::Controller::~Controller() {
+	ICMP::Controller::~Controller() {
 		lock_guard<recursive_mutex> lock(guard);
 	 	stop();
 	}
 
-	ICMP::Host::Controller & ICMP::Host::Controller::getInstance() {
+	ICMP::Controller & ICMP::Controller::getInstance() {
 		lock_guard<recursive_mutex> lock(guard);
 		static Controller instance;
 		return instance;
 	}
 
-	uint64_t ICMP::Host::Controller::getCurrentTime() noexcept {
+	uint64_t ICMP::Controller::getCurrentTime() noexcept {
 
 			struct timespec tm;
 			clock_gettime(CLOCK_MONOTONIC_RAW, &tm);
@@ -69,7 +69,7 @@
 			return time;
 	}
 
-	void ICMP::Host::Controller::stop() {
+	void ICMP::Controller::stop() {
 
 		this->Handler::disable();
 		this->Timer::disable();
@@ -79,7 +79,7 @@
 
 	}
 
-	void ICMP::Host::Controller::handle_event(const Event event) {
+	void ICMP::Controller::handle_event(const Event event) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
@@ -138,7 +138,7 @@
 
 	}
 
-	void ICMP::Host::Controller::on_timer() {
+	void ICMP::Controller::on_timer() {
 
 		ThreadPool::getInstance().push([this]() {
 
@@ -158,7 +158,7 @@
 
 	}
 
-	void ICMP::Host::Controller::start() {
+	void ICMP::Controller::start() {
 
 		try {
 
@@ -212,21 +212,21 @@
 
 	}
 
-	void ICMP::Host::Controller::insert(ICMP::Host *host) {
+	void ICMP::Controller::insert(ICMP::Worker &host, const IP::Address &addr) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
 		start();
-		hosts.emplace_back(host);
+		hosts.emplace_back(host,addr);
 
 	}
 
-	void ICMP::Host::Controller::remove(ICMP::Host *host) {
+	void ICMP::Controller::remove(ICMP::Worker &worker) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
-		hosts.remove_if([host](Host &h) {
-			return h == host;
+		hosts.remove_if([&worker](Host &h) {
+			return &h.host == &worker;
 		});
 
 		if(hosts.empty()) {
@@ -258,7 +258,7 @@
 		return ans;
 	}
 
-	void ICMP::Host::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
+	void ICMP::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
 
 		if(fd < 0) {
 			throw runtime_error("ICMP Controller is not available");
@@ -293,18 +293,6 @@
 					hosts.remove_if([code,&packet](Host &host) {
 						return host.onError(code,packet.payload);
 					});
-
-					/*
-					if(errno = ENETUNREACH) {
-
-						// Network is unreachable
-
-					} else {
-
-						throw std::system_error(errno, std::system_category(), string{"Can't send ICMP packet (errno="} + std::to_string(errno) + ")");
-
-					}
-					*/
 
 				}
 			}

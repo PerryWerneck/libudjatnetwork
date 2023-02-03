@@ -20,17 +20,19 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/intl.h>
- #include <udjat/tools/net/icmp.h>
+ #include <udjat/net/icmp.h>
  #include <udjat/tools/net/ip.h>
  #include <private/agents/host.h>
  #include <iostream>
  #include <private/module.h>
  #include <udjat/tools/string.h>
+ #include <udjat/agent/level.h>
 
  using namespace std;
 
  namespace Udjat {
 
+	/*
 	static const struct {
 		const char *name;
 		const ICMP::Response id;
@@ -150,6 +152,7 @@
 		}
 
 	}
+	*/
 
  }
 

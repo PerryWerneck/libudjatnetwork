@@ -39,10 +39,11 @@
 
 		UDJAT_API Response ResponseFactory(const char *name);
 
+		class Controller;
+
 		class UDJAT_API Worker {
 		private:
 
-			class Controller;
 			friend class Controller;
 
 			struct Timers {

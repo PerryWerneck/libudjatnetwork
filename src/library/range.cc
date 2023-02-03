@@ -22,6 +22,7 @@
 
  namespace Udjat {
 
+	/*
 	Network::Range::Range(const pugi::xml_node &node) : State(node) {
 
 
@@ -112,5 +113,6 @@
 		return netmask;
 
 	}
+	*/
 
  }

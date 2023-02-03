@@ -19,9 +19,9 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/tools/net/ip.h>
  #include <udjat/agent/abstract.h>
- #include <udjat/tools/net/icmp.h>
+ #include <udjat/tools/net/ip.h>
+ #include <udjat/net/icmp.h>
 
  namespace Udjat {
 

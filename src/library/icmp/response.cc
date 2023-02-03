@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/net/icmp.h>
+ #include <udjat/net/icmp.h>
  #include <cstring>
  #include <string>
  #include <stdexcept>

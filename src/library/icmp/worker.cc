@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/net/icmp.h>
+ #include <udjat/net/icmp.h>
  #include <private/icmp/controller.h>
  #include <udjat/tools/object.h>
 
@@ -41,10 +41,10 @@
 	}
 
 	ICMP::Worker::Worker(const pugi::xml_node &node)
-		: Worker(Object::getAttribute(node,"icmp-timeout", 5),Object::getAttribute(node,"icmp-interval", interval)) {
+		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
 	}
 
-	virtual ICMP::Worker::~Worker() {
+	ICMP::Worker::~Worker() {
 		stop();
 	}
 

@@ -23,6 +23,7 @@
  #include <udjat/tools/timer.h>
  #include <udjat/tools/handler.h>
  #include <udjat/tools/net/ip.h>
+ #include <udjat/net/icmp.h>
 
  /*
  #include <private/agents/host.h>
@@ -37,7 +38,7 @@
 
  namespace Udjat {
 
- 	class ICMP::Host::Controller : private MainLoop::Timer, private MainLoop::Handler {
+ 	class ICMP::Controller : private MainLoop::Timer, private MainLoop::Handler {;
 	public:
 
 		#pragma pack(1)
@@ -55,10 +56,9 @@
 
 		static recursive_mutex guard;
 
-		class Host {
-		private:
+		struct Host {
 
-			ICMP::Host &host;
+			ICMP::Worker &host;
 			const IP::Address address;
 			uint16_t id;
 
@@ -66,15 +66,13 @@
 			uint16_t packets = 0;
 			time_t next = 0;
 
-		public:
-
-			Host(ICMP::Host &h, const IP::Address &a);
+			Host(ICMP::Worker &h, const IP::Address &a);
 
 			bool onTimer();
 			void send() noexcept;
 
-			inline bool operator ==(const ICMP::Host *host) const noexcept {
-				return host == this->host;
+			inline bool operator ==(const ICMP::Worker &host) const noexcept {
+				return &host == &this->host;
 			}
 
 			/// @brief Process response.
@@ -103,8 +101,8 @@
 
 		~Controller();
 
-		void insert(ICMP::Host &host, const IP::Address &address);
-		void remove(ICMP::Host &host);
+		void insert(ICMP::Worker &host, const IP::Address &address);
+		void remove(ICMP::Worker &host);
 
 		void send(const sockaddr_storage &addr, const Payload &payload);
 
