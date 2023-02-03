@@ -30,6 +30,13 @@
 
 	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : IP::Address{addr}, Abstract::Agent{node}, ICMP::Worker{node} {
 		icmp.check = getAttribute(node,"icmp",icmp.check);
+
+#ifdef DEBUG
+		if(!IP::Address::empty()) {
+			debug("ICMP Check is ",(icmp.check ? "active" : "inactive")," on ",to_string());
+		}
+
+#endif // DEBUG
 	}
 
 	bool IP::Agent::set(std::shared_ptr<Abstract::State> state) {

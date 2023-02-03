@@ -40,7 +40,7 @@
 
 	class Module : public Udjat::Module {
 	private:
-		// Network::HostAgent::Factory hostFactory;
+		HostFactory hFactory;
 		Network::Agent::Factory 	nicFactory;
 
 	public:
