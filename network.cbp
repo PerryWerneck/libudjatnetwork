@@ -41,8 +41,6 @@
 			<Add library="resolv" />
 		</Linker>
 		<Unit filename="src/include/config.h" />
-		<Unit filename="src/include/controller.h" />
-		<Unit filename="src/include/private/agents/host.h" />
 		<Unit filename="src/include/private/agents/nic.h" />
 		<Unit filename="src/include/private/icmp/controller.h" />
 		<Unit filename="src/include/private/module.h" />
@@ -51,7 +49,6 @@
 		<Unit filename="src/include/udjat/net/icmp.h" />
 		<Unit filename="src/include/udjat/net/ip/agent.h" />
 		<Unit filename="src/include/udjat/net/ip/state.h" />
-		<Unit filename="src/include/udjat/tools/net/icmp.h" />
 		<Unit filename="src/library/defaultgateway.cc" />
 		<Unit filename="src/library/dns/record.cc" />
 		<Unit filename="src/library/dns/resolver.cc" />

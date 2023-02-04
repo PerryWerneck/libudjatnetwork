@@ -20,8 +20,12 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <pugixml.hpp>
+ #include <udjat/net/ip/address.h>
  #include <udjat/net/ip/agent.h>
  #include <udjat/net/icmp.h>
+ #include <iostream>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -30,6 +34,9 @@
 
 	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : IP::Address{addr}, Abstract::Agent{node}, ICMP::Worker{node} {
 		icmp.check = getAttribute(node,"icmp",icmp.check);
+
+		dns.server = getAttribute(node,"dns-server","");
+		dns.name = getAttribute(node,"host-name","");
 
 #ifdef DEBUG
 		if(!IP::Address::empty()) {
@@ -113,10 +120,73 @@
 		return super::getProperties(value);
 	}
 
+	bool IP::Agent::set(const DNS::Resolver &resolver) {
+
+		if(resolver.size()) {
+			sockaddr_storage addr = resolver.begin()->getAddr();
+			if(*((IP::Address *) this) == addr) {
+				return false;
+			}
+			IP::Address::set(addr);
+			info() << "Resolved address changed to '" << std::to_string(*((sockaddr_storage *) this)) << "'" << endl;
+			return true;
+		}
+
+		return false;
+	}
+
 	bool IP::Agent::refresh() {
 
 		debug("----------------------------------------------------------------",name());
 		bool rc = false;
+
+		// Check hostname?
+		if(dns.name && *dns.name) {
+
+			try {
+
+				// Do I have a fixed DNS server name?
+				if(dns.srvname && *dns.srvname) {
+
+					// Do I need to get the DNS server address?
+					if(dns.server) {
+
+						// Use detected DNS server.
+						if(set(DNS::Resolver{dns.server}.query(dns.name))) {
+							rc = true;
+						}
+
+					} else {
+
+						// Resolve DNS server.
+						DNS::Resolver resolver;
+						resolver.query(dns.srvname);
+
+						if(resolver.size()) {
+							// Got DNS server, use it.
+							dns.server.set(resolver.begin()->getAddr());
+							if(set(DNS::Resolver{dns.server}.query(dns.name))) {
+								rc = true;
+							}
+						}
+					}
+
+				} else {
+
+					// Use standard DNS
+					if(set(DNS::Resolver{}.query(dns.name))) {
+						rc = true;
+					}
+
+				}
+
+			} catch(const std::exception &e) {
+
+				error() << e.what() << endl;
+
+			}
+
+		}
 
 		// Check IP state
 		{

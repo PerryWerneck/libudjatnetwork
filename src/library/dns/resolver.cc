@@ -28,9 +28,9 @@
 
  namespace Udjat {
 
-	mutex Network::DNSResolver::guard;
+	mutex DNS::Resolver::guard;
 
-	Network::DNSResolver::DNSResolver() {
+	DNS::Resolver::Resolver() {
 
 		std::lock_guard<std::mutex> lock(guard);
 
@@ -45,17 +45,17 @@
 
 	}
 
-	Network::DNSResolver::DNSResolver(const struct sockaddr_storage &server) : Network::DNSResolver() {
+	DNS::Resolver::Resolver(const struct sockaddr_storage &server) : DNS::Resolver{} {
 		set(server);
 	}
 
-	Network::DNSResolver::~DNSResolver() {
+	DNS::Resolver::~Resolver() {
 		std::lock_guard<std::mutex> lock(guard);
 		res_nclose(&this->state);
 	}
 
 	/// @brief Set Address of the nameserver.
-	void Network::DNSResolver::set(const struct sockaddr_storage &server) {
+	void DNS::Resolver::set(const struct sockaddr_storage &server) {
 
 		if(!server.ss_family) {
 			return;
@@ -73,7 +73,7 @@
 	}
 
 	/// @brief Run DNS query.
-	void Network::DNSResolver::query(ns_class cls, ns_type type, const char *name) {
+	DNS::Resolver & DNS::Resolver::query(ns_class cls, ns_type type, const char *name) {
 
 		if(!(name && *name)) {
 			throw runtime_error("Cant resolve an empty hostname");
@@ -101,6 +101,8 @@
 			records.emplace_back(msg, rr);
 
 		}
+
+		return *this;
 
 	}
 

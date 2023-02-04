@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	Network::DNSResolver::Record::Record() {
+	DNS::Record::Record() {
 		memset(&addr,0,sizeof(addr));
 	}
 
@@ -67,7 +67,7 @@
 
 	}
 
-	Network::DNSResolver::Record::Record(const ns_msg &msg, const ns_rr &rr) : Network::DNSResolver::Record() {
+	DNS::Record::Record(const ns_msg &msg, const ns_rr &rr) : DNS::Record{} {
 
 		this->ttl	= (uint32_t) ns_rr_ttl(rr);
 		this->name	= ns_rr_name(rr);

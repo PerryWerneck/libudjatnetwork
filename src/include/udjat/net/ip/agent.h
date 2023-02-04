@@ -25,6 +25,8 @@
  #include <udjat/net/icmp.h>
  #include <udjat/net/ip/state.h>
 
+ #include <udjat/linux/dns.h>
+
  namespace Udjat {
 
 	namespace IP {
@@ -33,15 +35,25 @@
 		private:
 
 			struct {
-				bool check = true;										// Is ICMP check enabled?
-				Udjat::ICMP::Response response = Udjat::ICMP::invalid;	// ICMP Response.
-				std::vector<std::shared_ptr<ICMP::State>> states;		// XML defined ICMP states.
-				std::shared_ptr<ICMP::State> state;						// ICMP state.
+				bool check = true;										///< @brief Is ICMP check enabled?
+				Udjat::ICMP::Response response = Udjat::ICMP::invalid;	///< @brief ICMP Response.
+				std::vector<std::shared_ptr<ICMP::State>> states;		///< @brief XML defined ICMP states.
+				std::shared_ptr<ICMP::State> state;						///< @brief ICMP state.
 			} icmp;
 
 			struct {
-				std::vector<std::shared_ptr<IP::State>> states;			// XML defined IP states.
-				std::shared_ptr<IP::State> state;						// IP state.
+				IP::Address server;										///< @brief The DNS address.
+				const char * srvname = nullptr;							///< @brief The DNS Server to use.
+				const char * name = nullptr;							///< @brief The hostname to check (empty or nullptr to disable DNS test).
+			} dns;
+
+			/// @brief Set resolved hostname, update DNS state.
+			/// @return True if the addr has changed.
+			bool set(const DNS::Resolver &resolver);
+
+			struct {
+				std::vector<std::shared_ptr<IP::State>> states;			///< @brief XML defined IP states.
+				std::shared_ptr<IP::State> state;						///< @brief IP state.
 			} ip;
 
 		protected:

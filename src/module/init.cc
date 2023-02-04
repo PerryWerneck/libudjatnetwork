@@ -20,7 +20,6 @@
  #include <config.h>
  #include <private/module.h>
  #include <udjat/module.h>
- #include <private/agents/host.h>
  #include <private/agents/nic.h>
  #include <unistd.h>
  #include <sys/types.h>
