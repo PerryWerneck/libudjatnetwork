@@ -130,7 +130,11 @@
 			debug("Response ",htons(in.packet.icmp.icmp_seq)," from ",std::to_string(addr));
 
 			hosts.remove_if([&in,&addr](Host &host) {
-				return host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload);
+				if(host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload)) {
+					host.worker.busy = false;
+					return true;
+				}
+				return false;
 			});
 
 		}
@@ -146,7 +150,11 @@
 
 			// Send packets.
 			hosts.remove_if([](Host &host) {
-				return !host.onTimer();
+				if(!host.onTimer()) {
+					host.worker.busy = false;
+					return true;
+				}
+				return false;
 			});
 
 			if(hosts.empty()) {
@@ -216,7 +224,12 @@
 
 		lock_guard<recursive_mutex> lock(guard);
 
+		if(host.busy) {
+			throw std::system_error(EBUSY, std::system_category(), "ICMP Listener is already active");
+		}
+
 		start();
+		host.busy = true;
 		hosts.emplace_back(host,addr);
 
 	}
@@ -226,7 +239,11 @@
 		lock_guard<recursive_mutex> lock(guard);
 
 		hosts.remove_if([&worker](Host &h) {
-			return &h.host == &worker;
+			if(&h.worker == &worker) {
+				worker.busy = false;
+				return true;
+			}
+			return false;
 		});
 
 		if(hosts.empty()) {
@@ -291,7 +308,11 @@
 					int code = errno;
 
 					hosts.remove_if([code,&packet](Host &host) {
-						return host.onError(code,packet.payload);
+						if(host.onError(code,packet.payload)) {
+							host.worker.busy = false;
+							return true;
+						}
+						return false;
 					});
 
 				}

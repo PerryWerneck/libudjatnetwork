@@ -50,6 +50,8 @@
 		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='Gateway is not available' forward-to-children='yes' />
 		<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from gateway' forward-to-children='yes' />
 
+		<state name='subnet' subnet='192.168.0.0/24' level='ready' summary='Running on expected subnet' />
+
 		<network-host name='srv' ip='192.168.0.11' icmp='true' update-timer='60' icmp-timeout='30'>
 
 			<state name='active' icmp-response='echo-reply' level='ready' summary='Server is active' />

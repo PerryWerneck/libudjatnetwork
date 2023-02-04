@@ -73,6 +73,7 @@
 			} timers;
 
 			uint64_t time = 0;				///< @brief Time of last response.
+			bool busy = false;
 
 		protected:
 
@@ -90,6 +91,10 @@
 
 			inline time_t timeout() const noexcept {
 				return timers.timeout;
+			}
+
+			inline bool running() const noexcept {
+				return busy;
 			}
 
 			void start(const IP::Address &addr);

@@ -58,7 +58,7 @@
 
 		struct Host {
 
-			ICMP::Worker &host;
+			ICMP::Worker &worker;
 			const IP::Address address;
 			uint16_t id;
 
@@ -71,8 +71,8 @@
 			bool onTimer();
 			void send() noexcept;
 
-			inline bool operator ==(const ICMP::Worker &host) const noexcept {
-				return &host == &this->host;
+			inline bool operator ==(const ICMP::Worker &worker) const noexcept {
+				return &worker == &this->worker;
 			}
 
 			/// @brief Process response.

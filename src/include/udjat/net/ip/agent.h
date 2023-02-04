@@ -23,6 +23,7 @@
  #include <udjat/agent.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/icmp.h>
+ #include <udjat/net/ip/state.h>
 
  namespace Udjat {
 
@@ -38,13 +39,17 @@
 				std::shared_ptr<ICMP::State> state;						// ICMP state.
 			} icmp;
 
-		protected:
+			struct {
+				std::vector<std::shared_ptr<IP::State>> states;			// XML defined IP states.
+				std::shared_ptr<IP::State> state;						// IP state.
+			} ip;
 
-			bool set(std::shared_ptr<Abstract::State> state) override;
+		protected:
 
 			virtual void set(const ICMP::Response response, const IP::Address &from) override;
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 			std::shared_ptr<Abstract::State> computeState() override;
+			virtual void start() override;
 
 		public:
 

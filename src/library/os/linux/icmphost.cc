@@ -24,10 +24,10 @@
 
  namespace Udjat {
 
-	ICMP::Controller::Host::Host(ICMP::Worker &h, const IP::Address &a) : host{h}, address{a} {
+	ICMP::Controller::Host::Host(ICMP::Worker &w, const IP::Address &a) : worker{w}, address{a} {
 		static uint16_t id = 0;
 		this->id = id++;
-		timeout = time(0) + host.interval();
+		timeout = time(0) + worker.interval();
 		send();
 	}
 
@@ -36,7 +36,7 @@
  		time_t now = ::time(0);
 
 		if(now > timeout) {
-			host.set(Response::timeout,address);
+			worker.set(Response::timeout,address);
 			return false;
 		}
 
@@ -53,7 +53,7 @@
 
 			switch(code) {
 			case ENETUNREACH:	// Network is unreachable
-				host.set(Response::network_unreachable,address);
+				worker.set(Response::network_unreachable,address);
 				return true;
 
 			default:
@@ -83,21 +83,21 @@
 					uint64_t now = ICMP::Controller::getCurrentTime();
 
 					if(payload.time >= now) {
-						host.time = (payload.time - now);
+						worker.time = (payload.time - now);
 					} else {
-						host.time = (now - payload.time);
+						worker.time = (now - payload.time);
 					}
 
-					host.set(Response::echo_reply,addr);
+					worker.set(Response::echo_reply,addr);
 				}
 				break;
 
 			case ICMP_DEST_UNREACH: // Destination Unreachable
-				host.set(Response::destination_unreachable,addr);
+				worker.set(Response::destination_unreachable,addr);
 				break;
 
 			case ICMP_TIME_EXCEEDED: // Time Exceeded
-				host.set(Response::time_exceeded,addr);
+				worker.set(Response::time_exceeded,addr);
 				break;
 
 			default:
@@ -120,7 +120,7 @@
 
 			Payload packet;
 
-			next = ::time(0) + host.interval();
+			next = ::time(0) + worker.interval();
 
 			memset(&packet,0,sizeof(packet));
 			packet.id 	= this->id;

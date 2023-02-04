@@ -56,7 +56,6 @@
 		<Unit filename="src/library/dns/record.cc" />
 		<Unit filename="src/library/dns/resolver.cc" />
 		<Unit filename="src/library/icmp/controller.cc" />
-		<Unit filename="src/library/icmp/host.cc" />
 		<Unit filename="src/library/icmp/response.cc" />
 		<Unit filename="src/library/icmp/state.cc" />
 		<Unit filename="src/library/icmp/worker.cc" />

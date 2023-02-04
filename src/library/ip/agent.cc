@@ -39,13 +39,7 @@
 #endif // DEBUG
 	}
 
-	bool IP::Agent::set(std::shared_ptr<Abstract::State> state) {
-
-		if(*icmp.state > *state) {
-			state = icmp.state;
-		}
-
-		return super::set(state);
+	void IP::Agent::start() {
 	}
 
 	void IP::Agent::set(const ICMP::Response response, const IP::Address &from) {
@@ -54,28 +48,30 @@
 			return;
 		}
 
-		icmp.response = response;
-
-		Logger::String{"Setting ICMP state to '",response,"'"}.trace(name());
-
-		if(!icmp.states.empty()) {
-
-			// Check for xml defined states.
-			for(auto state : icmp.states) {
-				if(state->id == response) {
-					set(icmp.state = state);
-					return;
-				}
+		// Check for xml defined states.
+		for(auto state : icmp.states) {
+			if(state->id == response) {
+				icmp.state = state;
+				Logger::String{"Setting ICMP state to '",icmp.state->to_string(),"' (",response,")"}.trace(name());
+				updated(true);
+				return;
 			}
 		}
 
 		// Use predefined state.
-		set(icmp.state = ICMP::State::Factory(response));
+		icmp.state = ICMP::State::Factory(response);
+		Logger::String{"Setting ICMP state to '",icmp.state->to_string(),"' (",response,")"}.trace(name());
+		updated(true);
 
 	}
 
 	std::shared_ptr<Abstract::State> IP::Agent::computeState() {
+
 		auto state = super::computeState();
+
+		if(ip.state && *ip.state > *state) {
+			state = ip.state;
+		}
 
 		if(icmp.state && *icmp.state > *state) {
 			state = icmp.state;
@@ -86,12 +82,15 @@
 
 	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const pugi::xml_node &node) {
 
-		pugi::xml_attribute attr;
-
-		attr = Object::getAttribute(node,"icmp-response");
-		if(attr) {
+		if(Object::getAttribute(node,"icmp-response")) {
 			auto state = ICMP::State::Factory(node);
 			icmp.states.push_back(state);
+			return state;
+		}
+
+		if(Object::getAttribute(node,"subnet")) {
+			auto state = IP::State::Factory(node);
+			ip.states.push_back(state);
 			return state;
 		}
 
@@ -116,11 +115,42 @@
 
 	bool IP::Agent::refresh() {
 
-		if(icmp.check) {
+		debug("----------------------------------------------------------------",name());
+		bool rc = false;
+
+		// Check IP state
+		{
+			std::shared_ptr<IP::State> state;
+			for(auto subnet : ip.states) {
+				if(subnet->compare((const IP::Address) *this)) {
+					state = subnet;
+					break;
+				}
+			}
+
+			if(state.get() != ip.state.get()) {
+
+				// IP state has changed.
+
+				ip.state = state;
+				if(ip.state) {
+					Logger::String{"Setting IP state to '",ip.state->to_string(),"'"}.trace(name());
+				} else {
+					Logger::String{"Cleaning IP state"}.trace(name());
+				}
+				rc = true;
+
+			}
+
+		}
+
+		if(icmp.check && !ICMP::Worker::running()) {
 			ICMP::Worker::start(*this);
 		}
 
-		return false;
+		debug("-------------------------------------------------------------");
+		debug("Agent '",name(),"' refresh(), ends with rc=",(rc ? "Updated" : "no updated"));
+		return rc;
 	}
 
  }

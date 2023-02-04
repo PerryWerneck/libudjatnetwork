@@ -41,6 +41,8 @@
 
 		public:
 
+			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
+
 			/// @brief Create state from subnet on format xxx.xxx.xxx.xxx/bits
 			State(const char *subnet);
 

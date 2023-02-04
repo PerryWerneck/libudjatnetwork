@@ -30,6 +30,10 @@
 
  namespace Udjat {
 
+	std::shared_ptr<IP::State> IP::State::Factory(const pugi::xml_node &node) {
+		return make_shared<IP::State>(node);
+	}
+
 	IP::State::State(const char *subnet) : Abstract::State{subnet} {
 		set(subnet);
 	}
