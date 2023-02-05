@@ -23,6 +23,8 @@
  #include <udjat/net/ip/address.h>
  #include <udjat/net/ip/agent.h>
  #include <udjat/net/icmp.h>
+ #include <udjat/net/dns.h>
+ #include <udjat/agent/state.h>
  #include <iostream>
 
  using namespace std;
@@ -120,76 +122,96 @@
 		return super::getProperties(value);
 	}
 
-	bool IP::Agent::set(const DNS::Resolver &resolver) {
+	bool IP::Agent::set(const DNS::Response response, const char *name) {
 
-		if(resolver.size()) {
-			sockaddr_storage addr = resolver.begin()->getAddr();
-			if(*((IP::Address *) this) == addr) {
-				return false;
-			}
-			IP::Address::set(addr);
-			info() << "Resolved address changed to '" << std::to_string(*((sockaddr_storage *) this)) << "'" << endl;
-			return true;
+		if(dns.state->id == response) {
+			return false;
 		}
 
-		return false;
+		for(auto state : dns.states) {
+			if(state->id == response) {
+				dns.state = state;
+				info() << name << ": " << dns.state->to_string() << endl;
+				return true;
+			}
+		}
+
+		dns.state = DNS::State::Factory(response);
+		info() << name << ": " << dns.state->to_string() << endl;
+
+		return true;
 	}
+
 
 	bool IP::Agent::refresh() {
 
 		debug("----------------------------------------------------------------",name());
 		bool rc = false;
 
-		// Check hostname?
-		if(dns.name && *dns.name) {
+		// Check for DNS
+		try {
+			// Check hostname?
+			if(dns.name && *dns.name) {
 
-			try {
-
-				// Do I have a fixed DNS server name?
-				if(dns.srvname && *dns.srvname) {
-
-					// Do I need to get the DNS server address?
-					if(dns.server) {
-
-						// Use detected DNS server.
-						if(set(DNS::Resolver{dns.server}.query(dns.name))) {
-							rc = true;
-						}
-
-					} else {
-
-						// Resolve DNS server.
-						DNS::Resolver resolver;
-						resolver.query(dns.srvname);
-
-						if(resolver.size()) {
-							// Got DNS server, use it.
-							dns.server.set(resolver.begin()->getAddr());
-							if(set(DNS::Resolver{dns.server}.query(dns.name))) {
-								rc = true;
-							}
-						}
+				// Do we need the DNS server addr?
+				if(dns.srvname && *dns.srvname && !dns.server) {
+					//
+					// Resolve DNS server address using the system DNS server.
+					//
+					DNS::Resolver resolver;
+					resolver.query(dns.srvname);
+					if(resolver.empty()) {
+						icmp.state.reset();
+						ip.state.reset();
+						return set(DNS::cant_resolve_server_address,dns.srvname);
 					}
 
-				} else {
-
-					// Use standard DNS
-					if(set(DNS::Resolver{}.query(dns.name))) {
-						rc = true;
-					}
+					dns.server.set(resolver.begin()->getAddr());
 
 				}
 
-			} catch(const std::exception &e) {
+				// Using a custom DNS server?
+				if(dns.srvname && *dns.srvname) {
 
-				error() << e.what() << endl;
+					DNS::Resolver resolver{dns.server};
+					resolver.query(dns.name);
+					if(resolver.empty()) {
+						icmp.state.reset();
+						ip.state.reset();
+						return set(DNS::cant_resolve_address,dns.srvname);
+					}
+
+					IP::Address::set(resolver.begin()->getAddr());
+
+				} else {
+
+					DNS::Resolver resolver;
+					resolver.query(dns.name);
+					if(resolver.empty()) {
+						icmp.state.reset();
+						ip.state.reset();
+						return set(DNS::cant_resolve_address,dns.name);
+					}
+
+					IP::Address::set(resolver.begin()->getAddr());
+				}
+
+				if(set(DNS::dns_ok,dns.name)) {
+					rc = true;
+				}
 
 			}
 
+		} catch(...) {
+			icmp.state.reset();
+			ip.state.reset();
+			dns.state.reset();
+			throw;
 		}
 
 		// Check IP state
-		{
+		if(!IP::Address::empty()) {
+
 			std::shared_ptr<IP::State> state;
 			for(auto subnet : ip.states) {
 				if(subnet->compare((const IP::Address) *this)) {
@@ -212,10 +234,20 @@
 
 			}
 
+		} else {
+
+			ip.state.reset();
+
 		}
 
 		if(icmp.check && !ICMP::Worker::running()) {
-			ICMP::Worker::start(*this);
+
+			if(IP::Address::empty()) {
+				icmp.state.reset();
+			} else {
+				ICMP::Worker::start(*this);
+			}
+
 		}
 
 		debug("-------------------------------------------------------------");

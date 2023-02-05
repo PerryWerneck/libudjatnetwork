@@ -45,13 +45,16 @@
 		<Unit filename="src/include/private/icmp/controller.h" />
 		<Unit filename="src/include/private/module.h" />
 		<Unit filename="src/include/udjat/linux/dns.h" />
+		<Unit filename="src/include/udjat/net/dns.h" />
 		<Unit filename="src/include/udjat/net/gateway.h" />
 		<Unit filename="src/include/udjat/net/icmp.h" />
 		<Unit filename="src/include/udjat/net/ip/agent.h" />
 		<Unit filename="src/include/udjat/net/ip/state.h" />
+		<Unit filename="src/include/udjat/net/linux/dns.h" />
 		<Unit filename="src/library/defaultgateway.cc" />
 		<Unit filename="src/library/dns/record.cc" />
 		<Unit filename="src/library/dns/resolver.cc" />
+		<Unit filename="src/library/dns/state.cc" />
 		<Unit filename="src/library/icmp/controller.cc" />
 		<Unit filename="src/library/icmp/response.cc" />
 		<Unit filename="src/library/icmp/state.cc" />

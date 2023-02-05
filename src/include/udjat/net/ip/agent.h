@@ -24,8 +24,7 @@
  #include <udjat/net/ip/address.h>
  #include <udjat/net/icmp.h>
  #include <udjat/net/ip/state.h>
-
- #include <udjat/linux/dns.h>
+ #include <udjat/net/dns.h>
 
  namespace Udjat {
 
@@ -42,14 +41,12 @@
 			} icmp;
 
 			struct {
-				IP::Address server;										///< @brief The DNS address.
+				IP::Address server;										///< @brief The DNS server address.
 				const char * srvname = nullptr;							///< @brief The DNS Server to use.
 				const char * name = nullptr;							///< @brief The hostname to check (empty or nullptr to disable DNS test).
+				std::vector<std::shared_ptr<DNS::State>> states;			///< @brief XML defined DNS states.
+				std::shared_ptr<DNS::State> state;						///< @brief DNS state.
 			} dns;
-
-			/// @brief Set resolved hostname, update DNS state.
-			/// @return True if the addr has changed.
-			bool set(const DNS::Resolver &resolver);
 
 			struct {
 				std::vector<std::shared_ptr<IP::State>> states;			///< @brief XML defined IP states.
@@ -59,6 +56,11 @@
 		protected:
 
 			virtual void set(const ICMP::Response response, const IP::Address &from) override;
+
+			/// @brief Set DNS state.
+			/// @return true if the state has changed.
+			virtual bool set(const DNS::Response response, const char *name);
+
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 			std::shared_ptr<Abstract::State> computeState() override;
 			virtual void start() override;

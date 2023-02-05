@@ -111,7 +111,11 @@
 				return records.end();
 			}
 
-			inline size_t size() const {
+			inline bool empty() const noexcept {
+				return records.empty();
+			}
+
+			inline size_t size() const noexcept {
 				return records.size();
 			}
 

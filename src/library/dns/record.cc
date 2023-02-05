@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/linux/dns.h>
+ #include <udjat/net/dns.h>
  #include <string>
  #include <cstring>
  #include <udjat/net/ip/address.h>
