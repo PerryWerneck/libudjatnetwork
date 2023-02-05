@@ -74,6 +74,18 @@
 
 	};
 
+	UDJAT_API DNS::Response DNS::ResponseFactory(const char *name) {
+
+		for(size_t ix = 0; ix < N_ELEMENTS(dns_states); ix++) {
+			if(!strcasecmp(name,dns_states[ix].name)) {
+				return (DNS::Response) ix;
+			}
+		}
+
+		throw runtime_error(string{"Invalid DNS response id: "} + name);
+
+	}
+
 	std::shared_ptr<DNS::State> DNS::State::Factory(const pugi::xml_node &node) {
 
 		class State : public DNS::State {
@@ -113,7 +125,7 @@
 
 		};
 
-		DNS::Response id{ResponseFactory(node.attribute("dns-response").as_string())};
+		DNS::Response id{ResponseFactory(node.attribute("dns-state").as_string())};
 
 		for(const dns_state &st : dns_states) {
 
@@ -123,7 +135,7 @@
 
 		}
 
-		throw runtime_error("The required attribute 'dns-response' is missing or invalid");
+		throw runtime_error("The required attribute 'dns-state' is missing or invalid");
 
 	}
 
@@ -163,7 +175,7 @@
 
 		}
 
-		throw runtime_error("The required attribute 'icmp-response' is missing or invalid");
+		throw runtime_error("The required attribute 'dns-state' is missing or invalid");
 
 	}
 
