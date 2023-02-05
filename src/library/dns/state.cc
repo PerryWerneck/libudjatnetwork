@@ -48,7 +48,7 @@
 			N_("The DNS resolver state is invalid.")
 		},
 		{
-			"no-server",
+			"cant-resolve-server",
 			DNS::cant_resolve_server_address,
 			Level::critical,
 			N_("No server"),
@@ -56,7 +56,7 @@
 			N_("Unable to resolve the name of the defined DNS server.")
 		},
 		{
-			"no-name",
+			"cant-resolve-host",
 			DNS::cant_resolve_address,
 			Level::error,
 			N_("cant-resolve"),
