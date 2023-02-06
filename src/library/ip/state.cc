@@ -30,15 +30,30 @@
 
  namespace Udjat {
 
-	std::shared_ptr<IP::State> IP::State::Factory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::IP::State> IP::State::Factory(const pugi::xml_node &node) {
+
+		const char *subnet = Object::getAttribute(node,"subnet").as_string();
+
+		/*
+		if(!strncasecmp(subnet,"local")) {
+
+			// Create local subnet.
+			class State : public IP::State {
+			};
+
+
+		}
+		*/
+
+		// Create default state.
 		return make_shared<IP::State>(node);
 	}
 
-	IP::State::State(const char *subnet) : Abstract::State{subnet} {
+	IP::State::State(const char *subnet) : Abstract::IP::State{subnet} {
 		set(subnet);
 	}
 
-	IP::State::State(const pugi::xml_node &node) : Abstract::State{node} {
+	IP::State::State(const pugi::xml_node &node) : Abstract::IP::State{node} {
 		set(Object::getAttribute(node,"subnet").as_string());
 	}
 
@@ -72,23 +87,66 @@
 		return rc;
 	}
 
-	bool IP::State::compare(const IP::Address &value) {
-		return compare( (const sockaddr_storage) *this, (const sockaddr_storage) value);
-	}
+	/// @brief Test an IPV4 address range.
+	bool IP::State::compare(const sockaddr_in &addr) const {
 
-	bool IP::State::compare(const sockaddr_storage &subnet, const sockaddr_storage &addr) const {
-
-		if(addr.ss_family != this->ss_family) {
+		if(this->ss_family != AF_INET) {
 			return false;
 		}
 
-		if(ss_family == AF_INET) {
-			return compare(*((const sockaddr_in *) &subnet), *((const sockaddr_in *) &addr));
-		}
+		sockaddr_storage sn{*this};
+		sockaddr_in subnet = *((const sockaddr_in *) &sn);
 
+		sockaddr_in netmask;
+		memset(&netmask,0,sizeof(sockaddr_in));
+		netmask.sin_family = AF_INET;
+
+		for(size_t ix = 0; ix < bits; ix++) {
+			netmask.sin_addr.s_addr >>= 1;
+			netmask.sin_addr.s_addr |= 0x80000000;
+		}
+		netmask.sin_addr.s_addr = htonl(netmask.sin_addr.s_addr);
+
+		debug("subnet=",std::to_string(subnet));
+		debug("netmask=",std::to_string(netmask));
+		debug("ip=",std::to_string(addr));
+
+		in_addr_t net  = (addr.sin_addr.s_addr & netmask.sin_addr.s_addr);
+		in_addr_t base = (subnet.sin_addr.s_addr & netmask.sin_addr.s_addr);
+
+		debug("base==net: ", (base==net), "  (base|net)==net: ", ((base|net) == net))
+
+		return (base == net) && ((base|net) == net);
+
+
+	}
+
+	/// @brief Test an IPV6 address range.
+	bool IP::State::compare(const sockaddr_in6 &addr) const {
 		throw runtime_error("Unsupported network family");
 	}
 
+	bool Abstract::IP::State::compare(const Udjat::IP::Address &value) {
+		return compare((const sockaddr_storage) value);
+	}
+
+	bool Abstract::IP::State::compare(const sockaddr_storage &addr) const {
+
+		switch(addr.ss_family) {
+		case AF_INET:
+			return compare(*((const sockaddr_in *) &addr));
+
+		case AF_INET6:
+			return compare(*((const sockaddr_in6 *) &addr));
+
+		default:
+			throw runtime_error("Invalid address family");
+		}
+
+
+	}
+
+	/*
 	bool IP::State::compare(const sockaddr_in &subnet, const sockaddr_in &addr) const {
 
 		sockaddr_in netmask;
@@ -113,6 +171,7 @@
 		return (base == net) && ((base|net) == net);
 
 	}
+	*/
 
 
  }

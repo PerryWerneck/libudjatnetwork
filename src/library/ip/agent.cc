@@ -70,21 +70,6 @@
 
 	}
 
-	std::shared_ptr<Abstract::State> IP::Agent::computeState() {
-
-		auto state = super::computeState();
-
-		if(ip.state && *ip.state > *state) {
-			state = ip.state;
-		}
-
-		if(icmp.state && *icmp.state > *state) {
-			state = icmp.state;
-		}
-
-		return state;
-	}
-
 	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const pugi::xml_node &node) {
 
 		if(Object::getAttribute(node,"icmp-response")) {
@@ -120,59 +105,70 @@
 
 	bool IP::Agent::getProperty(const char *key, std::string &value) const noexcept {
 
+		if(!strcasecmp(key,"ip")) {
+			value = std::to_string((IP::Address) *this);
+		}
 
 		return super::getProperty(key,value);
 	}
 
-	bool IP::Agent::refresh() {
+	std::shared_ptr<Abstract::State> IP::Agent::computeState() {
 
-		bool rc = false;
+		auto state = super::computeState();
 
-		// Check IP state
 		if(IP::Address::empty()) {
 
-			debug("Empty IP address on agent ",name());
 			ip.state.reset();
-			set(ICMP::invalid,(IP::Address) *this);
+
+			// TODO: Find empty subnet.
 
 		} else {
 
-			std::shared_ptr<IP::State> state;
+			// Compute state from subnet.
 			for(auto subnet : ip.states) {
 				if(subnet->compare((const IP::Address) *this)) {
-					state = subnet;
+					if(!ip.state || ip.state != subnet) {
+						info() << std::to_string((IP::Address) *this) << ": " << subnet->to_string() << endl;
+					}
+					ip.state = subnet;
 					break;
 				}
 			}
 
-			if(state.get() != ip.state.get()) {
+		}
 
-				// IP state has changed.
+		if(ip.state && *ip.state > *state) {
+			state = ip.state;
+		}
 
-				ip.state = state;
-				if(ip.state) {
-					Logger::String{"Setting IP state to '",ip.state->to_string(),"'"}.trace(name());
-				} else {
-					Logger::String{"Cleaning IP state"}.trace(name());
-				}
-				rc = true;
+		if(icmp.state && *icmp.state > *state) {
+			state = icmp.state;
+		}
 
+		return state;
+	}
+
+
+	bool IP::Agent::refresh() {
+
+		// Check IP state
+		if(IP::Address::empty()) {
+
+			if(ip.state) {
+				info() << "No IP address, resetting state" << endl;
+				ip.state.reset();
+				set(ICMP::invalid,(IP::Address) *this);
 			}
 
-			if(icmp.check && !ICMP::Worker::running()) {
-
-				if(IP::Address::empty()) {
-					icmp.state.reset();
-				} else {
-					ICMP::Worker::start(*this);
-				}
-
-			}
+			return false;
 
 		}
 
-		debug("Agent '",name(),"' refresh(), ends with rc=",(rc ? "Updated" : "no updated"));
-		return rc;
+		if(icmp.check && !ICMP::Worker::running()) {
+			ICMP::Worker::start(*this);
+		}
+
+		return false;
 	}
 
  }

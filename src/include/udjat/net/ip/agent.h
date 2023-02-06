@@ -34,22 +34,28 @@
 		private:
 
 			struct {
-				bool check = true;										///< @brief Is ICMP check enabled?
-				Udjat::ICMP::Response response = Udjat::ICMP::invalid;	///< @brief ICMP Response.
-				std::vector<std::shared_ptr<ICMP::State>> states;		///< @brief XML defined ICMP states.
-				std::shared_ptr<ICMP::State> state;						///< @brief ICMP state.
+				bool check = true;											///< @brief Is ICMP check enabled?
+				Udjat::ICMP::Response response = Udjat::ICMP::invalid;		///< @brief ICMP Response.
+				std::vector<std::shared_ptr<ICMP::State>> states;			///< @brief XML defined ICMP states.
+				std::shared_ptr<ICMP::State> state;							///< @brief ICMP state.
 			} icmp;
 
 			struct {
-				std::vector<std::shared_ptr<IP::State>> states;			///< @brief XML defined IP states.
-				std::shared_ptr<IP::State> state;						///< @brief IP state.
+				std::vector<std::shared_ptr<Abstract::IP::State>> states;	///< @brief XML defined IP states.
+				std::shared_ptr<Abstract::IP::State> state;					///< @brief IP state.
 			} ip;
 
 		protected:
 
-			virtual void set(const ICMP::Response response, const IP::Address &from) override;
+			/// @brief Build and IP state from xml node.
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+
+			/// @brief Set and ICMP state
+			virtual void set(const ICMP::Response response, const IP::Address &from) override;
+
+			/// @brief Compute state.
 			std::shared_ptr<Abstract::State> computeState() override;
+
 			virtual void start() override;
 
 		public:

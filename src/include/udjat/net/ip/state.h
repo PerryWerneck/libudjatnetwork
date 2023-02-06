@@ -25,34 +25,65 @@
 
  namespace Udjat {
 
+	namespace Abstract {
+
+		namespace IP {
+
+			class UDJAT_API State : public Udjat::Abstract::State {
+			protected:
+				/// @brief Test an IPV4 address range.
+				virtual bool compare(const sockaddr_in &addr) const = 0;
+
+				/// @brief Test an IPV6 address range.
+				virtual bool compare(const sockaddr_in6 &addr) const = 0;
+
+				/// @brief Test address range.
+				bool compare(const sockaddr_storage &subnet, const sockaddr_storage &addr) const;
+
+			public:
+				State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "")
+					: Udjat::Abstract::State{name,level,summary,body} { }
+
+				/// @brief Create state from xml node
+				State(const pugi::xml_node &node)
+					: Udjat::Abstract::State{node} { }
+
+				/// @brief Test if IP is in range.
+				/// @param value IP to test.
+				/// @return true if IP is in state range.
+				bool compare(const Udjat::IP::Address &value);
+
+				bool compare(const sockaddr_storage &addr) const;
+
+			};
+
+		};
+
+	}
+
 	namespace IP {
 
-		class UDJAT_API State : public Abstract::State, public IP::Address {
+		class UDJAT_API State : public Abstract::IP::State, public IP::Address {
 		private:
 			unsigned int bits = 0;
-
 			void set(const char *subnet);
 
-			/// @brief Test an IPV4 address range.
-			bool compare(const sockaddr_in &subnet, const sockaddr_in &addr) const;
+		protected:
+				/// @brief Test an IPV4 address range.
+				bool compare(const sockaddr_in &addr) const override;
 
-			/// @brief Test address range.
-			bool compare(const sockaddr_storage &subnet, const sockaddr_storage &addr) const;
+				/// @brief Test an IPV6 address range.
+				bool compare(const sockaddr_in6 &addr) const override;
 
 		public:
 
-			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
+			static std::shared_ptr<Abstract::IP::State> Factory(const pugi::xml_node &node);
 
 			/// @brief Create state from subnet on format xxx.xxx.xxx.xxx/bits
 			State(const char *subnet);
 
 			/// @brief Create state from XML node.
 			State(const pugi::xml_node &node);
-
-			/// @brief Test if IP is in range.
-			/// @param value IP to test.
-			/// @return true if IP is in state range.
-			bool compare(const IP::Address &value);
 
 			std::string to_string() const noexcept override;
 
