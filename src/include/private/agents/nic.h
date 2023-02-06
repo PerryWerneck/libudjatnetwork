@@ -19,6 +19,7 @@
 
  #pragma once
 
+ /*
  #include <udjat/defs.h>
  #include <udjat/factory.h>
  #include <udjat/agent.h>
@@ -120,3 +121,4 @@
 	}
 
  }
+ */

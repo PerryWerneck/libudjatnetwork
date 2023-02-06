@@ -282,6 +282,13 @@ install-dev: \
 		$(DESTDIR)$(includedir)/udjat/net/dns
 
 	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/nic
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/dns/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/nic
+
+	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/net/@OSNAME@
 
 	@$(INSTALL_DATA) \

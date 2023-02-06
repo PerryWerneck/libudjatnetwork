@@ -10,16 +10,18 @@
 	<attribute name='alert-filename' value='/tmp/netwatcher.log' />
 	<attribute name='alert-payload' value='${timestamp} ${summary}' />
 
-	<!--
-	<network-interface name='nic' update-timer='60'>
+	<network-interface name='vpn' device-name='tunsnx'>
 
+		<!--
 		<state name='undefined' value='0' level='error' summary='Network link state is undefined' />
 		<state name='offline' value='1' level='warning' summary='System is offline' />
 		<state name='single' value='2' level='ready' summary='Single network link' />
 		<state name='multiple' value='3' level='ready' summary='Multiple network links' />
+		-->
 
 	</network-interface>
 
+	<!--
 	<network-interface name='vpn' interface-name='tunsnx' update-timer='60'>
 
 		<state name='undefined' level='error' summary='VPN link state is undefined' />

@@ -27,6 +27,7 @@
 
  using namespace std;
 
+	/*
  namespace Udjat {
 
 	Network::Agent::Interfaces::Interfaces(const pugi::xml_node &node) : Udjat::Agent<unsigned short>(node,NIC_STATE_UNDEFINED) {
@@ -156,3 +157,4 @@
 	}
 
  }
+ */

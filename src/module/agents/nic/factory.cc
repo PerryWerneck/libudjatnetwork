@@ -17,9 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /*
  #include <config.h>
  #include <private/module.h>
- #include <private/agents/nic.h>
+ #include <udjat/net/nic/agent.h>
+ #include <agent.h>
 
  namespace Udjat {
 
@@ -28,12 +30,15 @@
 
 	std::shared_ptr<Abstract::Agent> Network::Agent::Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) const {
 
-		if(node.attribute("interface-name")) {
-			return make_shared<Network::Agent::Interface>(node);
+		// Has device name? If yes create device agent
+		if(node.attribute("device-name")) {
+			return make_shared<Udjat::Nic::Agent>(node);
 		}
 
-		return make_shared<Network::Agent::Interfaces>(node);
+		// No device name, create container.
+		return make_shared<Udjat::Nic::List>(node);
 
 	}
 
  }
+ */

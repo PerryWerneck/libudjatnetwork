@@ -104,7 +104,6 @@
 
 	bool DNS::Agent::refresh() {
 
-		debug("----------------------------------------------------------------",name());
 		bool rc = false;
 
 		// Check hostname?
@@ -169,8 +168,6 @@
 			rc = true;
 		}
 
-		debug("-------------------------------------------------------------");
-		debug("Agent '",name(),"' refresh(), ends with rc=",(rc ? "Updated" : "no updated"));
 		return rc;
 	}
 

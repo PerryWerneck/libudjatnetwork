@@ -30,13 +30,6 @@
 
  namespace Udjat {
 
-	class UDJAT_PRIVATE HostFactory : public Factory {
-	public:
-		HostFactory();
-
-		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const override;
-
-	};
 
 		/*
 	namespace Network {
