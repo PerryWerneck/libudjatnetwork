@@ -54,6 +54,7 @@
 		<Unit filename="src/include/udjat/net/ip/state.h" />
 		<Unit filename="src/include/udjat/net/linux/dns.h" />
 		<Unit filename="src/include/udjat/net/nic/agent.h" />
+		<Unit filename="src/include/udjat/net/nic/state.h" />
 		<Unit filename="src/include/udjat/net/windows/dns.h" />
 		<Unit filename="src/library/defaultgateway.cc" />
 		<Unit filename="src/library/dns/agent.cc" />

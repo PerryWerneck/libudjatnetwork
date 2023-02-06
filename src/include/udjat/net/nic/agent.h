@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
+ #include <udjat/net/nic/state.h>
 
  namespace Udjat {
 
@@ -42,6 +43,11 @@
 			void on_rtlink_event();
 
 #endif // !_WIN32
+
+			std::vector<std::shared_ptr<Nic::State>> states;			///< @brief XML defined NIC states.
+
+		protected:
+			// std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 
 		public:
 

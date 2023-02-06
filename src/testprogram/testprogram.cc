@@ -86,6 +86,9 @@ int main(int argc, char **argv) {
 
 	// cout << "------------> " << Udjat::Network::DefaultGateway() << endl;
 
+	Logger::enable(Logger::Trace);
+	Logger::enable(Logger::Debug);
+
 	Service().run(argc,argv);
 
 	cout << "*** Test program finished" << endl;

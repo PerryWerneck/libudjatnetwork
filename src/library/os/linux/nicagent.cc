@@ -47,6 +47,31 @@
 
  namespace Udjat {
 
+	static const struct {
+		unsigned int flag;
+		const char *name;
+	} flagnames[] = {
+		{ IFF_UP,			"IFF_UP"			},
+		{ IFF_BROADCAST,	"IFF_BROADCAST"		},
+		{ IFF_DEBUG,		"IFF_DEBUG"			},
+		{ IFF_LOOPBACK,		"IFF_LOOPBACK"		},
+		{ IFF_POINTOPOINT,	"IFF_POINTOPOINT"	},
+		{ IFF_RUNNING,		"IFF_RUNNING"		},
+		{ IFF_NOARP,		"IFF_NOARP"			},
+		{ IFF_PROMISC,		"IFF_PROMISC"		},
+		{ IFF_NOTRAILERS,	"IFF_NOTRAILERS"	},
+		{ IFF_ALLMULTI,		"IFF_ALLMULTI"		},
+		{ IFF_MASTER,		"IFF_MASTER"		},
+		{ IFF_SLAVE,		"IFF_SLAVE"			},
+		{ IFF_MULTICAST,	"IFF_MULTICAST"		},
+		{ IFF_PORTSEL,		"IFF_PORTSEL"		},
+		{ IFF_AUTOMEDIA,	"IFF_AUTOMEDIA"		},
+		{ IFF_DYNAMIC,		"IFF_DYNAMIC"		},
+//						{ IFF_LOWER_UP,		"IFF_LOWER_UP"		},
+//						{ IFF_DORMANT,		"IFF_DORMANT"		},
+//						{ IFF_ECHO,			"IFF_ECHO"			},
+	};
+
 	class Nic::Agent::Controller : private MainLoop::Handler {
 	private:
 		static mutex guard;
@@ -101,11 +126,34 @@
 			Nic::Agent *agent = get_agent(ifi->ifi_index);
 
 			if(agent) {
+
 				bool changed = false;
 				if(agent->intf.flags != ifi->ifi_flags) {
+
 					changed = true;
 					agent->intf.flags = ifi->ifi_flags;
+
+					if(Logger::enabled(Logger::Trace)) {
+
+						Logger::String strflags;
+
+						for(size_t ix = 0; ix < N_ELEMENTS(flagnames);ix++) {
+
+							if(ifi->ifi_flags & flagnames[ix].flag) {
+								if(!strflags.empty()) {
+									strflags.append(" ");
+								}
+								strflags.append(flagnames[ix].name);
+							}
+
+						}
+
+						strflags.write(Logger::Trace,agent->std::string::c_str());
+
+					}
+
 				}
+
 				if(agent->intf.enabled != enabled) {
 					changed = true;
 					agent->intf.enabled = true;
