@@ -261,11 +261,32 @@ install-dev: \
 	install-@OSNAME@-static 
 	
 	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/tools/net
+		$(DESTDIR)$(includedir)/udjat/net
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/net/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/net
+		src/include/udjat/net/*.h \
+		$(DESTDIR)$(includedir)/udjat/net
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/ip
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/ip/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/ip
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/dns
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/dns/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/dns
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/@OSNAME@
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/@OSNAME@/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/@OSNAME@
 
 	# Install PKG-CONFIG files
 	@$(MKDIR) \

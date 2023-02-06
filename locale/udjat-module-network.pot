@@ -6,21 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"#-#-#-#-#  defaultgateway.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 12:30-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-04 00:48-0300\n"
+"POT-Creation-Date: 2023-02-06 08:41-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,74 +17,142 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/library/icmp/state.cc:45
+#: src/library/icmp/state.cc:47
 msgid "${name} address is invalid"
 msgstr ""
 
-#: src/library/icmp/state.cc:52
+#: src/library/icmp/state.cc:55
 msgid "${name} is active"
 msgstr ""
 
-#: src/library/icmp/state.cc:66
+#: src/library/icmp/state.cc:71
 msgid "${name} is not acessible"
 msgstr ""
 
-#: src/library/icmp/state.cc:73
+#: src/library/icmp/state.cc:79
 msgid "${name} is not available"
 msgstr ""
 
-#: src/library/icmp/state.cc:59
+#: src/library/icmp/state.cc:63
 msgid "${name} is not reachable"
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:63
+#: src/library/icmp/state.cc:54
+msgid "Active"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:64
 msgid "Cant get netlink socket"
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:101
+#: src/library/os/linux/defaultgateway.cc:102
 msgid "Cant receive netlink response"
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:87
+#: src/library/dns/state.cc:55
+msgid "Cant resolve DNS Server"
+msgstr ""
+
+#: src/library/dns/state.cc:63
+msgid "Cant resolve name"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:88
 msgid "Cant send netlink message"
 msgstr ""
 
-#: src/library/icmp/state.cc:60
+#: src/library/icmp/state.cc:64
 msgid ""
 "Destination Unreachable. The gateway doesnt know how to get to the defined "
 "network."
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:108
+#: src/library/os/linux/defaultgateway.cc:109
 msgid "Error in received packet"
 msgstr ""
 
-#: src/library/icmp/state.cc:53
+#: src/library/icmp/state.cc:56
 msgid "Got ICMP echo reply from host."
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:158
+#: src/library/dns/state.cc:46
+msgid "Invalid DNS"
+msgstr ""
+
+#: src/library/dns/state.cc:47
+msgid "Invalid DNS response"
+msgstr ""
+
+#: src/library/icmp/state.cc:46
+msgid "Invalid IP"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:159
 msgid "Invalid size on RTA_GATEWAY"
 msgstr ""
 
-#: src/library/icmp/state.cc:80
+#: src/library/icmp/state.cc:87
 msgid "Network is not reachable"
 msgstr ""
 
-#: src/library/icmp/state.cc:74
+#: src/library/icmp/state.cc:80
 msgid "No ICMP response from host."
 msgstr ""
 
-#: src/library/icmp/state.cc:81
+#: src/library/dns/state.cc:54
+msgid "No server"
+msgstr ""
+
+#: src/library/dns/state.cc:48
+msgid "The DNS resolver state is invalid."
+msgstr ""
+
+#: src/library/dns/state.cc:72
+msgid "The DNS was able to resolve ${hostname}."
+msgstr ""
+
+#: src/library/icmp/state.cc:88
 msgid "The entire network is unreachable."
 msgstr ""
 
-#: src/library/icmp/state.cc:67
+#: src/library/dns/state.cc:71
+msgid "The hostname was resolved"
+msgstr ""
+
+#: src/library/icmp/state.cc:72
 msgid ""
 "Time Exceeded. The ICMP request has been discarded because it was 'out of "
 "time'."
 msgstr ""
 
-#: src/library/icmp/state.cc:46
+#: src/library/icmp/state.cc:70
+msgid "Timeout"
+msgstr ""
+
+#: src/library/icmp/state.cc:48
 msgid "Unable to get a valid IP address for ${name}."
+msgstr ""
+
+#: src/library/dns/state.cc:64
+msgid "Unable to resolve ${hostname}."
+msgstr ""
+
+#: src/library/dns/state.cc:56
+msgid "Unable to resolve the name of the defined DNS server."
+msgstr ""
+
+#: src/library/icmp/state.cc:78
+msgid "Unavailable"
+msgstr ""
+
+#: src/library/icmp/state.cc:62 src/library/icmp/state.cc:86
+msgid "Unreachable"
+msgstr ""
+
+#: src/library/dns/state.cc:62
+msgid "cant-resolve"
+msgstr ""
+
+#: src/library/dns/state.cc:70
+msgid "resolved"
 msgstr ""

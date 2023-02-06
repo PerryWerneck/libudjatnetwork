@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: unnamed project\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-30 12:30-0300\n"
+"POT-Creation-Date: 2023-02-06 08:41-0300\n"
 "PO-Revision-Date: 2022-12-04 00:48-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -16,70 +16,110 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-Generator: Gtranslator 3.38.0\n"
 
-#: src/library/icmp/state.cc:45
+#: src/library/icmp/state.cc:47
 msgid "${name} address is invalid"
 msgstr "Endereço de ${name} e inválido"
 
-#: src/library/icmp/state.cc:52
+#: src/library/icmp/state.cc:55
 msgid "${name} is active"
 msgstr "${name} está ativo"
 
-#: src/library/icmp/state.cc:66
+#: src/library/icmp/state.cc:71
 msgid "${name} is not acessible"
 msgstr "${name} não está acessível"
 
-#: src/library/icmp/state.cc:73
+#: src/library/icmp/state.cc:79
 msgid "${name} is not available"
 msgstr "${name} não está disponível"
 
-#: src/library/icmp/state.cc:59
+#: src/library/icmp/state.cc:63
 msgid "${name} is not reachable"
 msgstr "Não foi possível alcançar ${name}"
 
-#: src/library/os/linux/defaultgateway.cc:63
+#: src/library/icmp/state.cc:54
+msgid "Active"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:64
 msgid "Cant get netlink socket"
 msgstr "Não foi possível obter o socket netlink"
 
-#: src/library/os/linux/defaultgateway.cc:101
+#: src/library/os/linux/defaultgateway.cc:102
 msgid "Cant receive netlink response"
 msgstr "Não foi possível receber resposta netlink"
 
-#: src/library/os/linux/defaultgateway.cc:87
+#: src/library/dns/state.cc:55
+msgid "Cant resolve DNS Server"
+msgstr ""
+
+#: src/library/dns/state.cc:63
+msgid "Cant resolve name"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:88
 msgid "Cant send netlink message"
 msgstr "Não foi possível enviar dados netlink"
 
-#: src/library/icmp/state.cc:60
+#: src/library/icmp/state.cc:64
 msgid ""
 "Destination Unreachable. The gateway doesnt know how to get to the defined "
 "network."
 msgstr ""
 "Destino indisponível. O roteador não sabe como chegar até a rede definida."
 
-#: src/library/os/linux/defaultgateway.cc:108
+#: src/library/os/linux/defaultgateway.cc:109
 msgid "Error in received packet"
 msgstr "Erro no pacote recebido"
 
-#: src/library/icmp/state.cc:53
+#: src/library/icmp/state.cc:56
 msgid "Got ICMP echo reply from host."
 msgstr "Obtive resposta ICMP do host"
 
-#: src/library/os/linux/defaultgateway.cc:158
+#: src/library/dns/state.cc:46
+msgid "Invalid DNS"
+msgstr ""
+
+#: src/library/dns/state.cc:47
+msgid "Invalid DNS response"
+msgstr ""
+
+#: src/library/icmp/state.cc:46
+msgid "Invalid IP"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:159
 msgid "Invalid size on RTA_GATEWAY"
 msgstr "Tamanho inválido em RTA_GATEWAY"
 
-#: src/library/icmp/state.cc:80
+#: src/library/icmp/state.cc:87
 msgid "Network is not reachable"
 msgstr "Rede não está disponível"
 
-#: src/library/icmp/state.cc:74
+#: src/library/icmp/state.cc:80
 msgid "No ICMP response from host."
 msgstr "Nenhuma resposta ICMP do host."
 
-#: src/library/icmp/state.cc:81
+#: src/library/dns/state.cc:54
+msgid "No server"
+msgstr ""
+
+#: src/library/dns/state.cc:48
+msgid "The DNS resolver state is invalid."
+msgstr ""
+
+#: src/library/dns/state.cc:72
+msgid "The DNS was able to resolve ${hostname}."
+msgstr ""
+
+#: src/library/icmp/state.cc:88
 msgid "The entire network is unreachable."
 msgstr "Toda a rede está inacessível"
 
-#: src/library/icmp/state.cc:67
+#: src/library/dns/state.cc:71
+msgid "The hostname was resolved"
+msgstr ""
+
+#: src/library/icmp/state.cc:72
 msgid ""
 "Time Exceeded. The ICMP request has been discarded because it was 'out of "
 "time'."
@@ -87,6 +127,35 @@ msgstr ""
 "Tempo excedido. A requisição ICMP foi descartada porque estava 'fora de "
 "tempo'."
 
-#: src/library/icmp/state.cc:46
+#: src/library/icmp/state.cc:70
+msgid "Timeout"
+msgstr ""
+
+#: src/library/icmp/state.cc:48
 msgid "Unable to get a valid IP address for ${name}."
 msgstr "Incapaz de obter um endereço IP válido para ${name}"
+
+#: src/library/dns/state.cc:64
+#, fuzzy
+msgid "Unable to resolve ${hostname}."
+msgstr "Incapaz de obter um endereço IP válido para ${name}"
+
+#: src/library/dns/state.cc:56
+msgid "Unable to resolve the name of the defined DNS server."
+msgstr ""
+
+#: src/library/icmp/state.cc:78
+msgid "Unavailable"
+msgstr ""
+
+#: src/library/icmp/state.cc:62 src/library/icmp/state.cc:86
+msgid "Unreachable"
+msgstr ""
+
+#: src/library/dns/state.cc:62
+msgid "cant-resolve"
+msgstr ""
+
+#: src/library/dns/state.cc:70
+msgid "resolved"
+msgstr ""
