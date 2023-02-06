@@ -36,6 +36,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/net/gateway.h>
  #include <udjat/net/ip/agent.h>
+ #include <udjat/net/dns/agent.h>
  #include <udjat/tools/object.h>
  #include <private/module.h>
 
@@ -44,23 +45,25 @@
 	HostFactory::HostFactory() : Udjat::Factory("network-host",moduleinfo) {
 	}
 
-	std::shared_ptr<Abstract::Agent> HostFactory::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
+	std::shared_ptr<Abstract::Agent> HostFactory::AgentFactory(const Abstract::Object &, const pugi::xml_node &node) const {
 
 		switch(String{node,"type","host"}.select("host","default-gateway",nullptr)) {
 		case 0:	// IP based host
-			{
-				auto ipaddr = Object::getAttribute(node,"host-ip");
-				if(ipaddr) {
-					return make_shared<IP::Agent>(node,ipaddr.as_string());
-				}
-			}
+			return make_shared<Udjat::IP::Gateway>(node);
 			break;
 
 		case 1: // Default gateway
 			return make_shared<Udjat::IP::Gateway>(node);
+
+		default:
+			if(node.attribute("hostname")) {
+				return make_shared<Udjat::DNS::Agent>(node);
+			} else if(node.attribute("ip")) {
+				return make_shared<Udjat::IP::Gateway>(node);
+			}
 		}
 
-		throw runtime_error("Invalid network host type");
+		throw runtime_error("Cant identify network host type, missing attribute 'ip' or 'hostname");
 
 	}
 

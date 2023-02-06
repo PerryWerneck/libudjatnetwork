@@ -56,13 +56,9 @@
 			Agent(const char *name = "");
 			Agent(const pugi::xml_node &node);
 
-			/// @brief Do an ICMP check
+			/// @brief Do a DNS check
 			/// @return true if the state has changed.
 			bool refresh() override;
-
-			std::string to_string() const noexcept override;
-
-			Udjat::Value & get(Udjat::Value &value) const override;
 
 			Udjat::Value & getProperties(Value &value) const noexcept override;
 

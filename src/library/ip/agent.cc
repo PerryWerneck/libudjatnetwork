@@ -36,6 +36,12 @@
 
 	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : IP::Address{addr}, Abstract::Agent{node}, ICMP::Worker{node} {
 		icmp.check = getAttribute(node,"icmp",icmp.check);
+
+		auto attr = node.attribute("ip");
+		if(attr) {
+			IP:Address::set(attr.as_string());
+		}
+
 	}
 
 	void IP::Agent::start() {
@@ -58,7 +64,7 @@
 		}
 
 		// Use predefined state.
-		icmp.state = ICMP::State::Factory(response);
+		icmp.state = ICMP::State::Factory(*this,response);
 		Logger::String{"Setting ICMP state to '",icmp.state->to_string(),"' (",response,")"}.trace(name());
 		updated(true);
 
@@ -114,14 +120,14 @@
 
 	bool IP::Agent::refresh() {
 
-		debug("----------------------------------------------------------------",name());
 		bool rc = false;
 
 		// Check IP state
 		if(IP::Address::empty()) {
 
+			debug("Empty IP address on agent ",name());
 			ip.state.reset();
-			icmp.state.reset();
+			set(ICMP::invalid,(IP::Address) *this);
 
 		} else {
 
@@ -159,8 +165,6 @@
 
 		}
 
-
-		debug("-------------------------------------------------------------");
 		debug("Agent '",name(),"' refresh(), ends with rc=",(rc ? "Updated" : "no updated"));
 		return rc;
 	}

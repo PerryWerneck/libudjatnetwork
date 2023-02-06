@@ -187,12 +187,6 @@
 			info() << "Default gateway changed to " << to_string() << endl;
 		}
 
-		// DO ICMP Check.
-		if(Udjat::IP::Agent::refresh()) {
-			changed = true;
-		}
-
-		debug("Agent '",name(),"' refresh(), ends with rc=",(changed ? "Updated" : "no updated"));
 		return changed;
 
 	}

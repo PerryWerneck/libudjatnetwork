@@ -47,12 +47,16 @@
 			State(const pugi::xml_node &node, const ICMP::Response i) : Abstract::State{node}, id{i} {
 			}
 
+			State(const char *name, const Level level, const ICMP::Response i)
+				: Abstract::State{name,level}, id{i} {
+			}
+
 			State(const char *name, const Level level, const char *summary, const char *body, const ICMP::Response i)
 				: Abstract::State{name,level,summary,body}, id{i} {
 			}
 
 			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
-			static std::shared_ptr<State> Factory(const ICMP::Response id);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const ICMP::Response id);
 
 		};
 

@@ -143,38 +143,38 @@
 
 	}
 
-	std::shared_ptr<ICMP::State> ICMP::State::Factory(const ICMP::Response id) {
+	std::shared_ptr<ICMP::State> ICMP::State::Factory(const Udjat::Abstract::Object &object, const ICMP::Response id) {
 
 		class State : public ICMP::State {
+		private:
+			Udjat::String summary;
+			Udjat::String body;
+
 		public:
+			State(const Udjat::Abstract::Object &object, const icmp_state &state) : ICMP::State{state.name,state.level,state.id} {
+
 #ifdef GETTEXT_PACKAGE
-			State(const icmp_state &state) : ICMP::State{
-				dgettext(GETTEXT_PACKAGE,state.name),
-				state.level,
-				dgettext(GETTEXT_PACKAGE,state.summary),
-				dgettext(GETTEXT_PACKAGE,state.body),
-				state.id
-			} {
+				summary = dgettext(GETTEXT_PACKAGE,state.summary);
+				body = dgettext(GETTEXT_PACKAGE,state.body);
+
 				Object::properties.label = dgettext(GETTEXT_PACKAGE,state.label);
-			}
 #else
-			State(const icmp_state &state) : ICMP::State{
-				state.name,
-				state.level,
-				state.summary,
-				state.body,
-				state.id
-			} {
+				summary = state.summary);
+				body = state.body;
+
 				Object::properties.label = state.label;
-			}
 #endif // GETTEXT_PACKAGE
 
+				properties.body = body.expand(object).c_str();
+				Object::properties.summary = summary.expand(object).c_str();
+
+			}
 		};
 
 		for(const icmp_state &st : icmp_states) {
 
 			if(st.id == id) {
-				return make_shared<State>(st);
+				return make_shared<State>(object,st);
 			}
 
 		}

@@ -59,10 +59,13 @@
 			<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='HTTP server is not available' forward-to-children='yes' />
 			<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from HTTP server' forward-to-children='yes' />
 
-			<network-host name='httpd' url='http://192.168.0.11'  update-timer='60'>
+			<!-- network-host name='httpd' url='http://192.168.0.11'  update-timer='60'>
 
-			</network-host>
+			</network-host -->
 
+		</network-host>
+
+		<network-host name='google' hostname='www.google.com' icmp='true' update-timer='60' icmp-timeout='30'>
 		</network-host>
 
 	</network-host>
