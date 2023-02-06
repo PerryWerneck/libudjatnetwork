@@ -34,7 +34,7 @@
 		private:
 
 			struct {
-				IP::Address ip;										///< @brief The DNS server address.
+				IP::Address ip;											///< @brief The DNS server address.
 				const char * name = nullptr;							///< @brief The DNS Server to use.
 			} server;
 
@@ -61,6 +61,7 @@
 			bool refresh() override;
 
 			Udjat::Value & getProperties(Value &value) const noexcept override;
+			bool getProperty(const char *key, std::string &value) const noexcept override;
 
 		};
 

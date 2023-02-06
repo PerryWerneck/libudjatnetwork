@@ -61,7 +61,7 @@
 			Level::error,
 			N_("cant-resolve"),
 			N_("Cant resolve name"),
-			N_("The DNS doesnt known the defined hostname.")
+			N_("Unable to resolve ${hostname}.")
 		},
 		{
 			"resolved",
@@ -69,7 +69,7 @@
 			Level::ready,
 			N_("resolved"),
 			N_("The hostname was resolved"),
-			N_("The DNS was able to resolve hostname.")
+			N_("The DNS was able to resolve ${hostname}.")
 		},
 
 	};
@@ -139,43 +139,40 @@
 
 	}
 
-	std::shared_ptr<DNS::State> DNS::State::Factory(const DNS::Response id) {
+	std::shared_ptr<DNS::State> DNS::State::Factory(const Udjat::Abstract::Object &object, const DNS::Response id) {
 
 		class State : public DNS::State {
+		private:
+			Udjat::String summary;
+			Udjat::String body;
+
 		public:
+			State(const Udjat::Abstract::Object &object, const dns_state &state) : DNS::State{state.name,state.level,state.id} {
 #ifdef GETTEXT_PACKAGE
-			State(const dns_state &state) : DNS::State{
-				dgettext(GETTEXT_PACKAGE,state.name),
-				state.level,
-				dgettext(GETTEXT_PACKAGE,state.summary),
-				dgettext(GETTEXT_PACKAGE,state.body),
-				state.id
-			} {
+				summary = dgettext(GETTEXT_PACKAGE,state.summary);
+				body = dgettext(GETTEXT_PACKAGE,state.body);
 				Object::properties.label = dgettext(GETTEXT_PACKAGE,state.label);
-			}
 #else
-			State(const icmp_state &state) : DNS::State{
-				state.name,
-				state.level,
-				state.summary,
-				state.body,
-				state.id
-			} {
+				summary = state.summary);
+				body = state.body;
 				Object::properties.label = state.label;
-			}
 #endif // GETTEXT_PACKAGE
+
+				properties.body = body.expand(object).c_str();
+				Object::properties.summary = summary.expand(object).c_str();
+			}
 
 		};
 
 		for(const dns_state &st : dns_states) {
 
 			if(st.id == id) {
-				return make_shared<State>(st);
+				return make_shared<State>(object,st);
 			}
 
 		}
 
-		throw runtime_error("The required attribute 'dns-state' is missing or invalid");
+		throw runtime_error("Invalid DNS state");
 
 	}
 

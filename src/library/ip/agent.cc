@@ -39,7 +39,7 @@
 
 		auto attr = node.attribute("ip");
 		if(attr) {
-			IP:Address::set(attr.as_string());
+			IP::Address::set(attr.as_string());
 		}
 
 	}
@@ -47,7 +47,7 @@
 	void IP::Agent::start() {
 	}
 
-	void IP::Agent::set(const ICMP::Response response, const IP::Address &from) {
+	void IP::Agent::set(const ICMP::Response response, const IP::Address &) {
 
 		if(response == icmp.response) {
 			return;
@@ -116,6 +116,12 @@
 
 
 		return super::getProperties(value);
+	}
+
+	bool IP::Agent::getProperty(const char *key, std::string &value) const noexcept {
+
+
+		return super::getProperty(key,value);
 	}
 
 	bool IP::Agent::refresh() {

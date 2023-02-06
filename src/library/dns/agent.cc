@@ -71,6 +71,16 @@
 		return IP::Agent::getProperties(value);
 	}
 
+	bool DNS::Agent::getProperty(const char *key, std::string &value) const noexcept {
+
+		if(!strcasecmp(key,"hostname")) {
+			value = hostname;
+			return true;
+		}
+
+		return IP::Agent::getProperty(key,value);
+	}
+
 	bool DNS::Agent::set(const DNS::Response response, const char *name) {
 
 		if(state && state->id == response) {
@@ -85,7 +95,7 @@
 			}
 		}
 
-		state = DNS::State::Factory(response);
+		state = DNS::State::Factory(*this,response);
 		info() << name << ": " << state->to_string() << endl;
 
 		return true;

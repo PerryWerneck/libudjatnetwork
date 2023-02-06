@@ -51,8 +51,12 @@
 				: Abstract::State{name,level,summary,body}, id{i} {
 			}
 
+			State(const char *name, const Level level, const DNS::Response i)
+				: Abstract::State{name,level}, id{i} {
+			}
+
 			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
-			static std::shared_ptr<State> Factory(const DNS::Response id);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const DNS::Response id);
 
 		};
 
