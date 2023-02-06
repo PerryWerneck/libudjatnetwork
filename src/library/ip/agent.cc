@@ -36,16 +36,6 @@
 
 	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : IP::Address{addr}, Abstract::Agent{node}, ICMP::Worker{node} {
 		icmp.check = getAttribute(node,"icmp",icmp.check);
-
-		dns.server = getAttribute(node,"dns-server","");
-		dns.name = getAttribute(node,"host-name","");
-
-#ifdef DEBUG
-		if(!IP::Address::empty()) {
-			debug("ICMP Check is ",(icmp.check ? "active" : "inactive")," on ",to_string());
-		}
-
-#endif // DEBUG
 	}
 
 	void IP::Agent::start() {
@@ -122,95 +112,18 @@
 		return super::getProperties(value);
 	}
 
-	bool IP::Agent::set(const DNS::Response response, const char *name) {
-
-		if(dns.state->id == response) {
-			return false;
-		}
-
-		for(auto state : dns.states) {
-			if(state->id == response) {
-				dns.state = state;
-				info() << name << ": " << dns.state->to_string() << endl;
-				return true;
-			}
-		}
-
-		dns.state = DNS::State::Factory(response);
-		info() << name << ": " << dns.state->to_string() << endl;
-
-		return true;
-	}
-
-
 	bool IP::Agent::refresh() {
 
 		debug("----------------------------------------------------------------",name());
 		bool rc = false;
 
-		// Check for DNS
-		try {
-			// Check hostname?
-			if(dns.name && *dns.name) {
-
-				// Do we need the DNS server addr?
-				if(dns.srvname && *dns.srvname && !dns.server) {
-					//
-					// Resolve DNS server address using the system DNS server.
-					//
-					DNS::Resolver resolver;
-					resolver.query(dns.srvname);
-					if(resolver.empty()) {
-						icmp.state.reset();
-						ip.state.reset();
-						return set(DNS::cant_resolve_server_address,dns.srvname);
-					}
-
-					dns.server.set(resolver.begin()->getAddr());
-
-				}
-
-				// Using a custom DNS server?
-				if(dns.srvname && *dns.srvname) {
-
-					DNS::Resolver resolver{dns.server};
-					resolver.query(dns.name);
-					if(resolver.empty()) {
-						icmp.state.reset();
-						ip.state.reset();
-						return set(DNS::cant_resolve_address,dns.srvname);
-					}
-
-					IP::Address::set(resolver.begin()->getAddr());
-
-				} else {
-
-					DNS::Resolver resolver;
-					resolver.query(dns.name);
-					if(resolver.empty()) {
-						icmp.state.reset();
-						ip.state.reset();
-						return set(DNS::cant_resolve_address,dns.name);
-					}
-
-					IP::Address::set(resolver.begin()->getAddr());
-				}
-
-				if(set(DNS::dns_ok,dns.name)) {
-					rc = true;
-				}
-
-			}
-
-		} catch(...) {
-			icmp.state.reset();
-			ip.state.reset();
-			dns.state.reset();
-			throw;
-		}
-
 		// Check IP state
-		if(!IP::Address::empty()) {
+		if(IP::Address::empty()) {
+
+			ip.state.reset();
+			icmp.state.reset();
+
+		} else {
 
 			std::shared_ptr<IP::State> state;
 			for(auto subnet : ip.states) {
@@ -234,21 +147,18 @@
 
 			}
 
-		} else {
+			if(icmp.check && !ICMP::Worker::running()) {
 
-			ip.state.reset();
+				if(IP::Address::empty()) {
+					icmp.state.reset();
+				} else {
+					ICMP::Worker::start(*this);
+				}
 
-		}
-
-		if(icmp.check && !ICMP::Worker::running()) {
-
-			if(IP::Address::empty()) {
-				icmp.state.reset();
-			} else {
-				ICMP::Worker::start(*this);
 			}
 
 		}
+
 
 		debug("-------------------------------------------------------------");
 		debug("Agent '",name(),"' refresh(), ends with rc=",(rc ? "Updated" : "no updated"));

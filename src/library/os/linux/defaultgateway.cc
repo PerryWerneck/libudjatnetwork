@@ -192,6 +192,7 @@
 			changed = true;
 		}
 
+		debug("Agent '",name(),"' refresh(), ends with rc=",(changed ? "Updated" : "no updated"));
 		return changed;
 
 	}

@@ -28,34 +28,33 @@
 
  namespace Udjat {
 
-	namespace IP {
+	namespace DNS {
 
-		class UDJAT_API Agent : public Udjat::IP::Address, public Abstract::Agent, private ICMP::Worker  {
+		class UDJAT_API Agent : public IP::Agent {
 		private:
 
 			struct {
-				bool check = true;										///< @brief Is ICMP check enabled?
-				Udjat::ICMP::Response response = Udjat::ICMP::invalid;	///< @brief ICMP Response.
-				std::vector<std::shared_ptr<ICMP::State>> states;		///< @brief XML defined ICMP states.
-				std::shared_ptr<ICMP::State> state;						///< @brief ICMP state.
-			} icmp;
+				IP::Address ip;										///< @brief The DNS server address.
+				const char * name = nullptr;							///< @brief The DNS Server to use.
+			} server;
 
-			struct {
-				std::vector<std::shared_ptr<IP::State>> states;			///< @brief XML defined IP states.
-				std::shared_ptr<IP::State> state;						///< @brief IP state.
-			} ip;
+			const char * hostname = nullptr;							///< @brief The hostname to check (empty or nullptr to disable DNS test).
+			std::vector<std::shared_ptr<DNS::State>> states;			///< @brief XML defined DNS states.
+			std::shared_ptr<DNS::State> state;							///< @brief DNS state.
 
 		protected:
 
-			virtual void set(const ICMP::Response response, const IP::Address &from) override;
+			/// @brief Set DNS state.
+			/// @return true if the state has changed.
+			virtual bool set(const DNS::Response response, const char *name);
+
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 			std::shared_ptr<Abstract::State> computeState() override;
-			virtual void start() override;
 
 		public:
 
 			Agent(const char *name = "");
-			Agent(const pugi::xml_node &node, const char *ipaddr = "");
+			Agent(const pugi::xml_node &node);
 
 			/// @brief Do an ICMP check
 			/// @return true if the state has changed.
