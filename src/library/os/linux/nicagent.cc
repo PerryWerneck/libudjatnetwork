@@ -47,8 +47,9 @@
 
  namespace Udjat {
 
-	class Nic::Agent::Controller : private MainLoop::Handler, private mutex {
+	class Nic::Agent::Controller : private MainLoop::Handler {
 	private:
+		static mutex guard;
 
 		/*
 
@@ -62,12 +63,68 @@
 
 		*/
 
-		void new_link(struct ifinfomsg *ifi) {
+		list<Nic::Agent *> nics;
+
+		Nic::Agent * get_agent(int index) {
+
+			char name[IF_NAMESIZE+1];
+			memset(name,0,IF_NAMESIZE+1);
+			if(if_indextoname(index,name)) {
+
+				debug(name);
+				for(auto nic : nics) {
+					if(!strcasecmp(nic->std::string::c_str(),name)) {
+						nic->intf.index = index;
+						return nic;
+					}
+				}
+
+			} else {
+
+				debug("Cant get name for ",index);
+				for(auto nic : nics) {
+					if(nic->intf.index == index) {
+						return nic;
+					}
+				}
+
+			}
+
+			return nullptr;
 
 		}
 
-		void del_link(struct ifinfomsg *ifi) {
+		void refresh(struct ifinfomsg *ifi, bool enabled) {
 
+			lock_guard<mutex> lock(guard);
+			debug(__FUNCTION__,"(",ifi->ifi_index,"): ",ifi->ifi_flags);
+			Nic::Agent *agent = get_agent(ifi->ifi_index);
+
+			if(agent) {
+				bool changed = false;
+				if(agent->intf.flags != ifi->ifi_flags) {
+					changed = true;
+					agent->intf.flags = ifi->ifi_flags;
+				}
+				if(agent->intf.enabled != enabled) {
+					changed = true;
+					agent->intf.enabled = true;
+				}
+
+				if(changed) {
+					agent->on_rtlink_event();
+				}
+
+			}
+
+		}
+
+		void new_link(struct ifinfomsg *ifi) {
+			refresh(ifi,true);
+		}
+
+		void del_link(struct ifinfomsg *ifi) {
+			refresh(ifi,false);
 		}
 
 		void handle_event(const Event) override {
@@ -77,7 +134,7 @@
 			struct sockaddr_nl snl;
 			struct msghdr msg = { (void *) &snl, sizeof snl, &iov, 1, NULL, 0, 0 };
 			struct nlmsghdr *h;
-			struct ifinfomsg *ifi;
+			//struct ifinfomsg *ifi = nullptr;
 
 			int status = recvmsg(this->fd, &msg, 0);
 			if (status < 0) {
@@ -101,12 +158,12 @@
 				switch(h->nlmsg_type) {
 				case RTM_NEWLINK:
 					debug("RTM_NEWLINK");
-					new_link(ifi);
+					new_link((ifinfomsg *) NLMSG_DATA(h));
 					break;
 
 				case RTM_DELLINK:
 					debug("RTM_DELLINK");
-					del_link(ifi);
+					del_link((ifinfomsg *) NLMSG_DATA(h));
 					break;
 
 				}
@@ -114,8 +171,6 @@
 			}
 
 		}
-
-		list<Nic::Agent *> nics;
 
 	public:
 		static Controller & getInstance() {
@@ -125,7 +180,7 @@
 
 		void push_back(Nic::Agent *agent) {
 
-			lock_guard<mutex> lock(*this);
+			lock_guard<mutex> lock(guard);
 			nics.push_back(agent);
 
 			if(this->fd != -1) {
@@ -156,7 +211,7 @@
 		}
 
 		void remove(Nic::Agent *nic) {
-			lock_guard<mutex> lock(*this);
+			lock_guard<mutex> lock(guard);
 			nics.remove_if([nic](Nic::Agent *n){
 				return n == nic;
 			});
@@ -173,12 +228,20 @@
 		}
 	};
 
+	mutex Nic::Agent::Controller::guard;
+
 	Nic::Agent::Agent(const char *name) : Abstract::Agent{name}, std::string{name} {
 		debug("-----------------------------> ",std::string::c_str());
 	}
 
 	Nic::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent{node}, std::string{node.attribute("device-name").as_string()} {
 		debug("-----------------------------> ",std::string::c_str());
+	}
+
+	void Nic::Agent::on_rtlink_event() {
+		push([this](std::shared_ptr<Abstract::Agent> agent){
+			Abstract::Agent::updated(true);
+		});
 	}
 
 	void Nic::Agent::start() {

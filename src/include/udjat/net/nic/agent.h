@@ -32,6 +32,17 @@
 			class Controller;
 			friend class Controller;
 
+#ifndef _WIN32
+			struct {
+				int index = -1;
+				bool enabled = false;
+				unsigned int flags = 0;
+			} intf;
+
+			void on_rtlink_event();
+
+#endif // !_WIN32
+
 		public:
 
 			Agent(const char *name = "");
