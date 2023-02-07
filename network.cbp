@@ -43,6 +43,7 @@
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/agents/nic.h" />
 		<Unit filename="src/include/private/icmp/controller.h" />
+		<Unit filename="src/include/private/linux/netlink.h" />
 		<Unit filename="src/include/private/module.h" />
 		<Unit filename="src/include/udjat/net/dns.h" />
 		<Unit filename="src/include/udjat/net/dns/agent.h" />
@@ -67,9 +68,12 @@
 		<Unit filename="src/library/icmp/worker.cc" />
 		<Unit filename="src/library/ip/agent.cc" />
 		<Unit filename="src/library/ip/state.cc" />
+		<Unit filename="src/library/nic/agent.cc" />
 		<Unit filename="src/library/os/linux/defaultgateway.cc" />
 		<Unit filename="src/library/os/linux/icmphost.cc" />
 		<Unit filename="src/library/os/linux/ipaddress.cc" />
+		<Unit filename="src/library/os/linux/netlink.cc" />
+		<Unit filename="src/library/os/linux/netlink.h" />
 		<Unit filename="src/library/os/linux/nicagent.cc" />
 		<Unit filename="src/library/os/windows/ipaddress.cc" />
 		<Unit filename="src/library/range.cc" />

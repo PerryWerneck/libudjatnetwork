@@ -24,10 +24,15 @@
  #include <udjat/tools/logger.h>
  #include <udjat/net/ip/address.h>
  #include <string>
+ #include <private/linux/netlink.h>
+ #include <udjat/tools/threadpool.h>
+ #include <sys/ioctl.h>
+ #include <unistd.h>
+
+ /*
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
  #include <list>
-
  // https://stackoverflow.com/questions/7225888/how-can-i-monitor-the-nic-statusup-down-in-a-c-program-without-polling-the-ker
  #include <asm/types.h>
  #include <sys/socket.h>
@@ -42,11 +47,13 @@
  #include <stdlib.h>
  #include <sys/time.h>
  #include <sys/types.h>
+ */
 
  using namespace std;
 
  namespace Udjat {
 
+	/*
 	static const struct {
 		unsigned int flag;
 		const char *name;
@@ -71,233 +78,127 @@
 //						{ IFF_DORMANT,		"IFF_DORMANT"		},
 //						{ IFF_ECHO,			"IFF_ECHO"			},
 	};
+	*/
 
-	class Nic::Agent::Controller : private MainLoop::Handler {
-	private:
-		static mutex guard;
+	mutex Nic::Agent::guard;
+	std::list <Nic::Agent *> Nic::Agent::agents;
 
-		/*
+	unsigned int getFlags(const char *name) {
 
-			struct ifinfomsg {
-                  unsigned char  ifi_family; AF_UNSPEC
-                  unsigned short ifi_type;   Device type
-                  int            ifi_index;  Interface index
-                  unsigned int   ifi_flags;  Device flags
-                  unsigned int   ifi_change; change mask
-              };
+		int sock = socket(PF_INET, SOCK_DGRAM, 0);
+		if(sock < 0) {
+			cerr << name << "\tUnable to create socket: " << strerror(errno) << endl;
+			return 0;
+		}
 
-		*/
+		struct ifreq ifr;
+		memset(&ifr,0,sizeof(ifr));
+		strncpy(ifr.ifr_name,name,sizeof(ifr.ifr_name));
 
-		list<Nic::Agent *> nics;
+		if (ioctl(sock, SIOCGIFFLAGS, (caddr_t)&ifr) < 0) {
 
-		Nic::Agent * get_agent(int index) {
-
-			char name[IF_NAMESIZE+1];
-			memset(name,0,IF_NAMESIZE+1);
-			if(if_indextoname(index,name)) {
-
-				debug(name);
-				for(auto nic : nics) {
-					if(!strcasecmp(nic->std::string::c_str(),name)) {
-						nic->intf.index = index;
-						return nic;
-					}
-				}
-
-			} else {
-
-				debug("Cant get name for ",index);
-				for(auto nic : nics) {
-					if(nic->intf.index == index) {
-						return nic;
-					}
-				}
-
-			}
-
-			return nullptr;
+			if(errno == ENODEV) {
+				clog << name << "\t" << strerror(errno) << endl;
+ 			} else {
+ 				cerr << name << "\t" << strerror(errno) << endl;
+ 			}
+			ifr.ifr_flags = 0;
 
 		}
 
-		void refresh(struct ifinfomsg *ifi, bool enabled) {
+		::close(sock);
 
-			lock_guard<mutex> lock(guard);
-			debug(__FUNCTION__,"(",ifi->ifi_index,"): ",ifi->ifi_flags);
-			Nic::Agent *agent = get_agent(ifi->ifi_index);
-
-			if(agent) {
-
-				bool changed = false;
-				if(agent->intf.flags != ifi->ifi_flags) {
-
-					changed = true;
-					agent->intf.flags = ifi->ifi_flags;
-
-					if(Logger::enabled(Logger::Trace)) {
-
-						Logger::String strflags;
-
-						for(size_t ix = 0; ix < N_ELEMENTS(flagnames);ix++) {
-
-							if(ifi->ifi_flags & flagnames[ix].flag) {
-								if(!strflags.empty()) {
-									strflags.append(" ");
-								}
-								strflags.append(flagnames[ix].name);
-							}
-
-						}
-
-						strflags.write(Logger::Trace,agent->std::string::c_str());
-
-					}
-
-				}
-
-				if(agent->intf.enabled != enabled) {
-					changed = true;
-					agent->intf.enabled = true;
-				}
-
-				if(changed) {
-					agent->on_rtlink_event();
-				}
-
-			}
-
-		}
-
-		void new_link(struct ifinfomsg *ifi) {
-			refresh(ifi,true);
-		}
-
-		void del_link(struct ifinfomsg *ifi) {
-			refresh(ifi,false);
-		}
-
-		void handle_event(const Event) override {
-
-			char buf[4096];
-			struct iovec iov = { buf, sizeof buf };
-			struct sockaddr_nl snl;
-			struct msghdr msg = { (void *) &snl, sizeof snl, &iov, 1, NULL, 0, 0 };
-			struct nlmsghdr *h;
-			//struct ifinfomsg *ifi = nullptr;
-
-			int status = recvmsg(this->fd, &msg, 0);
-			if (status < 0) {
-				if(errno == EWOULDBLOCK || errno == EAGAIN)
-					return;
-				throw system_error(errno,std::system_category(),"Cant read netlink socket");
-			}
-
-			for (h = (struct nlmsghdr *) buf; NLMSG_OK (h, (unsigned int) status); h = NLMSG_NEXT (h, status)) {
-
-				//Finish reading
-				if (h->nlmsg_type == NLMSG_DONE)
-					return;
-
-				// Message is some kind of error
-				if (h->nlmsg_type == NLMSG_ERROR) {
-					cerr << "netlink\tMessage is an error - decode TBD" << endl;
-					return;
-				}
-
-				switch(h->nlmsg_type) {
-				case RTM_NEWLINK:
-					debug("RTM_NEWLINK");
-					new_link((ifinfomsg *) NLMSG_DATA(h));
-					break;
-
-				case RTM_DELLINK:
-					debug("RTM_DELLINK");
-					del_link((ifinfomsg *) NLMSG_DATA(h));
-					break;
-
-				}
-
-			}
-
-		}
-
-	public:
-		static Controller & getInstance() {
-			static Controller instance;
-			return instance;
-		}
-
-		void push_back(Nic::Agent *agent) {
-
-			lock_guard<mutex> lock(guard);
-			nics.push_back(agent);
-
-			if(this->fd != -1) {
-				return;
-			}
-
-			// Start watcher.
-			Logger::String{"Starting NIC watcher"}.trace("network");
-
-			this->fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
-			if(this->fd < 0) {
-				throw system_error(errno,std::system_category(),"Cant get netlink socket");
-			}
-
-			struct sockaddr_nl addr;
-			memset ((void *) &addr, 0, sizeof (addr));
-			addr.nl_family = AF_NETLINK;
-			addr.nl_pid = getpid ();
-			addr.nl_groups = RTMGRP_LINK | RTMGRP_IPV4_IFADDR | RTMGRP_IPV6_IFADDR;
-
-			if(bind(this->fd, (struct sockaddr *) &addr, sizeof (addr)) < 0) {
-				throw system_error(errno,std::system_category(),"Cant bind netlink socket");
-			}
-
-			Handler::set(oninput);
-			Handler::enable();
-
-		}
-
-		void remove(Nic::Agent *nic) {
-			lock_guard<mutex> lock(guard);
-			nics.remove_if([nic](Nic::Agent *n){
-				return n == nic;
-			});
-
-			if(!nics.empty()) {
-				return;
-			}
-
-			Logger::String{"Stopping NIC watcher"}.trace("network");
-			Handler::disable();
-			::close(this->fd);
-			this->fd = -1;
-
-		}
-	};
-
-	mutex Nic::Agent::Controller::guard;
+		return ifr.ifr_flags;
+	}
 
 	Nic::Agent::Agent(const char *name) : Abstract::Agent{name}, std::string{name} {
-		debug("-----------------------------> ",std::string::c_str());
+		intf.flags = getFlags(std::string::c_str());
 	}
 
 	Nic::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent{node}, std::string{node.attribute("device-name").as_string()} {
-		debug("-----------------------------> ",std::string::c_str());
+		intf.flags = getFlags(std::string::c_str());
 	}
 
-	void Nic::Agent::on_rtlink_event() {
-		push([this](std::shared_ptr<Abstract::Agent> agent){
-			Abstract::Agent::updated(true);
-		});
+	Nic::Agent::~Agent() {
+		stop(); // Just in case.
 	}
 
 	void Nic::Agent::start() {
-		Controller::getInstance().push_back(this);
+
+		intf.index = if_nametoindex(std::string::c_str());
+
+		{
+			lock_guard<mutex> lock(guard);
+			agents.push_back(this);
+		}
+
+		// Interface was added.
+		NetLink::Controller::getInstance().push_back(this,RTM_NEWLINK,[this](const void *m){
+
+			const ifinfomsg *ifi = (const ifinfomsg *) m;
+
+			char name[IF_NAMESIZE+1];
+			memset(name,0,IF_NAMESIZE+1);
+			if(!if_indextoname(ifi->ifi_index,name)) {
+				cerr << "nic\tUnable to get name of interface " << ifi->ifi_index << ": " << strerror(errno) << endl;
+				return;
+			}
+
+			lock_guard<mutex> lock(guard);
+			for(Agent *agent : agents) {
+
+				if(strcmp(agent->std::string::c_str(),name)) {
+					continue;
+				}
+
+				Logger::String{"Interface link was crated (RTM_NEWLINK)"}.trace(agent->name());
+
+				agent->intf.index = ifi->ifi_index;
+
+				if(agent->intf.flags != ifi->ifi_flags) {
+					agent->intf.flags = ifi->ifi_flags;
+					agent->push([this](std::shared_ptr<Abstract::Agent>){
+						this->updated(true);
+					});
+				}
+
+			}
+
+		});
+
+		// Interface was removed.
+		NetLink::Controller::getInstance().push_back(this,RTM_DELLINK,[this](const void *m) {
+
+			// Link was removed
+			const ifinfomsg *ifi = (const ifinfomsg *) m;
+
+			lock_guard<mutex> lock(guard);
+			for(Agent *agent : agents) {
+				if(agent->intf.index == ifi->ifi_index && agent->intf.flags != ifi->ifi_flags) {
+
+					Logger::String{"Interface link was removed (RTM_DELLINK)"}.trace(agent->name());
+
+					agent->intf.flags = ifi->ifi_flags;
+					agent->push([this](std::shared_ptr<Abstract::Agent>){
+						this->updated(true);
+					});
+
+				}
+			}
+
+		});
 	}
 
 	void Nic::Agent::stop() {
-		Controller::getInstance().remove(this);
+
+		{
+			lock_guard<mutex> lock(guard);
+			agents.remove_if([this](Agent *agent) {
+				return agent == this;
+			});
+		}
+
+		NetLink::Controller::getInstance().remove(this);
 	}
 
 

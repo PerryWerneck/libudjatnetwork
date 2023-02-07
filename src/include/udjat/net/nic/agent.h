@@ -22,40 +22,50 @@
  #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
  #include <udjat/net/nic/state.h>
+ #include <list>
 
  namespace Udjat {
 
 	namespace Nic {
 
+		class State;
+
 		/// @brief Simple network interface agent.
 		class UDJAT_API Agent : public Abstract::Agent, public std::string  {
 		private:
-			class Controller;
-			friend class Controller;
+			friend class State;
+
+			static std::mutex guard;
+
+			/// @brief List of NIC agents.
+			static std::list <Agent *> agents;
 
 #ifndef _WIN32
 			struct {
-				int index = -1;
-				bool enabled = false;
+				int index = 0;
 				unsigned int flags = 0;
 			} intf;
-
-			void on_rtlink_event();
 
 #endif // !_WIN32
 
 			std::vector<std::shared_ptr<Nic::State>> states;			///< @brief XML defined NIC states.
 
 		protected:
-			// std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+			std::shared_ptr<Abstract::State> computeState() override;
 
 		public:
 
 			Agent(const char *name = "");
 			Agent(const pugi::xml_node &node);
+			virtual ~Agent();
 
 			void start() override;
 			void stop() override;
+
+			/// @brief Check for interface link.
+			/// @return true if the interface is 'up' and has an active link.
+			bool link();
 
 		};
 

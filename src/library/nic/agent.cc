@@ -17,29 +17,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
+ #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/agent/state.h>
- #include <pugixml.hpp>
+ #include <udjat/net/nic/agent.h>
+ #include <udjat/agent/abstract.h>
+
+ using namespace std;
 
  namespace Udjat {
 
-	namespace Nic {
-
-		class Agent;
-
-		class UDJAT_API State : public Abstract::State {
-		public:
-
-			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
-
-			/// @brief Create state from XML node.
-			State(const pugi::xml_node &node);
-
-			virtual bool compare(const Nic::Agent &agent) = 0;
-
-		};
-
+	std::shared_ptr<Abstract::State> Nic::Agent::StateFactory(const pugi::xml_node &node) {
+		std::shared_ptr<Nic::State> state = Nic::State::Factory(node);
+		states.push_back(state);
+		return state;
 	}
 
+	std::shared_ptr<Abstract::State> Nic::Agent::computeState() {
+
+		for(auto state : states) {
+			if(state->compare(*this)) {
+				return state;
+			}
+		}
+
+		return super::computeState();
+	}
+
+
  }
+

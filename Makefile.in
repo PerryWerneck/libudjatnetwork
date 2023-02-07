@@ -10,7 +10,8 @@ LIBRARY_SOURCES= \
 	$(wildcard src/library/ip/*.cc) \
 	$(wildcard src/library/os/@OSNAME@/*.cc) \
 	$(wildcard src/library/icmp/*.cc) \
-	$(wildcard src/library/dns/*.cc)
+	$(wildcard src/library/dns/*.cc) \
+	$(wildcard src/library/nic/*.cc)
 
 MODULE_SOURCES= \
 	$(wildcard src/module/*.cc) \
