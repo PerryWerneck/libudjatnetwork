@@ -34,7 +34,8 @@
 			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
 
 			/// @brief Create state from XML node.
-			State(const pugi::xml_node &node);
+			State(const pugi::xml_node &node) : Abstract::State{node} {
+			}
 
 			virtual bool compare(const Nic::Agent &agent) = 0;
 

@@ -39,6 +39,7 @@
  #include <net/if.h>
  #include <iostream>
  #include <udjat/tools/intl.h>
+ #include <private/linux/netlink.h>
 
  #include <stdexcept>
  #include <system_error>
@@ -48,6 +49,41 @@
  using namespace std;
 
  namespace Udjat {
+
+	IP::Gateway::Gateway() : Udjat::IP::Agent{"gateway"} {
+	}
+
+	IP::Gateway::Gateway(const pugi::xml_node &node) : Udjat::IP::Agent{node} {
+	}
+
+	void IP::Gateway::start() {
+
+		// https://stackoverflow.com/questions/11788326/extract-current-route-from-netlink-message-code-attached
+
+		// Route was added.
+		NetLink::Controller::getInstance().push_back(this,RTM_NEWROUTE,[this](const void *m){
+
+			debug("------------------------------------------ RTM_NEWROUTE");
+
+			// struct rtmsg *route_entry = (struct rtmsg *) m;
+
+		});
+
+		// Route was removed.
+		NetLink::Controller::getInstance().push_back(this,RTM_DELROUTE,[this](const void *m){
+
+			debug("------------------------------------------ RTM_DELROUTE");
+
+			// struct rtmsg *route_entry = (struct rtmsg *) m;
+
+
+		});
+
+	}
+
+	void IP::Gateway::stop() {
+		NetLink::Controller::getInstance().remove(this);
+	}
 
 	bool IP::Gateway::detect() {
 

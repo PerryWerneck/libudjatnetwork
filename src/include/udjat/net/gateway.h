@@ -42,6 +42,9 @@
 			Gateway();
 			Gateway(const pugi::xml_node &node);
 
+			void start() override;
+			void stop() override;
+
 			bool refresh() override;
 
 		};

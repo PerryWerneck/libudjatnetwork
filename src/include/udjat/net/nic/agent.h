@@ -43,6 +43,7 @@
 #ifndef _WIN32
 			struct {
 				int index = 0;
+				bool exist = false;	///< @brief True on RTM_NEWLINK, false on RTM_DELLINK
 				unsigned int flags = 0;
 			} intf;
 
@@ -66,6 +67,16 @@
 			/// @brief Check for interface link.
 			/// @return true if the interface is 'up' and has an active link.
 			bool link();
+
+#ifndef _WIN32
+			inline unsigned int flags() const noexcept {
+				return intf.flags;
+			}
+
+			inline bool exist() const noexcept {
+				return intf.exist;
+			}
+#endif // !_WIN32
 
 		};
 

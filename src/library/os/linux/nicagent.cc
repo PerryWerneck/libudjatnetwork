@@ -53,35 +53,50 @@
 
  namespace Udjat {
 
-	/*
-	static const struct {
-		unsigned int flag;
-		const char *name;
-	} flagnames[] = {
-		{ IFF_UP,			"IFF_UP"			},
-		{ IFF_BROADCAST,	"IFF_BROADCAST"		},
-		{ IFF_DEBUG,		"IFF_DEBUG"			},
-		{ IFF_LOOPBACK,		"IFF_LOOPBACK"		},
-		{ IFF_POINTOPOINT,	"IFF_POINTOPOINT"	},
-		{ IFF_RUNNING,		"IFF_RUNNING"		},
-		{ IFF_NOARP,		"IFF_NOARP"			},
-		{ IFF_PROMISC,		"IFF_PROMISC"		},
-		{ IFF_NOTRAILERS,	"IFF_NOTRAILERS"	},
-		{ IFF_ALLMULTI,		"IFF_ALLMULTI"		},
-		{ IFF_MASTER,		"IFF_MASTER"		},
-		{ IFF_SLAVE,		"IFF_SLAVE"			},
-		{ IFF_MULTICAST,	"IFF_MULTICAST"		},
-		{ IFF_PORTSEL,		"IFF_PORTSEL"		},
-		{ IFF_AUTOMEDIA,	"IFF_AUTOMEDIA"		},
-		{ IFF_DYNAMIC,		"IFF_DYNAMIC"		},
-//						{ IFF_LOWER_UP,		"IFF_LOWER_UP"		},
-//						{ IFF_DORMANT,		"IFF_DORMANT"		},
-//						{ IFF_ECHO,			"IFF_ECHO"			},
-	};
-	*/
-
 	mutex Nic::Agent::guard;
 	std::list <Nic::Agent *> Nic::Agent::agents;
+
+	static void logflags(const char *name, unsigned int flags) {
+		Logger::String text{"Flags:"};
+
+		static const struct {
+			unsigned int flag;
+			const char *name;
+		} names[] = {
+			{ IFF_UP,			"IFF_UP"			},
+			{ IFF_BROADCAST,	"IFF_BROADCAST"		},
+			{ IFF_DEBUG,		"IFF_DEBUG"			},
+			{ IFF_LOOPBACK,		"IFF_LOOPBACK"		},
+			{ IFF_POINTOPOINT,	"IFF_POINTOPOINT"	},
+			{ IFF_RUNNING,		"IFF_RUNNING"		},
+			{ IFF_NOARP,		"IFF_NOARP"			},
+			{ IFF_PROMISC,		"IFF_PROMISC"		},
+			{ IFF_NOTRAILERS,	"IFF_NOTRAILERS"	},
+			{ IFF_ALLMULTI,		"IFF_ALLMULTI"		},
+			{ IFF_MASTER,		"IFF_MASTER"		},
+			{ IFF_SLAVE,		"IFF_SLAVE"			},
+			{ IFF_MULTICAST,	"IFF_MULTICAST"		},
+			{ IFF_PORTSEL,		"IFF_PORTSEL"		},
+			{ IFF_AUTOMEDIA,	"IFF_AUTOMEDIA"		},
+			{ IFF_DYNAMIC,		"IFF_DYNAMIC"		},
+	//						{ IFF_LOWER_UP,		"IFF_LOWER_UP"		},
+	//						{ IFF_DORMANT,		"IFF_DORMANT"		},
+	//						{ IFF_ECHO,			"IFF_ECHO"			},
+		};
+
+		for(size_t ix = 0; ix < N_ELEMENTS(names); ix++) {
+
+			if(!(flags & names[ix].flag)) {
+				continue;
+			}
+
+			text += " ";
+			text += names[ix].name;
+
+		}
+
+		text.write(Logger::Trace,name);
+	}
 
 	unsigned int getFlags(const char *name) {
 
@@ -113,10 +128,12 @@
 
 	Nic::Agent::Agent(const char *name) : Abstract::Agent{name}, std::string{name} {
 		intf.flags = getFlags(std::string::c_str());
+		intf.exist = (intf.flags != 0);
 	}
 
 	Nic::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent{node}, std::string{node.attribute("device-name").as_string()} {
 		intf.flags = getFlags(std::string::c_str());
+		intf.exist = (intf.flags != 0);
 	}
 
 	Nic::Agent::~Agent() {
@@ -151,12 +168,18 @@
 					continue;
 				}
 
-				Logger::String{"Interface link was crated (RTM_NEWLINK)"}.trace(agent->name());
-
 				agent->intf.index = ifi->ifi_index;
 
+				Logger::String{"'RTM_NEWLINK' on interface ",ifi->ifi_index}.trace(agent->name());
+
 				if(agent->intf.flags != ifi->ifi_flags) {
+
+					if(Logger::enabled(Logger::Trace)) {
+						logflags(agent->name(),ifi->ifi_flags);
+					}
+
 					agent->intf.flags = ifi->ifi_flags;
+					agent->intf.exist = true;
 					agent->push([this](std::shared_ptr<Abstract::Agent>){
 						this->updated(true);
 					});
@@ -174,16 +197,26 @@
 
 			lock_guard<mutex> lock(guard);
 			for(Agent *agent : agents) {
-				if(agent->intf.index == ifi->ifi_index && agent->intf.flags != ifi->ifi_flags) {
 
-					Logger::String{"Interface link was removed (RTM_DELLINK)"}.trace(agent->name());
+				if(agent->intf.index != ifi->ifi_index) {
+					continue;
+				}
+
+				Logger::String{"'RTM_DELLINK' on interface ",ifi->ifi_index}.trace(agent->name());
+
+				if(agent->intf.flags != ifi->ifi_flags) {
+
+					if(Logger::enabled(Logger::Trace)) {
+						logflags(agent->name(),ifi->ifi_flags);
+					}
 
 					agent->intf.flags = ifi->ifi_flags;
+					agent->intf.exist = false;
 					agent->push([this](std::shared_ptr<Abstract::Agent>){
 						this->updated(true);
 					});
-
 				}
+
 			}
 
 		});

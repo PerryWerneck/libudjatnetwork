@@ -140,7 +140,7 @@
 		memset ((void *) &addr, 0, sizeof (addr));
 		addr.nl_family = AF_NETLINK;
 		addr.nl_pid = getpid ();
-		addr.nl_groups = RTMGRP_LINK | RTMGRP_IPV4_IFADDR | RTMGRP_IPV6_IFADDR;
+		addr.nl_groups = RTMGRP_LINK | RTMGRP_IPV4_IFADDR | RTMGRP_IPV6_IFADDR | RTMGRP_IPV4_ROUTE | RTMGRP_IPV6_ROUTE;
 
 		if(bind(this->fd, (struct sockaddr *) &addr, sizeof (addr)) < 0) {
 			throw system_error(errno,std::system_category(),"Cant bind netlink socket");

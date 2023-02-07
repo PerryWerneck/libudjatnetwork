@@ -31,12 +31,6 @@
 
  namespace Udjat {
 
-	IP::Gateway::Gateway() : Udjat::IP::Agent{"gateway"} {
-	}
-
-	IP::Gateway::Gateway(const pugi::xml_node &node) : Udjat::IP::Agent{node} {
-	}
-
 	bool IP::Gateway::refresh() {
 
 		bool changed = detect();

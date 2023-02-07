@@ -69,6 +69,7 @@
 		<Unit filename="src/library/ip/agent.cc" />
 		<Unit filename="src/library/ip/state.cc" />
 		<Unit filename="src/library/nic/agent.cc" />
+		<Unit filename="src/library/nic/state.cc" />
 		<Unit filename="src/library/os/linux/defaultgateway.cc" />
 		<Unit filename="src/library/os/linux/icmphost.cc" />
 		<Unit filename="src/library/os/linux/ipaddress.cc" />
