@@ -27,6 +27,7 @@
  #include <iostream>
  #include <memory>
  #include <udjat/tools/logger.h>
+ #include <udjat/net/ip/subnet.h>
 
  using namespace std;
  using namespace Udjat;
@@ -39,9 +40,16 @@ int main(int argc, char **argv) {
 	Logger::console(true);
 	Logger::redirect();
 
-	udjat_module_init();
+	//udjat_module_init();
 
-	Application{}.run(argc,argv,"./test.xml");
+	// Application{}.run(argc,argv,"./test.xml");
+	IP::SubNet::for_each([](const IP::SubNet &subnet){
+
+
+		cout << "---> " << subnet.to_string() << endl;
+
+		return false;
+	});
 
 	return 0;
 

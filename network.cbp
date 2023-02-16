@@ -78,6 +78,7 @@
 		<Unit filename="src/library/os/linux/netlink.cc" />
 		<Unit filename="src/library/os/linux/netlink.h" />
 		<Unit filename="src/library/os/linux/nicagent.cc" />
+		<Unit filename="src/library/os/linux/subnet.cc" />
 		<Unit filename="src/library/os/windows/ipaddress.cc" />
 		<Unit filename="src/library/range.cc" />
 		<Unit filename="src/module/agents/host/agent.cc" />

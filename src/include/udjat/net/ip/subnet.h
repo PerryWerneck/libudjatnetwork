@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/net/ip/address.h>
+ #include <functional>
 
  namespace Udjat {
 
@@ -56,6 +57,8 @@
 			bool contains(const IP::Address &value) const;
 
 			std::string to_string() const noexcept;
+
+			static bool for_each(const std::function<bool(const SubNet &subnet)> &method);
 
 		};
 
