@@ -22,6 +22,7 @@
  #include <udjat/agent/state.h>
  #include <udjat/net/ip/address.h>
  #include <pugixml.hpp>
+ #include <udjat/net/ip/subnet.h>
 
  namespace Udjat {
 
@@ -51,7 +52,7 @@
 				/// @brief Test if IP is in range.
 				/// @param value IP to test.
 				/// @return true if IP is in state range.
-				bool compare(const Udjat::IP::Address &value);
+				// bool compare(const Udjat::IP::Address &value);
 
 				bool compare(const sockaddr_storage &addr) const;
 
@@ -63,11 +64,7 @@
 
 	namespace IP {
 
-		class UDJAT_API State : public Abstract::IP::State, public IP::Address {
-		private:
-			unsigned int bits = 0;
-			void set(const char *subnet);
-
+		class UDJAT_API State : public Abstract::IP::State, public IP::SubNet {
 		protected:
 				/// @brief Test an IPV4 address range.
 				bool compare(const sockaddr_in &addr) const override;

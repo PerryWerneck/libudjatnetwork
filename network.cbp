@@ -53,6 +53,7 @@
 		<Unit filename="src/include/udjat/net/icmp.h" />
 		<Unit filename="src/include/udjat/net/ip/agent.h" />
 		<Unit filename="src/include/udjat/net/ip/state.h" />
+		<Unit filename="src/include/udjat/net/ip/subnet.h" />
 		<Unit filename="src/include/udjat/net/linux/dns.h" />
 		<Unit filename="src/include/udjat/net/nic/agent.h" />
 		<Unit filename="src/include/udjat/net/nic/state.h" />
@@ -68,6 +69,7 @@
 		<Unit filename="src/library/icmp/worker.cc" />
 		<Unit filename="src/library/ip/agent.cc" />
 		<Unit filename="src/library/ip/state.cc" />
+		<Unit filename="src/library/ip/subnet.cc" />
 		<Unit filename="src/library/nic/agent.cc" />
 		<Unit filename="src/library/nic/state.cc" />
 		<Unit filename="src/library/os/linux/defaultgateway.cc" />

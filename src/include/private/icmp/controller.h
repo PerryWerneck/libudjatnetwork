@@ -24,6 +24,7 @@
  #include <udjat/tools/handler.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/icmp.h>
+ #include <list>
 
  /*
  #include <private/agents/host.h>
@@ -31,7 +32,6 @@
  #include <mutex>
  #include <memory>
  #include <iostream>
- #include <list>
  */
 
  using namespace std;
