@@ -40,16 +40,9 @@ int main(int argc, char **argv) {
 	Logger::console(true);
 	Logger::redirect();
 
-	//udjat_module_init();
+	udjat_module_init();
 
-	// Application{}.run(argc,argv,"./test.xml");
-	IP::SubNet::for_each([](const IP::SubNet &subnet){
-
-
-		cout << "---> " << subnet.to_string() << endl;
-
-		return false;
-	});
+	Application{}.run(argc,argv,"./test.xml");
 
 	return 0;
 

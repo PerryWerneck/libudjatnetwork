@@ -22,13 +22,18 @@
  #include <cstring>
  #include <netdb.h>
  #include <iostream>
-// #include <udjat/tools/inet.h>
+ #include <netinet/in.h>
+ #include <arpa/nameser.h>
+ #include <resolv.h>
 
  using namespace std;
 
  namespace Udjat {
 
 	mutex DNS::Resolver::guard;
+
+	DNS::Exception::Exception(int code) : runtime_error{hstrerror(code)}, err{code} {
+	}
 
 	DNS::Resolver::Resolver() {
 
@@ -75,6 +80,8 @@
 	/// @brief Run DNS query.
 	DNS::Resolver & DNS::Resolver::query(ns_class cls, ns_type type, const char *name) {
 
+		debug("Resolving '",name,"'");
+
 		if(!(name && *name)) {
 			throw runtime_error("Cant resolve an empty hostname");
 		}
@@ -88,7 +95,7 @@
 		int szResponse = res_nquery(&this->state, name, cls, type, query_buffer, sizeof(query_buffer));
 
 		if (szResponse < 0) {
-			throw std::system_error(h_errno, std::system_category(), name);
+			throw DNS::Exception(h_errno);
 		}
 
 		ns_msg	msg;

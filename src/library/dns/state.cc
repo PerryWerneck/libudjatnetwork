@@ -64,6 +64,14 @@
 			N_("Unable to resolve ${hostname}.")
 		},
 		{
+			"host-not-found",
+			DNS::host_not_found,
+			Level::error,
+			N_("not-found"),
+			N_("Host not found"),
+			N_("Cant find ${hostname}.")
+		},
+		{
 			"resolved",
 			DNS::dns_ok,
 			Level::ready,

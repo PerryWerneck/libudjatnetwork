@@ -56,10 +56,7 @@
 					continue;
 				}
 
-				debug("Interface '",iface->ifa_name,"' is AF_INET");
-
 				SubNet subnet;
-
 				subnet.IP::Address::set((sockaddr_in *) iface->ifa_addr);
 
 				unsigned long s_addr = htonl(((sockaddr_in *) iface->ifa_netmask)->sin_addr.s_addr);
@@ -72,6 +69,7 @@
 					s_addr <<= 1;
 				}
 
+				debug(iface->ifa_name,": ",subnet.to_string());
 				if(method(subnet)) {
 					rc = true;
 					break;

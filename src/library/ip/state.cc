@@ -33,53 +33,80 @@
 
 	std::shared_ptr<Abstract::IP::State> IP::State::Factory(const pugi::xml_node &node) {
 
-		/*
+		const struct {
+			const char *name;
+			bool revert;
+		} locals[] = {
+			{ "local", 			false 	},
+			{ "!remote", 		false	},
+			{ "not remote", 	false	},
+			{ "internal", 		false	},
+			{ "mine", 			false	},
+			{ "remote", 		true	},
+			{ "!local", 		true	},
+			{ "not local", 		true	},
+			{ "external", 		true	},
+			{ "!mine", 			true	},
+			{ "not mine", 		true	},
+
+		};
+
 		const char *subnet = Object::getAttribute(node,"subnet").as_string();
 
-		// Create remote/local subnet.
-		class LocalState : public IP::State {
+		class Internal : public Abstract::IP::State, public IP::SubNet {
 		private:
 			bool revert;
 
 		protected:
+
 			/// @brief Test an IPV4 address range.
 			bool compare(const sockaddr_in &addr) const override {
-				bool found = Network::Interface::for_each([&addr](const Network::Interface &interface){
-					return interface.local(addr);
+				bool found = SubNet::for_each([this,&addr](const SubNet &subnet){
+					if(subnet.contains(addr)) {
+						*((SubNet *)this) = subnet;
+						return true;
+					}
+					return false;
 				});
 				return (revert ? !found : found);
 			}
 
 			/// @brief Test an IPV6 address range.
 			bool compare(const sockaddr_in6 &addr) const override {
-				bool found = Network::Interface::for_each([&addr](const Network::Interface &interface){
-					return interface.local(addr);
+				bool found = SubNet::for_each([this,&addr](const SubNet &subnet){
+					if(subnet.contains(addr)) {
+						*((SubNet *)this) = subnet;
+						return true;
+					}
+					return false;
 				});
 				return (revert ? !found : found);
 			}
 
 		public:
-			State(const pugi::xml_node &node, bool r) : IP::State{node}, revert{r} {
+			Internal(const pugi::xml_node &node, bool r) : Abstract::IP::State{node}, revert{r} {
+			}
 
+			std::string to_string() const noexcept override {
+				if(Object::properties.summary[0]) {
+					return Object::properties.summary;
+				}
+				return IP::SubNet::to_string();
 			}
 
 		};
 
-		if(!strncasecmp(subnet,"local")) {
-			return make_shared<LocalState>(node,false);
+		for(size_t ix = 0; ix < N_ELEMENTS(locals);ix++) {
+			if(!strcasecmp(subnet,locals[ix].name)) {
+				return make_shared<Internal>(node,locals[ix].revert);
+			}
 		}
-
-		if(!strncasecmp(subnet,"remote")) {
-			return make_shared<LocalState>(node,true);
-		}
-		*/
 
 		// Create default state.
 		return make_shared<IP::State>(node);
 	}
 
-	IP::State::State(const char *subnet) : Abstract::IP::State{subnet} {
-		SubNet::set(subnet);
+	IP::State::State(const char *subnet) : Abstract::IP::State{subnet}, IP::SubNet{subnet} {
 	}
 
 	IP::State::State(const pugi::xml_node &node) : Abstract::IP::State{node}, IP::SubNet{node} {

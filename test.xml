@@ -20,20 +20,24 @@
 
 	</network-interface>
 	
-	<network-host name='localhost' host='localhost' dns='true' icmp='true' update-timer='60' icmp-timeout='10'>
-	
-		<state name='local' same-network='yes' level='ready' summary='localhost is local' />
-		
-		<state name='remote' same-network='no' level='warning' summary='localhost is NOT local' />
-		
-		<state name='active' icmp-response='echo-reply' level='ready' summary='localhost is active' />
-		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='localhost is not reachable' />
-		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='localhost is not available' />
-		<state name='timeout' icmp-response='timeout' level='error' summary='localhost is not available' />
-
-	</network-host>
 	-->
 	
+	<network-host name='localhost' hostname='localhost' icmp='true' update-timer='60' icmp-timeout='10'>
+	
+		<state name='local' subnet='local' level='ready' summary='localhost is local' />
+		<state name='remote' subnet='remote' level='warning' summary='localhost is NOT local' />
+		
+	</network-host>
+	
+	<network-host name='cdn' hostname='cdn.werneck.eti.br' update-timer='60'>
+	
+		<state name='local' subnet='local' level='ready' summary='CDN Server is local' />
+		<state name='remote' subnet='remote' level='warning' summary='CDN Server is NOT local' />
+		<state name='not-found' dns-state='host-not-found' level='error' summary='Cant resolve CDN hostname' />
+			
+	</network-host>
+	
+
 	<network-host name='gateway' type='default-gateway' icmp='true' update-timer='60' icmp-timeout='60'>
 
 		<state name='active' icmp-response='echo-reply' level='ready' summary='Gateway is active' />

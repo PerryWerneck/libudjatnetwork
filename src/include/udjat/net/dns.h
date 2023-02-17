@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/agent/state.h>
+ #include <stdexcept>
 
  #ifdef _WIN32
 	#include <udjat/net/win32/dns.h>
@@ -35,7 +36,22 @@
 			invalid,
 			cant_resolve_server_address,
 			cant_resolve_address,
+			host_not_found,
 			dns_ok
+		};
+
+		class Exception : public std::runtime_error {
+		private:
+			int err;
+
+		public:
+			Exception(int c);
+
+			inline int code() const noexcept {
+				return err;
+			}
+
+
 		};
 
 		UDJAT_API Response ResponseFactory(const char *name);
