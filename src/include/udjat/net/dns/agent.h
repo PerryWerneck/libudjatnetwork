@@ -45,8 +45,9 @@
 		protected:
 
 			/// @brief Set DNS state.
+			/// @brief The DNS state code.
 			/// @return true if the state has changed.
-			virtual bool set(const DNS::Response response, const char *name);
+			virtual bool set(const int code, const char *name);
 
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
 			std::shared_ptr<Abstract::State> computeState() override;

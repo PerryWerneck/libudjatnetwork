@@ -73,6 +73,7 @@
 		<Unit filename="src/library/nic/agent.cc" />
 		<Unit filename="src/library/nic/state.cc" />
 		<Unit filename="src/library/os/linux/defaultgateway.cc" />
+		<Unit filename="src/library/os/linux/dns.cc" />
 		<Unit filename="src/library/os/linux/icmphost.cc" />
 		<Unit filename="src/library/os/linux/ipaddress.cc" />
 		<Unit filename="src/library/os/linux/netlink.cc" />

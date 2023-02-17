@@ -31,57 +31,7 @@
 
  namespace Udjat {
 
-	static const struct dns_state {
-		const char *name;
-		const DNS::Response id;
-		const Level level;
-		const char *label;
-		const char *summary;
-		const char *body;
-	} dns_states[] = {
-		{
-			"invalid",
-			DNS::invalid,
-			Level::critical,
-			N_("Invalid DNS"),
-			N_("Invalid DNS response"),
-			N_("The DNS resolver state is invalid.")
-		},
-		{
-			"cant-resolve-server",
-			DNS::cant_resolve_server_address,
-			Level::critical,
-			N_("No server"),
-			N_("Cant resolve DNS Server"),
-			N_("Unable to resolve the name of the defined DNS server.")
-		},
-		{
-			"cant-resolve-host",
-			DNS::cant_resolve_address,
-			Level::error,
-			N_("Cant resolve"),
-			N_("Cant resolve name"),
-			N_("Unable to resolve ${hostname}.")
-		},
-		{
-			"host-not-found",
-			DNS::host_not_found,
-			Level::error,
-			N_("Not found"),
-			N_("Host not found"),
-			N_("Cant find ${hostname}.")
-		},
-		{
-			"resolved",
-			DNS::dns_ok,
-			Level::ready,
-			N_("Ok"),
-			N_("The hostname was resolved"),
-			N_("The DNS was able to resolve ${hostname}.")
-		},
-
-	};
-
+	/*
 	UDJAT_API DNS::Response DNS::ResponseFactory(const char *name) {
 
 		for(size_t ix = 0; ix < N_ELEMENTS(dns_states); ix++) {
@@ -183,7 +133,7 @@
 		throw runtime_error("Invalid DNS state");
 
 	}
-
+	*/
 
  }
 

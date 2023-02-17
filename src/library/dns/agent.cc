@@ -29,6 +29,7 @@
  #include <iostream>
  #include <netdb.h>
 
+
  using namespace std;
 
  namespace Udjat {
@@ -46,9 +47,6 @@
 	std::shared_ptr<Abstract::State> DNS::Agent::computeState() {
 
 		auto state = IP::Agent::computeState();
-
-		debug("---------------------------------------------------- ", name(),"::",__FUNCTION__);
-		debug("IP STATE=",state->to_string());
 
 		if(!this->state) {
 			debug("Cant have an state, using the IP");
@@ -71,7 +69,7 @@
 	std::shared_ptr<Abstract::State> DNS::Agent::StateFactory(const pugi::xml_node &node) {
 
 		if(Object::getAttribute(node,"dns-state")) {
-			auto state = DNS::State::Factory(node);
+			auto state = DNS::State::Factory(*this,node);
 			states.push_back(state);
 			return state;
 		}
@@ -103,27 +101,25 @@
 		return IP::Agent::getProperty(key,value);
 	}
 
-	bool DNS::Agent::set(const DNS::Response response, const char *name) {
+	bool DNS::Agent::set(int code, const char *name) {
 
-		debug("---------------------------------------------");
-
-		if(state && state->id == response) {
+		if(state && *state == code) {
 			debug("DNS State not changed");
 			return false;
 		}
 
 		for(auto state : states) {
-			if(state->id == response) {
-				debug("Found predefined state for response ",(int) response);
+			if(*state == code) {
+				debug("Found predefined state for response ",code);
 				this->state = state;
 				info() << name << ": " << state->to_string() << endl;
 				return true;
 			}
 		}
 
-		debug("Using standard state for response ",(int) response);
-		this->state = DNS::State::Factory(*this,response);
-		info() << name << ": " << state->to_string() << endl;
+		debug("Using standard state for response ",code);
+		this->state = DNS::State::Factory(*this,code);
+		info() << state->to_string() << endl;
 
 		return true;
 	}
@@ -132,11 +128,6 @@
 	bool DNS::Agent::refresh() {
 
 		bool rc = false;
-
-		// Check hostname?
-		if(!(hostname && *hostname)) {
-			return set(DNS::invalid,"");
-		}
 
 		// Check for DNS
 		try {
@@ -150,7 +141,11 @@
 				resolver.query(server.name);
 				if(resolver.empty()) {
 					IP::Address::clear();
-					return set(DNS::cant_resolve_server_address,server.name);
+#ifdef _WIN32
+					#error Implement
+#else
+					set(HOST_NOT_FOUND,server.name);
+#endif // _WIN32
 				}
 
 				server.ip.set(resolver.begin()->getAddr());
@@ -164,7 +159,11 @@
 				resolver.query(hostname);
 				if(resolver.empty()) {
 					IP::Address::clear();
-					return set(DNS::cant_resolve_address,hostname);
+#ifdef _WIN32
+					#error Implement
+#else
+					set(HOST_NOT_FOUND,server.name);
+#endif // _WIN32
 				}
 
 				IP::Address::set(resolver.begin()->getAddr());
@@ -175,15 +174,21 @@
 				resolver.query(hostname);
 				if(resolver.empty()) {
 					IP::Address::clear();
-					return set(DNS::cant_resolve_address,hostname);
+#ifdef _WIN32
+					#error Implement
+#else
+					set(HOST_NOT_FOUND,server.name);
+#endif // _WIN32
 				}
 
 				IP::Address::set(resolver.begin()->getAddr());
 			}
 
-			if(set(DNS::dns_ok,hostname)) {
-				rc = true;
-			}
+#ifdef _WIN32
+			#error Implement
+#else
+			set(NETDB_SUCCESS,server.name);
+#endif // _WIN32
 
 		} catch(const DNS::Exception &e) {
 
@@ -191,34 +196,7 @@
 			IP::Address::clear();
 
 			Logger::String{"DNS Query has failed: ",e.what()," (",e.code(),")"}.trace(name());
-
-#ifdef _WIN32
-
-			throw;
-
-#else
-
-			switch(e.code()) {
-			case HOST_NOT_FOUND:
-				if(set(DNS::host_not_found,hostname)) {
-					debug("DNS State has changed");
-					return true;
-				}
-				return false;
-
-			case NO_DATA:
-				if(set(DNS::host_not_found,hostname)) {
-					debug("DNS State has changed");
-					return true;
-				}
-				return false;
-
-			default:
-				throw;
-			}
-
-#endif // _WIN32
-
+			return set(e.code(),hostname);
 
 		} catch(...) {
 

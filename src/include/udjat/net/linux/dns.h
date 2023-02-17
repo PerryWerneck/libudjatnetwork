@@ -31,6 +31,29 @@
 
 	namespace DNS {
 
+		/*
+		enum Response : int8_t {
+
+			/// @brief DNS in invalid state.
+			invalid	= -1,
+
+			/// @brief Authoritative Answer Host not found.
+			not_found = HOST_NOT_FOUND,
+
+			/// @brief Non-Authoritative Host not found, or SERVERFAIL.
+			try_again = TRY_AGAIN,
+
+			/// @brief Non recoverable errors, FORMERR, REFUSED, NOTIMP.
+			no_recovery = NO_RECOVERY,
+
+			/// @brief Valid name, no data record of requested type.
+			no_data = NO_DATA,
+
+			/// @brief No problem;
+			dns_ok = NETDB_SUCCESS
+		};
+		*/
+
 		class Resolver;
 
 		/// @brief DNS Record

@@ -24,7 +24,7 @@ Example of configuration files for [Udjat](../../../udjat)
 		<state name='remote' subnet='remote' level='warning' summary='CDN Server is NOT local' />
 		
 		<!-- DNS states -->
-		<state name='not-found' dns-state='cant-resolve-host' level='error' summary='Cant resolve CDN hostname' />
+		<state name='not-found' dns-state='host-not-found' level='error' summary='Cant resolve ${hostname}' />
 			
 		<!-- ICMP states -->
 		<state name='active' icmp-response='echo-reply' level='ready' summary='CDN is active' />

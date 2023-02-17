@@ -32,14 +32,6 @@
 
 	namespace DNS {
 
-		enum Response : uint8_t {
-			invalid,
-			cant_resolve_server_address,
-			cant_resolve_address,
-			host_not_found,
-			dns_ok
-		};
-
 		class Exception : public std::runtime_error {
 		private:
 			int err;
@@ -54,25 +46,15 @@
 
 		};
 
-		UDJAT_API Response ResponseFactory(const char *name);
-
-		class UDJAT_API State : public Abstract::State {
+		class UDJAT_API State : public Udjat::State<int> {
 		public:
-			const DNS::Response id;
 
-			State(const pugi::xml_node &node, const DNS::Response i) : Abstract::State{node}, id{i} {
-			}
+			State(const int code);
+			State(const pugi::xml_node &node, const int code);
 
-			State(const char *name, const Level level, const char *summary, const char *body, const DNS::Response i)
-				: Abstract::State{name,level,summary,body}, id{i} {
-			}
-
-			State(const char *name, const Level level, const DNS::Response i)
-				: Abstract::State{name,level}, id{i} {
-			}
-
-			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
-			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const DNS::Response id);
+			// static std::shared_ptr<State> Factory(const pugi::xml_node &node, const int code);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const pugi::xml_node &node);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const int code);
 
 		};
 
