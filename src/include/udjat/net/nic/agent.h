@@ -29,16 +29,17 @@
 	namespace Nic {
 
 		class State;
+		class Controller;
 
 		/// @brief Simple network interface agent.
 		class UDJAT_API Agent : public Abstract::Agent, public std::string  {
 		private:
 			friend class State;
+			friend class Controller;
 
-			static std::mutex guard;
-
+			// static std::mutex guard;
 			/// @brief List of NIC agents.
-			static std::list <Agent *> agents;
+			// static std::list <Agent *> agents;
 
 #ifndef _WIN32
 			struct {

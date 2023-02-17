@@ -26,14 +26,6 @@
  #include <udjat/net/icmp.h>
  #include <list>
 
- /*
- #include <private/agents/host.h>
- #include <udjat/tools/net/icmp.h>
- #include <mutex>
- #include <memory>
- #include <iostream>
- */
-
  using namespace std;
 
  namespace Udjat {

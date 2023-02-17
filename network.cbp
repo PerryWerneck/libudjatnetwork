@@ -82,13 +82,6 @@
 		<Unit filename="src/library/os/linux/subnet.cc" />
 		<Unit filename="src/library/os/windows/ipaddress.cc" />
 		<Unit filename="src/library/range.cc" />
-		<Unit filename="src/module/agents/host/agent.cc" />
-		<Unit filename="src/module/agents/host/factory.cc" />
-		<Unit filename="src/module/agents/host/state.cc" />
-		<Unit filename="src/module/agents/nic/factory.cc" />
-		<Unit filename="src/module/agents/nic/interface.cc" />
-		<Unit filename="src/module/agents/nic/interfaces.cc" />
-		<Unit filename="src/module/agents/nic/state.cc" />
 		<Unit filename="src/module/init.cc" />
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/inet.cc" />

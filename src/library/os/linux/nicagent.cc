@@ -29,32 +29,9 @@
  #include <sys/ioctl.h>
  #include <unistd.h>
 
- /*
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/handler.h>
- #include <list>
- // https://stackoverflow.com/questions/7225888/how-can-i-monitor-the-nic-statusup-down-in-a-c-program-without-polling-the-ker
- #include <asm/types.h>
- #include <sys/socket.h>
- #include <unistd.h>
- #include <errno.h>
- #include <stdio.h>
- #include <string.h>
- #include <net/if.h>
- #include <netinet/in.h>
- #include <linux/netlink.h>
- #include <linux/rtnetlink.h>
- #include <stdlib.h>
- #include <sys/time.h>
- #include <sys/types.h>
- */
-
  using namespace std;
 
  namespace Udjat {
-
-	mutex Nic::Agent::guard;
-	std::list <Nic::Agent *> Nic::Agent::agents;
 
 	static void logflags(const char *name, unsigned int flags) {
 		Logger::String text{"Flags:"};
@@ -144,11 +121,6 @@
 
 		intf.index = if_nametoindex(std::string::c_str());
 
-		{
-			lock_guard<mutex> lock(guard);
-			agents.push_back(this);
-		}
-
 		// Interface was added.
 		NetLink::Controller::getInstance().push_back(this,RTM_NEWLINK,[this](const void *m){
 
@@ -161,29 +133,28 @@
 				return;
 			}
 
-			lock_guard<mutex> lock(guard);
-			for(Agent *agent : agents) {
+			debug("RTM_NEWLINK on '",this->name(),"'");
 
-				if(strcmp(agent->std::string::c_str(),name)) {
-					continue;
+			if(strcmp(this->std::string::c_str(),name)) {
+				debug("'",this->std::string::c_str(),"' ignoring event from '",name,"'");
+				return;
+			}
+
+			this->intf.index = ifi->ifi_index;
+
+			Logger::String{"'RTM_NEWLINK' on interface ",ifi->ifi_index," with index ",this->intf.index}.trace(this->name());
+
+			if(this->intf.flags != ifi->ifi_flags) {
+
+				if(Logger::enabled(Logger::Trace)) {
+					logflags(this->name(),ifi->ifi_flags);
 				}
 
-				agent->intf.index = ifi->ifi_index;
-
-				Logger::String{"'RTM_NEWLINK' on interface ",ifi->ifi_index}.trace(agent->name());
-
-				if(agent->intf.flags != ifi->ifi_flags) {
-
-					if(Logger::enabled(Logger::Trace)) {
-						logflags(agent->name(),ifi->ifi_flags);
-					}
-
-					agent->intf.flags = ifi->ifi_flags;
-					agent->intf.exist = true;
-					agent->push([this](std::shared_ptr<Abstract::Agent>){
-						this->updated(true);
-					});
-				}
+				this->intf.flags = ifi->ifi_flags;
+				this->intf.exist = true;
+				this->push([this](std::shared_ptr<Abstract::Agent>){
+					this->updated(true);
+				});
 
 			}
 
@@ -192,47 +163,35 @@
 		// Interface was removed.
 		NetLink::Controller::getInstance().push_back(this,RTM_DELLINK,[this](const void *m) {
 
-			// Link was removed
 			const ifinfomsg *ifi = (const ifinfomsg *) m;
 
-			lock_guard<mutex> lock(guard);
-			for(Agent *agent : agents) {
-
-				if(agent->intf.index != ifi->ifi_index) {
-					continue;
-				}
-
-				Logger::String{"'RTM_DELLINK' on interface ",ifi->ifi_index}.trace(agent->name());
-
-				if(agent->intf.flags != ifi->ifi_flags) {
-
-					if(Logger::enabled(Logger::Trace)) {
-						logflags(agent->name(),ifi->ifi_flags);
-					}
-
-					agent->intf.flags = ifi->ifi_flags;
-					agent->intf.exist = false;
-					agent->push([this](std::shared_ptr<Abstract::Agent>){
-						this->updated(true);
-					});
-				}
-
+			// Link was removed
+			if(this->intf.index != ifi->ifi_index) {
+				debug("Ignoring RTM_DELLINK to index '",ifi->ifi_index,"' mine is '",this->intf.index,"'");
+				return;
 			}
+
+			Logger::String{"'RTM_DELLINK' on interface ",ifi->ifi_index," with index ",this->intf.index}.trace(this->name());
+
+			if(this->intf.flags != ifi->ifi_flags) {
+
+				if(Logger::enabled(Logger::Trace)) {
+					logflags(this->name(),ifi->ifi_flags);
+				}
+
+				this->intf.flags = ifi->ifi_flags;
+				this->intf.exist = false;
+				this->push([this](std::shared_ptr<Abstract::Agent>){
+					this->updated(true);
+				});
+			}
+
 
 		});
 	}
 
 	void Nic::Agent::stop() {
-
-		{
-			lock_guard<mutex> lock(guard);
-			agents.remove_if([this](Agent *agent) {
-				return agent == this;
-			});
-		}
-
 		NetLink::Controller::getInstance().remove(this);
 	}
-
 
  }
