@@ -31,9 +31,18 @@
 	
 	<network-host name='cdn' hostname='cdn.werneck.eti.br' update-timer='60'>
 	
+		<!-- subnet states -->
 		<state name='local' subnet='local' level='ready' summary='CDN Server is local' />
 		<state name='remote' subnet='remote' level='warning' summary='CDN Server is NOT local' />
-		<state name='not-found' dns-state='host-not-found' level='error' summary='Cant resolve CDN hostname' />
+		
+		<!-- DNS states -->
+		<state name='not-found' dns-state='cant-resolve-host' level='error' summary='Cant resolve CDN hostname' />
+			
+		<!-- ICMP states -->
+		<state name='active' icmp-response='echo-reply' level='ready' summary='CDN is active' />
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='CDN is not reachable' />
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='CDN is not available' />
+		<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from CDN' />
 			
 	</network-host>
 	
