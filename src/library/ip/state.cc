@@ -87,6 +87,10 @@
 			Internal(const pugi::xml_node &node, bool r) : Abstract::IP::State{node}, revert{r} {
 			}
 
+			bool empty() const noexcept override {
+				return IP::SubNet::empty();
+			}
+
 			std::string to_string() const noexcept override {
 				if(Object::properties.summary[0]) {
 					return Object::properties.summary;
@@ -121,6 +125,10 @@
 		return IP::SubNet::to_string();
 	}
 
+	bool IP::State::empty() const noexcept {
+		return IP::SubNet::empty();
+	}
+
 	/// @brief Test an IPV4 address range.
 	bool IP::State::compare(const sockaddr_in &addr) const {
 		return IP::SubNet::contains(addr);
@@ -139,6 +147,9 @@
 
 		case AF_INET6:
 			return compare(*((const sockaddr_in6 *) &addr));
+
+		case 0:
+			return empty();
 
 		default:
 			throw runtime_error("Invalid address family");

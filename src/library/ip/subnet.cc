@@ -87,13 +87,16 @@
 	}
 
 	/// @brief Test an IPV6 address range.
-	bool IP::SubNet::contains(const sockaddr_in6 &addr) const {
-		throw runtime_error("Unsupported network family");
+	bool IP::SubNet::contains(const sockaddr_in6 &) const {
+		throw std::system_error(ENOTSUP, std::system_category(),"No support for IPV6");
 	}
 
 	bool IP::SubNet::contains(const sockaddr_storage &addr) const {
 
 		switch(addr.ss_family) {
+		case 0:
+			return empty();
+
 		case AF_INET:
 			return contains(*((const sockaddr_in *) &addr));
 
@@ -101,7 +104,7 @@
 			return contains(*((const sockaddr_in6 *) &addr));
 
 		default:
-			throw runtime_error("Invalid address family");
+			throw std::system_error(ENOTSUP, std::system_category(),"Invalid address family");
 		}
 
 	}
@@ -111,6 +114,10 @@
 	}
 
 	std::string IP::SubNet::to_string() const noexcept {
+
+		if(!ss_family) {
+			return "None";
+		}
 
 		std::string rc{std::to_string((IP::Address) *this)};
 		rc += "/";

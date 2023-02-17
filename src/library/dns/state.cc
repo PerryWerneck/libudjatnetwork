@@ -59,7 +59,7 @@
 			"cant-resolve-host",
 			DNS::cant_resolve_address,
 			Level::error,
-			N_("cant-resolve"),
+			N_("Cant resolve"),
 			N_("Cant resolve name"),
 			N_("Unable to resolve ${hostname}.")
 		},
@@ -67,7 +67,7 @@
 			"host-not-found",
 			DNS::host_not_found,
 			Level::error,
-			N_("not-found"),
+			N_("Not found"),
 			N_("Host not found"),
 			N_("Cant find ${hostname}.")
 		},
@@ -75,7 +75,7 @@
 			"resolved",
 			DNS::dns_ok,
 			Level::ready,
-			N_("resolved"),
+			N_("Ok"),
 			N_("The hostname was resolved"),
 			N_("The DNS was able to resolve ${hostname}.")
 		},

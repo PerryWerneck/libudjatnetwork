@@ -38,6 +38,9 @@
 				/// @brief Test an IPV6 address range.
 				virtual bool compare(const sockaddr_in6 &addr) const = 0;
 
+				/// @brief Test if it's an empty state.
+				virtual bool empty() const noexcept = 0;
+
 				/// @brief Test address range.
 				bool compare(const sockaddr_storage &subnet, const sockaddr_storage &addr) const;
 
@@ -71,6 +74,8 @@
 
 				/// @brief Test an IPV6 address range.
 				bool compare(const sockaddr_in6 &addr) const override;
+
+				bool empty() const noexcept override;
 
 		public:
 

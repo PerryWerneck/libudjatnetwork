@@ -114,38 +114,26 @@
 
 	std::shared_ptr<Abstract::State> IP::Agent::computeState() {
 
-		auto state = super::computeState();
+		auto computed_state = super::computeState();
 
-		if(IP::Address::empty()) {
-
-			ip.state.reset();
-
-			// TODO: Find empty subnet.
-
-		} else {
-
-			// Compute state from subnet.
-			for(auto subnet : ip.states) {
-				if(subnet->compare((const IP::Address) *this)) {
-					if(!ip.state || ip.state != subnet) {
-						info() << std::to_string((IP::Address) *this) << ": " << subnet->to_string() << endl;
-					}
-					ip.state = subnet;
-					break;
-				}
+		// Compute state from subnet.
+		ip.state.reset();
+		for(auto subnet : ip.states) {
+			if(subnet->compare((const IP::Address) *this)) {
+				ip.state = subnet;
+				break;
 			}
-
 		}
 
-		if(ip.state && *ip.state > *state) {
-			state = ip.state;
+		if(ip.state && *ip.state > *computed_state) {
+			computed_state = ip.state;
 		}
 
-		if(icmp.state && *icmp.state > *state) {
-			state = icmp.state;
+		if(icmp.state && *icmp.state > *computed_state) {
+			computed_state = icmp.state;
 		}
 
-		return state;
+		return computed_state;
 	}
 
 

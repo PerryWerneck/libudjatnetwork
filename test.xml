@@ -29,7 +29,7 @@
 		
 	</network-host>
 	
-	<network-host name='cdn' hostname='cdn.werneck.eti.br' update-timer='60'>
+	<network-host name='cdn' hostname='cdn.werneck.eti.br' update-timer='60' icmp='true' icmp-timeout='60'>
 	
 		<!-- subnet states -->
 		<state name='local' subnet='local' level='ready' summary='CDN Server is local' />

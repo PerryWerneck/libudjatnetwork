@@ -17,7 +17,7 @@ Example of configuration files for [Udjat](../../../udjat)
 	<!-- Load network agents -->
 	<module name='users' required='yes' />
 
-	<network-host name='cdn' hostname='cdn.werneck.eti.br' icmp='true' update-timer='60'>
+	<network-host name='cdn' hostname='cdn.werneck.eti.br' icmp='true' icmp-timeout='60' update-timer='60'>
 	
 		<!-- subnet states -->
 		<state name='local' subnet='local' level='ready' summary='CDN Server is local' />
