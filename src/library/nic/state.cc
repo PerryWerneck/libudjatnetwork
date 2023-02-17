@@ -37,9 +37,12 @@
 		const char		* active;
 		const char 		* inactive;
 	} flagstates[] = {
-		{ IFF_UP,			"up",		"down"			},
-		{ IFF_RUNNING,		"running",	"not-running"	},
-		{ IFF_PROMISC,		"promisc",	"not-promisc"	},
+		{ IFF_UP,				"up",			"down"			},
+		{ IFF_RUNNING,			"running",		"not-running"	},
+		{ IFF_PROMISC,			"promisc",		"not-promisc"	},
+		{ IFF_POINTOPOINT,		"p2p",			"not-p2p"		},
+		{ IFF_NOARP,			"no-arp",		"arp"			},
+		{ IFF_MULTICAST,		"multicast",	"no-multicast"	},
 	};
 
 	std::shared_ptr<Nic::State> Nic::State::Factory(const pugi::xml_node &node) {
@@ -76,7 +79,7 @@
 
 		};
 
-		const char * state = node.attribute("device-state").as_string();
+		const char * state = node.attribute("device-state").as_string(node.attribute("name").as_string());
 		if(!state[0]) {
 			throw runtime_error("The required attribute 'device-state' is missing");
 		}
@@ -93,7 +96,31 @@
 
 		}
 
-		throw runtime_error("Unexpected value on attribute 'device-state'");
+		// @brief Test if interface exists.
+		class StateExistant : public Nic::State {
+		private:
+			bool revert;
+
+		public:
+			StateExistant(const pugi::xml_node &node, bool r) : Nic::State{node}, revert{r} {
+			}
+
+			bool compare(const Nic::Agent &agent) override {
+				return (revert ? !agent.intf.exist : agent.intf.exist);
+			}
+
+		};
+
+		if(!strcasecmp(state,"found")) {
+			return make_shared<StateExistant>(node,false);
+		}
+
+		if(!strcasecmp(state,"not-found")) {
+			return make_shared<StateExistant>(node,true);
+		}
+
+
+		throw runtime_error("Required attribute 'device-state' is missing or invalid");
 
 	}
 

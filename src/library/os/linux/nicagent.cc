@@ -75,42 +75,11 @@
 		text.write(Logger::Trace,name);
 	}
 
-	unsigned int getFlags(const char *name) {
-
-		int sock = socket(PF_INET, SOCK_DGRAM, 0);
-		if(sock < 0) {
-			cerr << name << "\tUnable to create socket: " << strerror(errno) << endl;
-			return 0;
-		}
-
-		struct ifreq ifr;
-		memset(&ifr,0,sizeof(ifr));
-		strncpy(ifr.ifr_name,name,sizeof(ifr.ifr_name));
-
-		if (ioctl(sock, SIOCGIFFLAGS, (caddr_t)&ifr) < 0) {
-
-			if(errno == ENODEV) {
-				clog << name << "\t" << strerror(errno) << endl;
- 			} else {
- 				cerr << name << "\t" << strerror(errno) << endl;
- 			}
-			ifr.ifr_flags = 0;
-
-		}
-
-		::close(sock);
-
-		return ifr.ifr_flags;
-	}
 
 	Nic::Agent::Agent(const char *name) : Abstract::Agent{name}, std::string{name} {
-		intf.flags = getFlags(std::string::c_str());
-		intf.exist = (intf.flags != 0);
 	}
 
 	Nic::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent{node}, std::string{node.attribute("device-name").as_string()} {
-		intf.flags = getFlags(std::string::c_str());
-		intf.exist = (intf.flags != 0);
 	}
 
 	Nic::Agent::~Agent() {
@@ -118,6 +87,14 @@
 	}
 
 	void Nic::Agent::start() {
+
+		if(refresh()) {
+			Abstract::Agent::updated(true);
+		}
+
+#ifdef DEBUG
+		sched_update(5);
+#endif // DEBUG
 
 		intf.index = if_nametoindex(std::string::c_str());
 
@@ -144,7 +121,7 @@
 
 			Logger::String{"'RTM_NEWLINK' on interface ",ifi->ifi_index," with index ",this->intf.index}.trace(this->name());
 
-			if(this->intf.flags != ifi->ifi_flags) {
+			if(this->intf.flags != (unsigned int) ifi->ifi_flags) {
 
 				if(Logger::enabled(Logger::Trace)) {
 					logflags(this->name(),ifi->ifi_flags);
@@ -153,7 +130,9 @@
 				this->intf.flags = ifi->ifi_flags;
 				this->intf.exist = true;
 				this->push([this](std::shared_ptr<Abstract::Agent>){
+					debug("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB> Scheduling update");
 					this->updated(true);
+					this->sched_update(1); // 1 second to check other interface options.
 				});
 
 			}
@@ -173,7 +152,7 @@
 
 			Logger::String{"'RTM_DELLINK' on interface ",ifi->ifi_index," with index ",this->intf.index}.trace(this->name());
 
-			if(this->intf.flags != ifi->ifi_flags) {
+			if(this->intf.flags != (unsigned int) ifi->ifi_flags || this->intf.exist) {
 
 				if(Logger::enabled(Logger::Trace)) {
 					logflags(this->name(),ifi->ifi_flags);
@@ -181,11 +160,13 @@
 
 				this->intf.flags = ifi->ifi_flags;
 				this->intf.exist = false;
+
 				this->push([this](std::shared_ptr<Abstract::Agent>){
+					debug("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB> Scheduling update");
 					this->updated(true);
+					this->sched_update(1); // 1 second to check if interface still exists.
 				});
 			}
-
 
 		});
 	}
@@ -193,5 +174,55 @@
 	void Nic::Agent::stop() {
 		NetLink::Controller::getInstance().remove(this);
 	}
+
+	bool Nic::Agent::refresh() {
+
+		debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA> Refreshing ",name());
+
+		bool rc = false;
+
+		int sock = socket(PF_INET, SOCK_DGRAM, 0);
+		if(sock < 0) {
+			throw std::system_error(errno, std::system_category());
+		}
+
+		struct ifreq ifr;
+		memset(&ifr,0,sizeof(ifr));
+		strncpy(ifr.ifr_name,std::string::c_str(),sizeof(ifr.ifr_name));
+
+		if (ioctl(sock, SIOCGIFFLAGS, (caddr_t)&ifr) < 0) {
+
+			if(errno == ENODEV) {
+				warning() << strerror(errno) << endl;
+ 			} else {
+ 				error() << strerror(errno) << endl;
+ 			}
+
+ 			if(intf.flags != 0 || intf.exist || intf.index != -1) {
+				rc = true;
+ 			}
+
+			intf.flags = 0;
+			intf.exist = false;
+			intf.index = -1;
+
+		} else {
+
+ 			if(intf.flags != (unsigned int) ifr.ifr_flags || !intf.exist || intf.index != ifr.ifr_ifindex) {
+				rc = true;
+ 			}
+
+			intf.flags = ifr.ifr_flags;
+			intf.exist = true;
+			intf.index = ifr.ifr_ifindex;
+
+		}
+
+		::close(sock);
+
+		return rc;
+
+	}
+
 
  }

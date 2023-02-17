@@ -96,27 +96,9 @@
 						cerr << "netlink\tUnexpected error processing message" << endl;
 
 					}
-
 				}
 			}
-
-			/*
-			switch(h->nlmsg_type) {
-			case RTM_NEWLINK:
-				debug("RTM_NEWLINK");
-				new_link((ifinfomsg *) NLMSG_DATA(h));
-				break;
-
-			case RTM_DELLINK:
-				debug("RTM_DELLINK");
-				del_link((ifinfomsg *) NLMSG_DATA(h));
-				break;
-
-			}
-			*/
-
 		}
-
 	}
 
 	void NetLink::Controller::push_back(void *object, uint16_t message, std::function<void(const void *)> method) {

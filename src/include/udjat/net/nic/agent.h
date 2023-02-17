@@ -35,11 +35,6 @@
 		class UDJAT_API Agent : public Abstract::Agent, public std::string  {
 		private:
 			friend class State;
-			friend class Controller;
-
-			// static std::mutex guard;
-			/// @brief List of NIC agents.
-			// static std::list <Agent *> agents;
 
 #ifndef _WIN32
 			struct {
@@ -64,10 +59,11 @@
 
 			void start() override;
 			void stop() override;
+			bool refresh() override;
 
 			/// @brief Check for interface link.
 			/// @return true if the interface is 'up' and has an active link.
-			bool link();
+			// bool link();
 
 #ifndef _WIN32
 			inline unsigned int flags() const noexcept {
