@@ -14,13 +14,6 @@
 
 
 	</network-interface>
-
-	<!--
-	<network-interface name='vpn' interface-name='tunsnx' update-timer='60'>
-
-	</network-interface>
-	
-	-->
 	
 	<network-host name='localhost' hostname='localhost' icmp='true' update-timer='60' icmp-timeout='10'>
 	
