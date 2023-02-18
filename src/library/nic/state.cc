@@ -34,15 +34,16 @@
 
 	static const struct {
 		unsigned int	  flag;
+		bool			  standard_icon;
 		const char		* active;
 		const char 		* inactive;
 	} flagstates[] = {
-		{ IFF_UP,				"up",			"down"			},
-		{ IFF_RUNNING,			"running",		"not-running"	},
-		{ IFF_PROMISC,			"promisc",		"not-promisc"	},
-		{ IFF_POINTOPOINT,		"p2p",			"not-p2p"		},
-		{ IFF_NOARP,			"no-arp",		"arp"			},
-		{ IFF_MULTICAST,		"multicast",	"no-multicast"	},
+		{ IFF_UP,				true,	"up",			"down"			},
+		{ IFF_RUNNING,			true,	"running",		"not-running"	},
+		{ IFF_PROMISC,			false,	"promisc",		"not-promisc"	},
+		{ IFF_POINTOPOINT,		false,	"p2p",			"not-p2p"		},
+		{ IFF_NOARP,			false,	"no-arp",		"arp"			},
+		{ IFF_MULTICAST,		false,	"multicast",	"no-multicast"	},
 	};
 
 	std::shared_ptr<Nic::State> Nic::State::Factory(const pugi::xml_node &node) {
@@ -53,7 +54,10 @@
 			const unsigned int flags;
 
 		public:
-			StateActive(unsigned int f, const pugi::xml_node &node) : Nic::State{node}, flags{f} {
+			StateActive(unsigned int f, const char *icon, const pugi::xml_node &node) : Nic::State{node}, flags{f} {
+				if(icon && !(Object::properties.icon && *Object::properties.icon)) {
+					Object::properties.icon = icon;
+				}
 			}
 
 			bool compare(const Nic::Agent &agent) override {
@@ -69,7 +73,10 @@
 			const unsigned int flags;
 
 		public:
-			StateInactive(unsigned int f, const pugi::xml_node &node) : Nic::State{node}, flags{f} {
+			StateInactive(unsigned int f, const char *icon, const pugi::xml_node &node) : Nic::State{node}, flags{f} {
+				if(icon && !(Object::properties.icon && *Object::properties.icon)) {
+					Object::properties.icon = icon;
+				}
 			}
 
 			bool compare(const Nic::Agent &agent) override {
@@ -87,11 +94,19 @@
 		for(size_t ix = 0; ix < N_ELEMENTS(flagstates); ix++) {
 
 			if(!strcasecmp(state,flagstates[ix].active)) {
-				return make_shared<StateActive>(flagstates[ix].flag,node);
+				return make_shared<StateActive>(
+								flagstates[ix].flag,
+								(flagstates[ix].standard_icon ? "network-transmit-receive" : nullptr),
+								node
+							);
 			}
 
 			if(!strcasecmp(state,flagstates[ix].inactive)) {
-				return make_shared<StateInactive>(flagstates[ix].flag,node);
+				return make_shared<StateInactive>(
+								flagstates[ix].flag,
+								(flagstates[ix].standard_icon ? "network-error" : nullptr),
+								node
+							);
 			}
 
 		}
@@ -103,6 +118,12 @@
 
 		public:
 			StateExistant(const pugi::xml_node &node, bool r) : Nic::State{node}, revert{r} {
+
+				// https://specifications.freedesktop.org/icon-naming-spec/latest/ar01s04.html
+				if(!(Object::properties.icon && *Object::properties.icon)) {
+					Object::properties.icon = revert ? "network-error" : "network-transmit-receive";
+				}
+
 			}
 
 			bool compare(const Nic::Agent &agent) override {

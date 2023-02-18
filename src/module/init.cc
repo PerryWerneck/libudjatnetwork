@@ -20,14 +20,11 @@
  #include <config.h>
  #include <private/module.h>
  #include <udjat/module.h>
- #include <private/agents/nic.h>
  #include <unistd.h>
  #include <sys/types.h>
  #include <udjat/moduleinfo.h>
 
- #include <udjat/net/gateway.h>
  #include <udjat/net/ip/agent.h>
- #include <udjat/net/dns/agent.h>
  #include <udjat/net/nic/agent.h>
 
  #ifndef _WIN32
@@ -49,7 +46,7 @@
 		}
 
 		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &, const pugi::xml_node &node) const {
-			return make_shared<Nic::Agent>(node);
+			return Nic::Agent::Factory(node);
 		}
 
 	};
@@ -61,25 +58,7 @@
 		}
 
 		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &, const pugi::xml_node &node) const {
-
-			switch(String{node,"type","host"}.select("host","default-gateway",nullptr)) {
-			case 0:	// IP based host
-				return make_shared<Udjat::IP::Gateway>(node);
-				break;
-
-			case 1: // Default gateway
-				return make_shared<Udjat::IP::Gateway>(node);
-
-			default:
-				if(node.attribute("hostname")) {
-					return make_shared<Udjat::DNS::Agent>(node);
-				} else if(node.attribute("ip")) {
-					return make_shared<Udjat::IP::Gateway>(node);
-				}
-			}
-
-			throw runtime_error("Cant identify network host type, missing attribute 'ip' or 'hostname");
-
+			return IP::Agent::Factory(node);
 		}
 
 	};

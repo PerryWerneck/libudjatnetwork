@@ -22,7 +22,6 @@
  #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
  #include <udjat/net/nic/state.h>
- #include <list>
 
  namespace Udjat {
 
@@ -39,8 +38,9 @@
 #ifndef _WIN32
 			struct {
 				int index = 0;
-				bool exist = false;	///< @brief True on RTM_NEWLINK, false on RTM_DELLINK
-				unsigned int flags = 0;
+				bool netlink = false;		///< @brief True on RTM_NEWLINK, false on RTM_DELLINK.
+				bool exist = false;			///< @brief True if cant get device info.
+				unsigned int flags = 0;		///< @brief Interface flags.
 			} intf;
 
 #endif // !_WIN32
@@ -52,6 +52,8 @@
 			std::shared_ptr<Abstract::State> computeState() override;
 
 		public:
+
+			static std::shared_ptr<Abstract::Agent> Factory(const pugi::xml_node &node);
 
 			Agent(const char *name = "");
 			Agent(const pugi::xml_node &node);
@@ -71,7 +73,7 @@
 			}
 
 			inline bool exist() const noexcept {
-				return intf.exist;
+				return intf.netlink;
 			}
 #endif // !_WIN32
 
@@ -79,8 +81,13 @@
 
 		/// @brief Container with all network interfaces.
 		class UDJAT_API List : public Udjat::Agent<unsigned int>  {
+		private:
+			bool auto_detect = false;	///< @brief If true build agents for detected interfaces.
+
+			void init();
+
 		public:
-			List();
+			List(bool auto_detect);
 			List(const pugi::xml_node &node);
 
 			bool refresh() override;
@@ -88,7 +95,7 @@
 			Udjat::Value & getProperties(Value &value) const noexcept override;
 			bool getProperty(const char *key, std::string &value) const noexcept override;
 
-			std::shared_ptr<Abstract::Agent> find(const char *path, bool required, bool autoins) override;
+			// std::shared_ptr<Abstract::Agent> find(const char *path, bool required, bool autoins) override;
 
 		};
 

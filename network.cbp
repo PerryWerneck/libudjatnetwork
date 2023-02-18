@@ -68,9 +68,12 @@
 		<Unit filename="src/library/icmp/state.cc" />
 		<Unit filename="src/library/icmp/worker.cc" />
 		<Unit filename="src/library/ip/agent.cc" />
+		<Unit filename="src/library/ip/factory.cc" />
 		<Unit filename="src/library/ip/state.cc" />
 		<Unit filename="src/library/ip/subnet.cc" />
 		<Unit filename="src/library/nic/agent.cc" />
+		<Unit filename="src/library/nic/factory.cc" />
+		<Unit filename="src/library/nic/list.cc" />
 		<Unit filename="src/library/nic/state.cc" />
 		<Unit filename="src/library/os/linux/defaultgateway.cc" />
 		<Unit filename="src/library/os/linux/dns.cc" />

@@ -128,9 +128,8 @@
 				}
 
 				this->intf.flags = ifi->ifi_flags;
-				this->intf.exist = true;
+				this->intf.netlink = true;
 				this->push([this](std::shared_ptr<Abstract::Agent>){
-					debug("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB> Scheduling update");
 					this->updated(true);
 					this->sched_update(1); // 1 second to check other interface options.
 				});
@@ -152,17 +151,16 @@
 
 			Logger::String{"'RTM_DELLINK' on interface ",ifi->ifi_index," with index ",this->intf.index}.trace(this->name());
 
-			if(this->intf.flags != (unsigned int) ifi->ifi_flags || this->intf.exist) {
+			if(this->intf.flags != (unsigned int) ifi->ifi_flags || this->intf.netlink) {
 
 				if(Logger::enabled(Logger::Trace)) {
 					logflags(this->name(),ifi->ifi_flags);
 				}
 
 				this->intf.flags = ifi->ifi_flags;
-				this->intf.exist = false;
+				this->intf.netlink = false;
 
 				this->push([this](std::shared_ptr<Abstract::Agent>){
-					debug("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB> Scheduling update");
 					this->updated(true);
 					this->sched_update(1); // 1 second to check if interface still exists.
 				});
@@ -176,8 +174,6 @@
 	}
 
 	bool Nic::Agent::refresh() {
-
-		debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA> Refreshing ",name());
 
 		bool rc = false;
 
@@ -198,7 +194,7 @@
  				error() << strerror(errno) << endl;
  			}
 
- 			if(intf.flags != 0 || intf.exist || intf.index != -1) {
+ 			if(intf.flags != 0 || intf.index != -1 || intf.exist) {
 				rc = true;
  			}
 
@@ -208,13 +204,13 @@
 
 		} else {
 
- 			if(intf.flags != (unsigned int) ifr.ifr_flags || !intf.exist || intf.index != ifr.ifr_ifindex) {
+ 			if(intf.flags != (unsigned int) ifr.ifr_flags || intf.index != ifr.ifr_ifindex || !intf.exist) {
 				rc = true;
  			}
 
 			intf.flags = ifr.ifr_flags;
-			intf.exist = true;
 			intf.index = ifr.ifr_ifindex;
+			intf.exist = true;
 
 		}
 

@@ -60,6 +60,8 @@
 
 		public:
 
+			static std::shared_ptr<Abstract::Agent> Factory(const pugi::xml_node &node);
+
 			Agent(const char *name = "");
 			Agent(const pugi::xml_node &node, const char *ipaddr = "");
 
