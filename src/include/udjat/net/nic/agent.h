@@ -90,6 +90,9 @@
 			List(bool auto_detect);
 			List(const pugi::xml_node &node);
 
+			/// @brief Get number of active interfaces.
+			size_t active();
+
 			bool refresh() override;
 
 			Udjat::Value & getProperties(Value &value) const noexcept override;

@@ -31,60 +31,18 @@
 		init();
 	}
 
-	Nic::List::List(const pugi::xml_node &node) : Udjat::Agent<unsigned int>{node}, auto_detect{node.attribute("auto-detect").bool(false)} {
+	Nic::List::List(const pugi::xml_node &node) : Udjat::Agent<unsigned int>{node}, auto_detect{node.attribute("auto-detect").as_bool(false)} {
 		init();
 	}
 
 	bool Nic::List::refresh() {
-
-		// Count interfaces.
-		unsigned int interfaces = 0;
-
-		Network::Interface::for_each([&interfaces](const Interface &) {
-			interfaces++;
-		});
-
-		return set(interfaces);
-	}
-
-	bool Nic::List::getProperty(const char *key, std::string &value) const noexcept {
-
-		if(!strcasecmp(key,"active-nic")) {
-			// Find first active nic.
-			Network::Interface::for_each([&value](const Interface &interface) {
-				if(interface.active()) {
-					value = interface.name();
-					return true;
-				}
-			});
-
-			return true;
-
-		}
-
-		if(!strcasecmp(key,"active-nics")) {
-			// Get all interfaces.
-			Network::Interface::for_each([&value](const Interface &interface) {
-				if(interface.active()) {
-					if(!value.empty()) {
-						value += ",";
-					}
-					value += interface.name();
-					return true;
-				}
-			});
-
-			return true;
-		}
-
-		return super::getProperty(key,value);
-
+		return set(active());
 	}
 
 	Value & Nic::List::getProperties(Value &value) const noexcept {
 
-		getProperty("active-nic",value["active-nic"]);
-		getProperty("active-nics",value["active-nics"]);
+		Abstract::Object::getProperty("nics",value["nics"]);
+		Abstract::Object::getProperty("active",value["active"]);
 
 		// TODO: List all interfaces.
 
