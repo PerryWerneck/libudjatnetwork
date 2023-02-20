@@ -10,6 +10,10 @@
 	<attribute name='alert-filename' value='/tmp/netwatcher.log' />
 	<attribute name='alert-payload' value='${timestamp} ${summary}' />
 
+	<network-interface name='niclist' device-name='all'>
+	</network-interface>
+	
+	<!--
 	<network-interface name='vpn' device-name='tunsnx'>
 
 		<state name='not-found' device-state='not-found' level='unimportant' summary='No VPN interface' />
@@ -17,6 +21,7 @@
 		<state name='down' device-state='down' level='warning' summary='VPN is down' />
 
 	</network-interface>
+	-->
 	
 	<network-host name='localhost' hostname='localhost' icmp='true' update-timer='60' icmp-timeout='10'>
 	

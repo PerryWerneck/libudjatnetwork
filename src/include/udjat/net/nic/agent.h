@@ -84,6 +84,9 @@
 		public:
 			List(const pugi::xml_node &node);
 
+			void start() override;
+			void stop() override;
+
 			/// @brief Get number of active interfaces.
 			size_t active();
 
@@ -92,7 +95,7 @@
 			Udjat::Value & getProperties(Value &value) const noexcept override;
 			bool getProperty(const char *key, std::string &value) const noexcept override;
 
-			// std::shared_ptr<Abstract::Agent> find(const char *path, bool required, bool autoins) override;
+			bool getProperties(const char *path, Value &value) const override;
 
 		};
 

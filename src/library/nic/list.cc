@@ -22,18 +22,44 @@
  #include <udjat/net/nic/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/net/interface.h>
+ #include <udjat/tools/file.h>
+ #include <udjat/tools/string.h>
 
  using namespace std;
 
  namespace Udjat {
 
- 	// , auto_detect{node.attribute("auto-detect").as_bool(false)} {
-
-	Nic::List::List(const pugi::xml_node &node) : Udjat::Agent<unsigned int>{node} {
+ 	Nic::List::List(const pugi::xml_node &node) : Udjat::Agent<unsigned int>{node} {
 	}
 
 	bool Nic::List::refresh() {
 		return set(active());
+	}
+
+	bool Nic::List::getProperties(const char *path, Value &value) const {
+
+		if(super::getProperties(path,value)) {
+			return true;
+		}
+
+		if(!*path) {
+			return false;
+
+		}
+
+		return Network::Interface::for_each([&value,path](const Network::Interface &interface) {
+			if(!strcasecmp(interface.name(),path)) {
+
+#ifndef _WIN32
+				value["carrier"] = stoi(File::Text{String{"/sys/class/net/",interface.name(),"/carrier"}}.c_str()) != 0;
+#endif // _WIN32
+
+				interface.getProperties(value);
+				return true;
+			}
+			return false;
+		});
+
 	}
 
 	Value & Nic::List::getProperties(Value &value) const noexcept {

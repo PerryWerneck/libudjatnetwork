@@ -30,6 +30,17 @@
 
  namespace Udjat {
 
+	void Nic::List::start() {
+
+		super::start(active());
+	}
+
+	void Nic::List::stop() {
+		super::stop();
+
+	}
+
+
 	static bool carrier(const char *name) {
 		return stoi(File::Text{String{"/sys/class/net/",name,"/carrier"}}.c_str()) != 0;
 	}
@@ -50,7 +61,7 @@
 		if(!strcasecmp(key,"active")) {
 			// Find first active nic.
 			Network::Interface::for_each([&value](const Network::Interface &interface) {
-				if(interface.up() && carrier(interface.name())) {
+				if(!interface.loopback() && interface.up() && carrier(interface.name())) {
 					value = interface.name();
 					return true;
 				}
@@ -64,10 +75,12 @@
 		if(!strcasecmp(key,"nics")) {
 			// Get all interfaces.
 			Network::Interface::for_each([&value](const Network::Interface &interface) {
-				if(!value.empty()) {
-					value += ",";
+				if(!interface.loopback()) {
+					if(!value.empty()) {
+						value += ",";
+					}
+					value += interface.name();
 				}
-				value += interface.name();
 				return false;
 			});
 
