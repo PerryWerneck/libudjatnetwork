@@ -95,7 +95,7 @@
 			"no-data",
 			N_("No data"),
 			N_("No data for ${hostname}"),
-			N_("")
+			""
 		},
 
 		{
