@@ -27,12 +27,9 @@
 
  namespace Udjat {
 
-	Nic::List::List(bool a) : auto_detect{a} {
-		init();
-	}
+ 	// , auto_detect{node.attribute("auto-detect").as_bool(false)} {
 
-	Nic::List::List(const pugi::xml_node &node) : Udjat::Agent<unsigned int>{node}, auto_detect{node.attribute("auto-detect").as_bool(false)} {
-		init();
+	Nic::List::List(const pugi::xml_node &node) : Udjat::Agent<unsigned int>{node} {
 	}
 
 	bool Nic::List::refresh() {

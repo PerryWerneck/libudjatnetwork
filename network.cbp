@@ -82,6 +82,7 @@
 		<Unit filename="src/library/os/linux/netlink.cc" />
 		<Unit filename="src/library/os/linux/netlink.h" />
 		<Unit filename="src/library/os/linux/nicagent.cc" />
+		<Unit filename="src/library/os/linux/nicdetect.cc" />
 		<Unit filename="src/library/os/linux/niclist.cc" />
 		<Unit filename="src/library/os/linux/subnet.cc" />
 		<Unit filename="src/library/os/windows/ipaddress.cc" />

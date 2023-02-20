@@ -56,7 +56,7 @@
 			static std::shared_ptr<Abstract::Agent> Factory(const pugi::xml_node &node);
 
 			Agent(const char *name = "");
-			Agent(const pugi::xml_node &node);
+			Agent(const pugi::xml_node &node, const char *name = "");
 			virtual ~Agent();
 
 			void start() override;
@@ -81,13 +81,7 @@
 
 		/// @brief Container with all network interfaces.
 		class UDJAT_API List : public Udjat::Agent<unsigned int>  {
-		private:
-			bool auto_detect = false;	///< @brief If true build agents for detected interfaces.
-
-			void init();
-
 		public:
-			List(bool auto_detect);
 			List(const pugi::xml_node &node);
 
 			/// @brief Get number of active interfaces.

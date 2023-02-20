@@ -22,6 +22,7 @@
  #include <udjat/net/nic/agent.h>
  #include <memory>
  #include <pugixml.hpp>
+ #include <private/agents/nic.h>
 
  using namespace std;
 
@@ -34,6 +35,11 @@
 		if(*device_name) {
 
 			if(!(strcasecmp(device_name,"*") && strcasecmp(device_name,"all"))) {
+
+				if(node.attribute("auto-detect").as_bool(false)) {
+					return make_shared<Nic::AutoDetect>(node);
+				}
+
 				return make_shared<Nic::List>(node);
 			}
 

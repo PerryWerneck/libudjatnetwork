@@ -30,10 +30,6 @@
 
  namespace Udjat {
 
-	void Nic::List::init() {
-
-	}
-
 	static bool carrier(const char *name) {
 		return stoi(File::Text{String{"/sys/class/net/",name,"/carrier"}}.c_str()) != 0;
 	}
