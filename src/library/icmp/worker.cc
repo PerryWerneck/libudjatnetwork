@@ -17,26 +17,45 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/net/nic/agent.h>
-// #include <udjat/tools/singleton.h>
+ #include <udjat/net/icmp.h>
+ #include <private/icmp/controller.h>
+ #include <udjat/tools/object.h>
+
+ /*
+ #include <controller.h>
+ #include <udjat/net/ip/address.h>
+ #include <udjat/tools/threadpool.h>
+ #include <cstring>
+ #include <sys/types.h>
+ #include <unistd.h>
+ #include <private/agents/host.h>
+ #include <udjat/tools/logger.h>
+ #include <netinet/ip_icmp.h>
+ */
 
  namespace Udjat {
 
-	namespace Nic {
+	ICMP::Worker::Worker(time_t timeout, time_t interval) : timers{timeout,interval} {
+	}
 
-		class UDJAT_PRIVATE AutoDetect : public Nic::Agent {
-		public:
-			AutoDetect(const pugi::xml_node &node);
-			virtual ~AutoDetect();
+	ICMP::Worker::Worker(const pugi::xml_node &node)
+		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
+	}
 
-			void start() override;
-			void stop() override;
+	ICMP::Worker::~Worker() {
+		stop();
+	}
 
-		};
+	void ICMP::Worker::start(const IP::Address &addr) {
+		Controller::getInstance().insert(*this,addr);
 
 	}
 
+	void ICMP::Worker::stop() {
+		Controller::getInstance().remove(*this);
+	}
+
  }
+

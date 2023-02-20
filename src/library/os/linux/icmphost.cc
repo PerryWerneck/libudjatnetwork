@@ -17,41 +17,26 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <controller.h>
- #include <udjat/tools/net/ip.h>
- #include <udjat/tools/threadpool.h>
- #include <cstring>
- #include <sys/types.h>
- #include <unistd.h>
- #include <private/agents/host.h>
- #include <udjat/tools/logger.h>
- #include <netinet/ip_icmp.h>
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <private/icmp/controller.h>
+ #include <linux/icmp.h>
 
  namespace Udjat {
 
-	ICMP::Host::Host() {
-		memset(&addr,0,sizeof(addr));
-	}
-
-	void ICMP::Host::start() {
-		Controller::getInstance().insert(this);
-	}
-
-	ICMP::Host::Controller::Host::Host(ICMP::Host *h) : host{h} {
-
-		static unsigned short id = 0;
-
+	ICMP::Controller::Host::Host(ICMP::Worker &w, const IP::Address &a) : worker{w}, address{a} {
+		static uint16_t id = 0;
 		this->id = id++;
-		timeout = ::time(0) + host->timeout;
+		timeout = time(0) + worker.interval();
 		send();
 	}
 
-	bool ICMP::Host::Controller::Host::onTimer() {
+	bool ICMP::Controller::Host::onTimer() {
 
  		time_t now = ::time(0);
 
 		if(now > timeout) {
-			host->set(Response::timeout,host->addr);
+			worker.set(Response::timeout,address);
 			return false;
 		}
 
@@ -62,17 +47,17 @@
 		return true;
 	}
 
-	bool ICMP::Host::Controller::Host::onError(int code, const Controller::Payload &payload) {
+	bool ICMP::Controller::Host::onError(int code, const Controller::Payload &payload) {
 
 		if(payload.id == this->id) {
 
 			switch(code) {
 			case ENETUNREACH:	// Network is unreachable
-				host->set(Response::network_unreachable,host->addr);
+				worker.set(Response::network_unreachable,address);
 				return true;
 
 			default:
-				cerr << "icmp\tError '" << strerror(code) << "' searching " << host->addr << endl;
+				cerr << "icmp\tError '" << strerror(code) << "' searching " << address << endl;
 
 			}
 
@@ -81,7 +66,7 @@
 		return false;
 	}
 
-	bool ICMP::Host::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
+	bool ICMP::Controller::Host::onResponse(int icmp_type, const sockaddr_storage &addr, const Payload &payload) noexcept {
 
 		if(payload.id != this->id) {
 			return false;
@@ -95,26 +80,24 @@
 
 			case ICMP_ECHOREPLY: // Echo Reply
 				{
-					uint64_t now = ICMP::Host::Controller::getCurrentTime();
+					uint64_t now = ICMP::Controller::getCurrentTime();
 
 					if(payload.time >= now) {
-						host->time = (payload.time - now);
+						worker.time = (payload.time - now);
 					} else {
-						host->time = (now - payload.time);
+						worker.time = (now - payload.time);
 					}
 
-					host->set(Response::echo_reply,addr);
+					worker.set(Response::echo_reply,addr);
 				}
 				break;
 
 			case ICMP_DEST_UNREACH: // Destination Unreachable
-				host->time = (uint64_t) -1;
-				host->set(Response::destination_unreachable,addr);
+				worker.set(Response::destination_unreachable,addr);
 				break;
 
 			case ICMP_TIME_EXCEEDED: // Time Exceeded
-				host->time = (uint64_t) -1;
-				host->set(Response::time_exceeded,addr);
+				worker.set(Response::time_exceeded,addr);
 				break;
 
 			default:
@@ -131,20 +114,20 @@
 
 	}
 
-	void ICMP::Host::Controller::Host::send() noexcept {
+	void ICMP::Controller::Host::send() noexcept {
 
 		try {
 
 			Payload packet;
 
-			next = ::time(0) + host->interval;
+			next = ::time(0) + worker.interval();
 
 			memset(&packet,0,sizeof(packet));
 			packet.id 	= this->id;
 			packet.seq	= ++this->packets;
 			packet.time = getCurrentTime();
 
-			Controller::getInstance().send(host->addr,packet);
+			Controller::getInstance().send(address,packet);
 
 		} catch(const exception &e) {
 

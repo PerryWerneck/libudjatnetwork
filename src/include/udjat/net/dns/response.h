@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,21 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #include <udjat/network/ipaddress.h>
- #include <exception>
- #include <cstring>
- #include <string>
+ #pragma once
+ #include <udjat/defs.h>
 
- using namespace std;
+  namespace Udjat {
 
- /*
- namespace Udjat {
+	namespace DNS {
 
-	/// @brief Resolve hostname and setup storage.
-	IP::Address::Address(const char *hostname) {
+		enum Response : uint8_t {
+			invalid,
+			cant_resolve_server_address,
+			cant_resolve_address,
+			dns_ok
+		};
+
+		UDJAT_API Response ResponseFactory(const char *name);
+
 	}
 
+  }
 
- }
- */

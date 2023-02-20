@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,22 +18,31 @@
  */
 
  #include <config.h>
- #include <private/module.h>
- #include <private/agents/nic.h>
+ #include <udjat/defs.h>
+ #include <udjat/net/nic/agent.h>
+ #include <udjat/agent/abstract.h>
+
+ using namespace std;
 
  namespace Udjat {
 
- 	Network::Agent::Factory::Factory() : Udjat::Factory("network-interface",moduleinfo) {
+	std::shared_ptr<Abstract::State> Nic::Agent::StateFactory(const pugi::xml_node &node) {
+		std::shared_ptr<Nic::State> state = Nic::State::Factory(node);
+		states.push_back(state);
+		return state;
 	}
 
-	std::shared_ptr<Abstract::Agent> Network::Agent::Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) const {
+	std::shared_ptr<Abstract::State> Nic::Agent::computeState() {
 
-		if(node.attribute("interface-name")) {
-			return make_shared<Network::Agent::Interface>(node);
+		for(auto state : states) {
+			if(state->compare(*this)) {
+				return state;
+			}
 		}
 
-		return make_shared<Network::Agent::Interfaces>(node);
-
+		return super::computeState();
 	}
 
+
  }
+

@@ -20,20 +20,17 @@
  #pragma once
 
  #include <config.h>
- #include <private/agents/host.h>
  #include <udjat/tools/timer.h>
  #include <udjat/tools/handler.h>
- #include <udjat/tools/net/icmp.h>
- #include <mutex>
- #include <memory>
- #include <iostream>
+ #include <udjat/net/ip/address.h>
+ #include <udjat/net/icmp.h>
  #include <list>
 
  using namespace std;
 
  namespace Udjat {
 
- 	class ICMP::Host::Controller : private MainLoop::Timer, private MainLoop::Handler {
+ 	class ICMP::Controller : private MainLoop::Timer, private MainLoop::Handler {;
 	public:
 
 		#pragma pack(1)
@@ -51,25 +48,23 @@
 
 		static recursive_mutex guard;
 
-		class Host {
-		private:
+		struct Host {
 
-			ICMP::Host *host;
+			ICMP::Worker &worker;
+			const IP::Address address;
+			uint16_t id;
 
-			uint16_t id = 0;
-			uint16_t packets = 0;
 			time_t timeout;
+			uint16_t packets = 0;
 			time_t next = 0;
 
-		public:
-
-			Host(ICMP::Host *host);
+			Host(ICMP::Worker &h, const IP::Address &a);
 
 			bool onTimer();
 			void send() noexcept;
 
-			inline bool operator ==(const ICMP::Host *host) const noexcept {
-				return host == this->host;
+			inline bool operator ==(const ICMP::Worker &worker) const noexcept {
+				return &worker == &this->worker;
 			}
 
 			/// @brief Process response.
@@ -98,8 +93,8 @@
 
 		~Controller();
 
-		void insert(ICMP::Host *host);
-		void remove(ICMP::Host *host);
+		void insert(ICMP::Worker &host, const IP::Address &address);
+		void remove(ICMP::Worker &host);
 
 		void send(const sockaddr_storage &addr, const Payload &payload);
 

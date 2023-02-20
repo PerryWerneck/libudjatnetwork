@@ -18,7 +18,8 @@
  */
 
  #include <config.h>
- #include <controller.h>
+ #include <private/icmp/controller.h>
+
  #include <unistd.h>
  #include <netdb.h>
  #include <fcntl.h>
@@ -27,8 +28,8 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/net/icmp.h>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/icmp.h>
+ #include <udjat/net/ip/address.h>
  #include <netinet/ip_icmp.h>
 
  namespace Udjat {
@@ -36,27 +37,27 @@
 	#pragma pack(1)
 	struct Packet {
 		struct icmp icmp;
-		struct ICMP::Host::Controller::Payload payload;
+		struct ICMP::Controller::Payload payload;
 	};
 	#pragma pack()
 
-	recursive_mutex ICMP::Host::Controller::guard;
+	recursive_mutex ICMP::Controller::guard;
 
-	ICMP::Host::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
+	ICMP::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
 	}
 
-	ICMP::Host::Controller::~Controller() {
+	ICMP::Controller::~Controller() {
 		lock_guard<recursive_mutex> lock(guard);
 	 	stop();
 	}
 
-	ICMP::Host::Controller & ICMP::Host::Controller::getInstance() {
+	ICMP::Controller & ICMP::Controller::getInstance() {
 		lock_guard<recursive_mutex> lock(guard);
 		static Controller instance;
 		return instance;
 	}
 
-	uint64_t ICMP::Host::Controller::getCurrentTime() noexcept {
+	uint64_t ICMP::Controller::getCurrentTime() noexcept {
 
 			struct timespec tm;
 			clock_gettime(CLOCK_MONOTONIC_RAW, &tm);
@@ -68,7 +69,7 @@
 			return time;
 	}
 
-	void ICMP::Host::Controller::stop() {
+	void ICMP::Controller::stop() {
 
 		this->Handler::disable();
 		this->Timer::disable();
@@ -78,7 +79,7 @@
 
 	}
 
-	void ICMP::Host::Controller::handle_event(const Event event) {
+	void ICMP::Controller::handle_event(const Event event) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
@@ -129,7 +130,11 @@
 			debug("Response ",htons(in.packet.icmp.icmp_seq)," from ",std::to_string(addr));
 
 			hosts.remove_if([&in,&addr](Host &host) {
-				return host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload);
+				if(host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload)) {
+					host.worker.busy = false;
+					return true;
+				}
+				return false;
 			});
 
 		}
@@ -137,7 +142,7 @@
 
 	}
 
-	void ICMP::Host::Controller::on_timer() {
+	void ICMP::Controller::on_timer() {
 
 		ThreadPool::getInstance().push([this]() {
 
@@ -145,7 +150,11 @@
 
 			// Send packets.
 			hosts.remove_if([](Host &host) {
-				return !host.onTimer();
+				if(!host.onTimer()) {
+					host.worker.busy = false;
+					return true;
+				}
+				return false;
 			});
 
 			if(hosts.empty()) {
@@ -157,7 +166,7 @@
 
 	}
 
-	void ICMP::Host::Controller::start() {
+	void ICMP::Controller::start() {
 
 		try {
 
@@ -211,21 +220,30 @@
 
 	}
 
-	void ICMP::Host::Controller::insert(ICMP::Host *host) {
+	void ICMP::Controller::insert(ICMP::Worker &host, const IP::Address &addr) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
+		if(host.busy) {
+			throw std::system_error(EBUSY, std::system_category(), "ICMP Listener is already active");
+		}
+
 		start();
-		hosts.emplace_back(host);
+		host.busy = true;
+		hosts.emplace_back(host,addr);
 
 	}
 
-	void ICMP::Host::Controller::remove(ICMP::Host *host) {
+	void ICMP::Controller::remove(ICMP::Worker &worker) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
-		hosts.remove_if([host](Host &h) {
-			return h == host;
+		hosts.remove_if([&worker](Host &h) {
+			if(&h.worker == &worker) {
+				worker.busy = false;
+				return true;
+			}
+			return false;
 		});
 
 		if(hosts.empty()) {
@@ -257,7 +275,7 @@
 		return ans;
 	}
 
-	void ICMP::Host::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
+	void ICMP::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
 
 		if(fd < 0) {
 			throw runtime_error("ICMP Controller is not available");
@@ -290,20 +308,12 @@
 					int code = errno;
 
 					hosts.remove_if([code,&packet](Host &host) {
-						return host.onError(code,packet.payload);
+						if(host.onError(code,packet.payload)) {
+							host.worker.busy = false;
+							return true;
+						}
+						return false;
 					});
-
-					/*
-					if(errno = ENETUNREACH) {
-
-						// Network is unreachable
-
-					} else {
-
-						throw std::system_error(errno, std::system_category(), string{"Can't send ICMP packet (errno="} + std::to_string(errno) + ")");
-
-					}
-					*/
 
 				}
 			}

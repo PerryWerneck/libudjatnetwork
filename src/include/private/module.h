@@ -21,10 +21,8 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <private/agents/host.h>
- #include <iostream>
-// #include <udjat/tools/inet.h>
-// #include <arpa/inet.h>
+ #include <udjat/moduleinfo.h>
+ #include <udjat/factory.h>
 
  using namespace std;
 
@@ -32,6 +30,8 @@
 
  namespace Udjat {
 
+
+		/*
 	namespace Network {
 
 		/// @brief Abstract network agent state.
@@ -99,8 +99,8 @@
 
 		};
 
-
 	}
+		*/
 
 
  }

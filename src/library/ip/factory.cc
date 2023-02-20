@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -19,49 +19,36 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/net/icmp.h>
- #include <cstring>
- #include <string>
- #include <stdexcept>
+ #include <memory>
 
- static const char *names[] = {
-	"invalid",
-	"echo-reply",
-	"destination-unreachable",
-	"time-exceeded",
-	"timeout",
-	"network-unreachable"
- };
+ #include <udjat/net/gateway.h>
+ #include <udjat/net/ip/agent.h>
+ #include <udjat/net/dns/agent.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	ICMP::Response ICMP::ResponseFactory(const char *name) {
+	std::shared_ptr<Abstract::Agent> IP::Agent::Factory(const pugi::xml_node &node) {
 
-		for(size_t ix = 0; ix < N_ELEMENTS(names); ix++) {
+		switch(String{node,"type","host"}.select("host","default-gateway",nullptr)) {
+		case 0:	// IP based host
+			return make_shared<Udjat::IP::Agent>(node);
+			break;
 
-			if(!strcasecmp(name,names[ix])) {
-				return (ICMP::Response) ix;
+		case 1: // Default gateway
+			return make_shared<Udjat::IP::Gateway>(node);
+
+		default:
+			if(node.attribute("hostname")) {
+				return make_shared<Udjat::DNS::Agent>(node);
+			} else if(node.attribute("ip")) {
+				return make_shared<Udjat::IP::Agent>(node);
 			}
-
 		}
 
-		throw runtime_error(string{"Invalid ICMP response id: "} + name);
-	}
+		throw runtime_error("Cant identify network host type, missing attribute 'ip' or 'hostname");
 
-
- }
-
- namespace std {
-
-	UDJAT_API const char * to_string(const Udjat::ICMP::Response response) {
-
-		if( ((size_t) response) > N_ELEMENTS(names)) {
-			return "invalid";
-		}
-
-		return names[response];
 	}
 
  }

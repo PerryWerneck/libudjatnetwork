@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/intl.h>
- #include <udjat/net/icmp.h>
+ #include <udjat/net/dns.h>
  #include <udjat/net/ip/address.h>
  #include <iostream>
  #include <private/module.h>
@@ -31,74 +31,28 @@
 
  namespace Udjat {
 
-	static const struct icmp_state {
-		const char *name;
-		const ICMP::Response id;
-		const Level level;
-		const char *label;
-		const char *summary;
-		const char *body;
-	} icmp_states[] = {
-		{
-			"invalid",
-			ICMP::Response::invalid,
-			Level::error,
-			N_("Invalid IP"),
-			N_("${name} address is invalid"),
-			N_("Unable to get a valid IP address for ${name}.")
-		},
-		{
-			"echo-reply",
-			ICMP::Response::echo_reply,
-			Level::ready,
-			N_("Active"),
-			N_("${name} is active"),
-			N_("Got ICMP echo reply from host.")
-		},
-		{
-			"destination-unreachable",
-			ICMP::Response::destination_unreachable,
-			Level::error,
-			N_("Unreachable"),
-			N_("${name} is not reachable"),
-			N_("Destination Unreachable. The gateway doesnt know how to get to the defined network.")
-		},
-		{
-			"time-exceeded",
-			ICMP::Response::time_exceeded,
-			Level::error,
-			N_("Timeout"),
-			N_("${name} is not acessible"),
-			N_("Time Exceeded. The ICMP request has been discarded because it was 'out of time'.")
-		},
-		{
-			"timeout",
-			ICMP::Response::timeout,
-			Level::error,
-			N_("Unavailable"),
-			N_("${name} is not available"),
-			N_("No ICMP response from host.")
-		},
-		{
-			"network-unreachable",
-			ICMP::Response::network_unreachable,
-			Level::error,
-			N_("Unreachable"),
-			N_("Network is not reachable"),
-			N_("The entire network is unreachable.")
-		},
+	/*
+	UDJAT_API DNS::Response DNS::ResponseFactory(const char *name) {
 
-	};
+		for(size_t ix = 0; ix < N_ELEMENTS(dns_states); ix++) {
+			if(!strcasecmp(name,dns_states[ix].name)) {
+				return (DNS::Response) ix;
+			}
+		}
 
-	std::shared_ptr<ICMP::State> ICMP::State::Factory(const pugi::xml_node &node) {
+		throw runtime_error(string{"Invalid DNS response id: "} + name);
 
-		class State : public ICMP::State {
+	}
+
+	std::shared_ptr<DNS::State> DNS::State::Factory(const pugi::xml_node &node) {
+
+		class State : public DNS::State {
 		private:
 			Udjat::String summary;
 			Udjat::String body;
 
 		public:
-			State(const pugi::xml_node &node, const icmp_state &state) : ICMP::State{node,state.id} {
+			State(const pugi::xml_node &node, const dns_state &state) : DNS::State{node,state.id} {
 
 				if(!Object::properties.label[0]) {
 #ifdef GETTEXT_PACKAGE
@@ -129,9 +83,9 @@
 
 		};
 
-		ICMP::Response id{ResponseFactory(node.attribute("icmp-response").as_string())};
+		DNS::Response id{ResponseFactory(node.attribute("dns-state").as_string())};
 
-		for(const icmp_state &st : icmp_states) {
+		for(const dns_state &st : dns_states) {
 
 			if(st.id == id) {
 				return make_shared<State>(node,st);
@@ -139,39 +93,36 @@
 
 		}
 
-		throw runtime_error("The required attribute 'icmp-response' is missing or invalid");
+		throw runtime_error("The required attribute 'dns-state' is missing or invalid");
 
 	}
 
-	std::shared_ptr<ICMP::State> ICMP::State::Factory(const Udjat::Abstract::Object &object, const ICMP::Response id) {
+	std::shared_ptr<DNS::State> DNS::State::Factory(const Udjat::Abstract::Object &object, const DNS::Response id) {
 
-		class State : public ICMP::State {
+		class State : public DNS::State {
 		private:
 			Udjat::String summary;
 			Udjat::String body;
 
 		public:
-			State(const Udjat::Abstract::Object &object, const icmp_state &state) : ICMP::State{state.name,state.level,state.id} {
-
+			State(const Udjat::Abstract::Object &object, const dns_state &state) : DNS::State{state.name,state.level,state.id} {
 #ifdef GETTEXT_PACKAGE
 				summary = dgettext(GETTEXT_PACKAGE,state.summary);
 				body = dgettext(GETTEXT_PACKAGE,state.body);
-
 				Object::properties.label = dgettext(GETTEXT_PACKAGE,state.label);
 #else
 				summary = state.summary);
 				body = state.body;
-
 				Object::properties.label = state.label;
 #endif // GETTEXT_PACKAGE
 
 				properties.body = body.expand(object).c_str();
 				Object::properties.summary = summary.expand(object).c_str();
-
 			}
+
 		};
 
-		for(const icmp_state &st : icmp_states) {
+		for(const dns_state &st : dns_states) {
 
 			if(st.id == id) {
 				return make_shared<State>(object,st);
@@ -179,10 +130,10 @@
 
 		}
 
-		throw runtime_error("The required attribute 'icmp-response' is missing or invalid");
+		throw runtime_error("Invalid DNS state");
 
 	}
-
+	*/
 
  }
 

@@ -10,45 +10,52 @@
 	<attribute name='alert-filename' value='/tmp/netwatcher.log' />
 	<attribute name='alert-payload' value='${timestamp} ${summary}' />
 
+	<network-interface name='niclist' device-name='all'>
+	</network-interface>
+	
 	<!--
-	<network-interface name='nic' update-timer='60'>
+	<network-interface name='vpn' device-name='tunsnx'>
 
-		<state name='undefined' value='0' level='error' summary='Network link state is undefined' />
-		<state name='offline' value='1' level='warning' summary='System is offline' />
-		<state name='single' value='2' level='ready' summary='Single network link' />
-		<state name='multiple' value='3' level='ready' summary='Multiple network links' />
-
-	</network-interface>
-
-	<network-interface name='vpn' interface-name='tunsnx' update-timer='60'>
-
-		<state name='undefined' level='error' summary='VPN link state is undefined' />
-		<state name='offline' level='warning' summary='VPN is offline' forward-to-children='yes' />
-		<state name='online' level='ready' summary='VPN is online' />
-		<state name='not-found' level='unimportant' summary='VPN is not available' forward-to-children='yes' />
+		<state name='not-found' device-state='not-found' level='unimportant' summary='No VPN interface' />
+		<state name='up' device-state='up' level='ready' summary='VPN is up' />
+		<state name='down' device-state='down' level='warning' summary='VPN is down' />
 
 	</network-interface>
-	
-	<network-host name='localhost' host='localhost' dns='true' icmp='true' update-timer='60' icmp-timeout='10'>
-	
-		<state name='local' same-network='yes' level='ready' summary='localhost is local' />
-		
-		<state name='remote' same-network='no' level='warning' summary='localhost is NOT local' />
-		
-		<state name='active' icmp-response='echo-reply' level='ready' summary='localhost is active' />
-		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='localhost is not reachable' />
-		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='localhost is not available' />
-		<state name='timeout' icmp-response='timeout' level='error' summary='localhost is not available' />
-
-	</network-host>
 	-->
 	
+	<network-host name='localhost' hostname='localhost' icmp='true' update-timer='60' icmp-timeout='10'>
+	
+		<state name='local' subnet='local' level='ready' summary='localhost is local' />
+		<state name='remote' subnet='remote' level='warning' summary='localhost is NOT local' />
+		
+	</network-host>
+	
+	<network-host name='cdn' hostname='cdn.werneck.eti.br' update-timer='60' icmp='true' icmp-timeout='60'>
+	
+		<!-- subnet states -->
+		<state name='local' subnet='local' level='ready' summary='CDN Server is local' />
+		<state name='remote' subnet='remote' level='warning' summary='CDN Server is NOT local' />
+		
+		<!-- DNS states -->
+		<state name='not-found' dns-state='host-not-found' level='error' summary='Cant resolve ${hostname}' />
+			
+		<!-- ICMP states -->
+		<state name='active' icmp-response='echo-reply' level='ready' summary='CDN is active' />
+		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='CDN is not reachable' />
+		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='CDN is not available' />
+		<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from CDN' />
+			
+	</network-host>
+	
+
 	<network-host name='gateway' type='default-gateway' icmp='true' update-timer='60' icmp-timeout='60'>
 
 		<state name='active' icmp-response='echo-reply' level='ready' summary='Gateway is active' />
 		<state name='unreachable' icmp-response='destination-unreachable' level='error' summary='Gateway is not reachable' forward-to-children='yes' />
 		<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='Gateway is not available' forward-to-children='yes' />
 		<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from gateway' forward-to-children='yes' />
+
+		<state name='subnet' subnet='192.168.0.0/24' level='ready' summary='Running on expected subnet' />
 
 		<network-host name='srv' ip='192.168.0.11' icmp='true' update-timer='60' icmp-timeout='30'>
 
@@ -57,10 +64,13 @@
 			<state name='time-exceeded' icmp-response='time-exceeded' level='error' summary='HTTP server is not available' forward-to-children='yes' />
 			<state name='timeout' icmp-response='timeout' level='error' summary='No ICMP response from HTTP server' forward-to-children='yes' />
 
-			<network-host name='httpd' url='http://192.168.0.11'  update-timer='60'>
+			<!-- network-host name='httpd' url='http://192.168.0.11'  update-timer='60'>
 
-			</network-host>
+			</network-host -->
 
+		</network-host>
+
+		<network-host name='google' hostname='www.google.com' icmp='true' update-timer='60' icmp-timeout='30'>
 		</network-host>
 
 	</network-host>

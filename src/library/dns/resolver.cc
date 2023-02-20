@@ -18,19 +18,24 @@
  */
 
  #include <config.h>
- #include <udjat/linux/dns.h>
+ #include <udjat/net/dns.h>
  #include <cstring>
  #include <netdb.h>
  #include <iostream>
-// #include <udjat/tools/inet.h>
+ #include <netinet/in.h>
+ #include <arpa/nameser.h>
+ #include <resolv.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	mutex Network::DNSResolver::guard;
+	mutex DNS::Resolver::guard;
 
-	Network::DNSResolver::DNSResolver() {
+	DNS::Exception::Exception(int code) : runtime_error{hstrerror(code)}, err{code} {
+	}
+
+	DNS::Resolver::Resolver() {
 
 		std::lock_guard<std::mutex> lock(guard);
 
@@ -45,17 +50,17 @@
 
 	}
 
-	Network::DNSResolver::DNSResolver(const struct sockaddr_storage &server) : Network::DNSResolver() {
+	DNS::Resolver::Resolver(const struct sockaddr_storage &server) : DNS::Resolver{} {
 		set(server);
 	}
 
-	Network::DNSResolver::~DNSResolver() {
+	DNS::Resolver::~Resolver() {
 		std::lock_guard<std::mutex> lock(guard);
 		res_nclose(&this->state);
 	}
 
 	/// @brief Set Address of the nameserver.
-	void Network::DNSResolver::set(const struct sockaddr_storage &server) {
+	void DNS::Resolver::set(const struct sockaddr_storage &server) {
 
 		if(!server.ss_family) {
 			return;
@@ -73,7 +78,9 @@
 	}
 
 	/// @brief Run DNS query.
-	void Network::DNSResolver::query(ns_class cls, ns_type type, const char *name) {
+	DNS::Resolver & DNS::Resolver::query(ns_class cls, ns_type type, const char *name) {
+
+		debug("Resolving '",name,"'");
 
 		if(!(name && *name)) {
 			throw runtime_error("Cant resolve an empty hostname");
@@ -88,7 +95,7 @@
 		int szResponse = res_nquery(&this->state, name, cls, type, query_buffer, sizeof(query_buffer));
 
 		if (szResponse < 0) {
-			throw std::system_error(h_errno, std::system_category(), name);
+			throw DNS::Exception(h_errno);
 		}
 
 		ns_msg	msg;
@@ -101,6 +108,8 @@
 			records.emplace_back(msg, rr);
 
 		}
+
+		return *this;
 
 	}
 

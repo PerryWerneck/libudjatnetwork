@@ -22,7 +22,8 @@
  #include <udjat/defs.h>
  #include <pugixml.hpp>
  #include <iostream>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
+ #include <udjat/agent/state.h>
 
  namespace Udjat {
 
@@ -38,6 +39,73 @@
 		};
 
 		UDJAT_API Response ResponseFactory(const char *name);
+
+		class UDJAT_API State : public Abstract::State {
+		public:
+			const ICMP::Response id;
+
+			State(const pugi::xml_node &node, const ICMP::Response i) : Abstract::State{node}, id{i} {
+			}
+
+			State(const char *name, const Level level, const ICMP::Response i)
+				: Abstract::State{name,level}, id{i} {
+			}
+
+			State(const char *name, const Level level, const char *summary, const char *body, const ICMP::Response i)
+				: Abstract::State{name,level,summary,body}, id{i} {
+			}
+
+			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const ICMP::Response id);
+
+		};
+
+		class Controller;
+
+		class UDJAT_API Worker {
+		private:
+
+			friend class Controller;
+
+			struct Timers {
+				const time_t timeout;		///< @brief ICMP timeout.
+				const time_t interval;		///< @brief ICMP packet interval.
+
+				constexpr Timers(time_t t, time_t i) : timeout{t}, interval{i} {
+				}
+
+			} timers;
+
+			uint64_t time = 0;				///< @brief Time of last response.
+			bool busy = false;
+
+		protected:
+
+			virtual void set(const ICMP::Response response, const IP::Address &from) = 0;
+
+		public:
+			Worker(time_t timeout = 5, time_t interval = 1);
+			Worker(const pugi::xml_node &node);
+
+			virtual ~Worker();
+
+			inline time_t interval() const noexcept {
+				return timers.interval;
+			}
+
+			inline time_t timeout() const noexcept {
+				return timers.timeout;
+			}
+
+			inline bool running() const noexcept {
+				return busy;
+			}
+
+			void start(const IP::Address &addr);
+			void stop();
+		};
+
+		/*
 		// UDJAT_API Response ResponseFactory(const pugi::xml_node &node);
 
 		class UDJAT_API Host {
@@ -47,10 +115,6 @@
 
 		protected:
 
-			IP::Address addr;			///< @brief ICMP host to check.
-			time_t interval = 1;		///< @brief ICMP packet interval.
-			time_t timeout = 5;			///< @brief ICMP timeout.
-			uint64_t time = 0;			///< @brief Time of last response.
 
 			/// @brief Start ICMP check.
 			void start();
@@ -68,6 +132,7 @@
 			}
 
 		};
+		*/
 
 	}
 

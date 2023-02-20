@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,32 +18,37 @@
  */
 
  #include <config.h>
-
- #include <udjat/tools/systemservice.h>
- #include <udjat/tools/application.h>
- #include <udjat/agent.h>
- #include <udjat/factory.h>
- #include <udjat/module.h>
- #include <iostream>
+ #include <udjat/defs.h>
+ #include <udjat/net/nic/agent.h>
  #include <memory>
- #include <udjat/tools/logger.h>
- #include <udjat/net/ip/subnet.h>
+ #include <pugixml.hpp>
+ #include <private/agents/nic.h>
 
  using namespace std;
- using namespace Udjat;
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ namespace Udjat {
 
-int main(int argc, char **argv) {
+	std::shared_ptr<Abstract::Agent> Nic::Agent::Factory(const pugi::xml_node &node) {
 
-	Logger::verbosity(9);
-	Logger::console(true);
-	Logger::redirect();
+		const char *device_name = node.attribute("device-name").as_string();
 
-	udjat_module_init();
+		if(*device_name) {
 
-	Application{}.run(argc,argv,"./test.xml");
+			if(!(strcasecmp(device_name,"*") && strcasecmp(device_name,"all"))) {
 
-	return 0;
+				if(node.attribute("auto-detect").as_bool(false)) {
+					return make_shared<Nic::AutoDetect>(node);
+				}
 
-}
+				return make_shared<Nic::List>(node);
+			}
+
+			return make_shared<Nic::Agent>(node);
+		}
+
+
+		throw std::system_error(EINVAL, std::system_category(),"device-name");
+
+	}
+
+ }

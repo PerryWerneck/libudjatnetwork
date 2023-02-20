@@ -17,33 +17,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
+ // References:
+ //
+ // https://www.linuxquestions.org/questions/linux-networking-3/howto-find-gateway-address-through-code-397078/
+ // https://gist.github.com/javiermon/6272065#file-gateway_netlink-c
+ //
 
- #include <udjat/tools/systemservice.h>
- #include <udjat/tools/application.h>
- #include <udjat/agent.h>
- #include <udjat/factory.h>
- #include <udjat/module.h>
- #include <iostream>
- #include <memory>
- #include <udjat/tools/logger.h>
- #include <udjat/net/ip/subnet.h>
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/net/gateway.h>
 
  using namespace std;
- using namespace Udjat;
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ namespace Udjat {
 
-int main(int argc, char **argv) {
+	bool IP::Gateway::refresh() {
 
-	Logger::verbosity(9);
-	Logger::console(true);
-	Logger::redirect();
+		bool changed = detect();
 
-	udjat_module_init();
+		if(IP::Agent::refresh()) {
+			changed = true;
+		}
 
-	Application{}.run(argc,argv,"./test.xml");
+		return changed;
+	}
 
-	return 0;
-
-}
+ }

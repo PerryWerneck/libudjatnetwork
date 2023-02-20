@@ -17,33 +17,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
+ #pragma once
 
- #include <udjat/tools/systemservice.h>
- #include <udjat/tools/application.h>
- #include <udjat/agent.h>
- #include <udjat/factory.h>
- #include <udjat/module.h>
- #include <iostream>
- #include <memory>
- #include <udjat/tools/logger.h>
- #include <udjat/net/ip/subnet.h>
+ #include <udjat/defs.h>
+ #include <udjat/net/ip/agent.h>
+ #include <string>
 
- using namespace std;
- using namespace Udjat;
+ namespace Udjat {
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+	namespace IP {
 
-int main(int argc, char **argv) {
+		/// @brief Agent for default gateway
+		class UDJAT_API Gateway : public Udjat::IP::Agent {
+		private:
+			std::string intf;
 
-	Logger::verbosity(9);
-	Logger::console(true);
-	Logger::redirect();
+		protected:
 
-	udjat_module_init();
+			/// @brief Detect default gateway, update IP::Agent
+			/// @return true if the address was changed.
+			bool detect();
 
-	Application{}.run(argc,argv,"./test.xml");
+		public:
+			Gateway();
+			Gateway(const pugi::xml_node &node);
 
-	return 0;
+			void start() override;
+			void stop() override;
 
-}
+			bool refresh() override;
+
+		};
+
+	}
+
+ }
+
+

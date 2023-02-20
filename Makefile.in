@@ -10,7 +10,8 @@ LIBRARY_SOURCES= \
 	$(wildcard src/library/ip/*.cc) \
 	$(wildcard src/library/os/@OSNAME@/*.cc) \
 	$(wildcard src/library/icmp/*.cc) \
-	$(wildcard src/library/dns/*.cc)
+	$(wildcard src/library/dns/*.cc) \
+	$(wildcard src/library/nic/*.cc)
 
 MODULE_SOURCES= \
 	$(wildcard src/module/*.cc) \
@@ -261,11 +262,39 @@ install-dev: \
 	install-@OSNAME@-static 
 	
 	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/tools/net
+		$(DESTDIR)$(includedir)/udjat/net
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/net/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/net
+		src/include/udjat/net/*.h \
+		$(DESTDIR)$(includedir)/udjat/net
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/ip
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/ip/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/ip
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/dns
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/dns/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/dns
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/nic
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/dns/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/nic
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/@OSNAME@
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/@OSNAME@/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/@OSNAME@
 
 	# Install PKG-CONFIG files
 	@$(MKDIR) \

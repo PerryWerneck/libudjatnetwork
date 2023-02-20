@@ -29,81 +29,79 @@
 
  namespace Udjat {
 
-	namespace Network {
+	namespace DNS {
 
-		class UDJAT_API DNSResolver {
+		class Resolver;
+
+		/// @brief DNS Record
+		class UDJAT_API Record {
+		private:
+			friend class Resolver;
+
+			/// @brief TTL value from the record
+			uint32_t ttl;
+
+			std::string name;
+
+			ns_type type;
+			ns_class cls;
+
+			/// @brief IP address
+			sockaddr_storage addr;
+
+			/// @brief Record value
+			std::string value;
+
 		public:
+			Record();
+			Record(const ns_msg &msg, const ns_rr &rr);
 
-			/// @brief DNS Record
-			class UDJAT_API Record {
-			private:
-				friend class DNSResolver;
+			/// @brief Get TTL value from the record;
+			inline uint32_t getTTL() const noexcept {
+				return this->ttl;
+			}
 
-				/// @brief TTL value from the record
-				uint32_t ttl;
+			inline const char * getName() const noexcept {
+				return this->name.c_str();
+			}
 
-				std::string name;
+			inline ns_type getType() const noexcept {
+				return this->type;
+			}
 
-				ns_type type;
-				ns_class cls;
+			inline ns_class getClass() const noexcept {
+				return this->cls;
+			}
 
-				/// @brief IP address
-				sockaddr_storage addr;
+			inline const sockaddr_storage & getAddr() const {
+				return this->addr;
+			}
 
-				/// @brief Record value
-				std::string value;
+			inline std::string toString() const {
+				return value;
+			}
 
-			public:
-				Record();
-				Record(const ns_msg &msg, const ns_rr &rr);
+			inline const char * c_str() const {
+				return value.c_str();
+			}
 
-				/// @brief Get TTL value from the record;
-				inline uint32_t getTTL() const noexcept {
-					return this->ttl;
-				}
+			inline operator sockaddr_storage() const {
+				return this->addr;
+			}
 
-				inline const char * getName() const noexcept {
-					return this->name.c_str();
-				}
+		};
 
-				inline ns_type getType() const noexcept {
-					return this->type;
-				}
-
-				inline ns_class getClass() const noexcept {
-					return this->cls;
-				}
-
-				inline const sockaddr_storage & getAddr() const {
-					return this->addr;
-				}
-
-				inline std::string toString() const {
-					return value;
-				}
-
-				inline const char * c_str() const {
-					return value.c_str();
-				}
-
-				inline operator sockaddr_storage() const {
-					return this->addr;
-				}
-
-			};
-
+		class UDJAT_API Resolver {
 		private:
 			struct __res_state state;
-
 			static std::mutex guard;
-
 			std::vector<Record> records;
 
 		public:
 
-			DNSResolver();
-			DNSResolver(const struct sockaddr_storage &server);
-			~DNSResolver();
+			Resolver();
+			Resolver(const struct sockaddr_storage &server);
+			~Resolver();
 
 			inline std::vector<Record>::const_iterator begin() const {
 				return records.begin();
@@ -113,7 +111,11 @@
 				return records.end();
 			}
 
-			inline size_t size() const {
+			inline bool empty() const noexcept {
+				return records.empty();
+			}
+
+			inline size_t size() const noexcept {
 				return records.size();
 			}
 
@@ -126,11 +128,11 @@
 			/// @param type	The type of request being made.
 			/// @param domain	The pointer to the domain name.
 			///
-			void query(ns_class cls, ns_type type, const char *name);
+			Resolver & query(ns_class cls, ns_type type, const char *name);
 
 			/// @brief Run DNS query.
-			inline void query(const char *name) {
-				query(ns_c_in, ns_t_a, name);
+			inline Resolver & query(const char *name) {
+				return query(ns_c_in, ns_t_a, name);
 			}
 
 		};
