@@ -103,13 +103,13 @@
 
 	bool DNS::Agent::set(int code, const char *name) {
 
-		if(state && *state == code) {
+		if(state && state->compare(code)) {
 			debug("DNS State not changed");
 			return false;
 		}
 
 		for(auto state : states) {
-			if(*state == code) {
+			if(state->compare(code)) {
 				debug("Found predefined state for response ",code);
 				this->state = state;
 				info() << name << ": " << state->to_string() << endl;
@@ -142,7 +142,7 @@
 				if(resolver.empty()) {
 					IP::Address::clear();
 #ifdef _WIN32
-					#error Implement
+					#warning Implement
 #else
 					set(HOST_NOT_FOUND,server.name);
 #endif // _WIN32
@@ -160,7 +160,7 @@
 				if(resolver.empty()) {
 					IP::Address::clear();
 #ifdef _WIN32
-					#error Implement
+					#warning Implement
 #else
 					set(HOST_NOT_FOUND,server.name);
 #endif // _WIN32
@@ -175,7 +175,7 @@
 				if(resolver.empty()) {
 					IP::Address::clear();
 #ifdef _WIN32
-					#error Implement
+					#warning Implement
 #else
 					set(HOST_NOT_FOUND,server.name);
 #endif // _WIN32
@@ -185,7 +185,7 @@
 			}
 
 #ifdef _WIN32
-			#error Implement
+			#warning Implement
 #else
 			set(NETDB_SUCCESS,server.name);
 #endif // _WIN32
