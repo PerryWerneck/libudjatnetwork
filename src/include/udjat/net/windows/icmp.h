@@ -18,24 +18,37 @@
  */
 
  #pragma once
- #include <config.h>
+
  #include <udjat/defs.h>
- #include <icmpapi.h>
+ #include <pugixml.hpp>
+ #include <udjat/net/ip/address.h>
  #include <udjat/win32/handler.h>
-
- using namespace std;
-
- // https://learn.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6createfile
 
  namespace Udjat {
 
-	namespace Udjat {
+	namespace ICMP {
 
-		namespace ICMP {
+		enum Response : uint8_t {
+			invalid,
+			echo_reply,
+			destination_unreachable,
+			time_exceeded,
+			timeout,
+			network_unreachable
+		};
 
-		}
+		class UDJAT_API Worker : Win32::Handler {
+		private:
+
+		protected:
+
+		public:
+
+			void handle(bool abandoned) override;
+
+
+		};
 
 	}
 
  }
-

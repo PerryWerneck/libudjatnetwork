@@ -42,7 +42,6 @@
 		</Linker>
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/agents/nic.h" />
-		<Unit filename="src/include/private/icmp/controller.h" />
 		<Unit filename="src/include/private/linux/icmp_controller.h" />
 		<Unit filename="src/include/private/linux/netlink.h" />
 		<Unit filename="src/include/private/module.h" />
@@ -61,6 +60,7 @@
 		<Unit filename="src/include/udjat/net/nic/agent.h" />
 		<Unit filename="src/include/udjat/net/nic/state.h" />
 		<Unit filename="src/include/udjat/net/windows/dns.h" />
+		<Unit filename="src/include/udjat/net/windows/icmp.h" />
 		<Unit filename="src/library/defaultgateway.cc" />
 		<Unit filename="src/library/dns/agent.cc" />
 		<Unit filename="src/library/dns/linux/record.cc" />
