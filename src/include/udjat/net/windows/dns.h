@@ -20,6 +20,8 @@
  #pragma once
 
  #include <udjat/defs.h>
+
+/*
  #include <resolv.h>
  #include <arpa/nameser.h>
  #include <mutex>
@@ -140,3 +142,4 @@
 	}
 
  }
+*/

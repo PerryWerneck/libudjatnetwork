@@ -23,7 +23,7 @@
  #include <stdexcept>
 
  #ifdef _WIN32
-	#include <udjat/net/win32/dns.h>
+	#include <udjat/net/windows/dns.h>
  #else
 	#include <udjat/net/linux/dns.h>
  #endif // _WIN32

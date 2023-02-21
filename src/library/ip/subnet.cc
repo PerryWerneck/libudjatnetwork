@@ -77,8 +77,13 @@
 		debug("netmask=",std::to_string(netmask));
 		debug("ip=",std::to_string(addr));
 
+#ifdef _WIN32
+		unsigned long net  = (addr.sin_addr.s_addr & netmask.sin_addr.s_addr);
+		unsigned long base = (subnet.sin_addr.s_addr & netmask.sin_addr.s_addr);
+#else
 		in_addr_t net  = (addr.sin_addr.s_addr & netmask.sin_addr.s_addr);
 		in_addr_t base = (subnet.sin_addr.s_addr & netmask.sin_addr.s_addr);
+#endif // _WIN32
 
 		debug("base==net: ", (base==net), "  (base|net)==net: ", ((base|net) == net))
 

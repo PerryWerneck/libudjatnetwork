@@ -27,8 +27,10 @@
  #include <udjat/net/dns/agent.h>
  #include <udjat/agent/state.h>
  #include <iostream>
- #include <netdb.h>
 
+#ifndef _WIN32
+  #include <netdb.h>
+#endif // _WIN32
 
  using namespace std;
 
@@ -79,8 +81,6 @@
 	}
 
 	Udjat::Value & DNS::Agent::getProperties(Value &value) const noexcept {
-
-		debug("----------------------------------------------- ",name(),"::",__FUNCTION__);
 
 		if(state) {
 			value["dns"] = state->to_string();
