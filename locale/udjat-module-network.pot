@@ -3,9 +3,44 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#: src/library/os/linux/dns.cc:98
 #, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  dns.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-20 18:59-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  defaultgateway.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-20 18:56-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-02-20 18:56-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-06 08:41-0300\n"
@@ -41,11 +76,19 @@ msgstr ""
 msgid "Active"
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:64
+#: src/library/os/linux/dns.cc:71
+msgid "Authoritative Answer 'Host not found' response on query for ${hostname}"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:70
+msgid "Cant find ${hostname}"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:100
 msgid "Cant get netlink socket"
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:102
+#: src/library/os/linux/defaultgateway.cc:138
 msgid "Cant receive netlink response"
 msgstr ""
 
@@ -57,8 +100,12 @@ msgstr ""
 msgid "Cant resolve name"
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:88
+#: src/library/os/linux/defaultgateway.cc:124
 msgid "Cant send netlink message"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:105
+msgid "DNS Ok"
 msgstr ""
 
 #: src/library/icmp/state.cc:64
@@ -67,19 +114,27 @@ msgid ""
 "network."
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:109
+#: src/library/os/linux/defaultgateway.cc:145
 msgid "Error in received packet"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:106
+msgid "Got ${hostname}"
 msgstr ""
 
 #: src/library/icmp/state.cc:56
 msgid "Got ICMP echo reply from host."
 msgstr ""
 
-#: src/library/dns/state.cc:46
+#: src/library/os/linux/dns.cc:79
+msgid "Host not found/Server Fail"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:60 src/library/dns/state.cc:46
 msgid "Invalid DNS"
 msgstr ""
 
-#: src/library/dns/state.cc:47
+#: src/library/os/linux/dns.cc:61 src/library/dns/state.cc:47
 msgid "Invalid DNS response"
 msgstr ""
 
@@ -87,7 +142,7 @@ msgstr ""
 msgid "Invalid IP"
 msgstr ""
 
-#: src/library/os/linux/defaultgateway.cc:159
+#: src/library/os/linux/defaultgateway.cc:195
 msgid "Invalid size on RTA_GATEWAY"
 msgstr ""
 
@@ -99,11 +154,41 @@ msgstr ""
 msgid "No ICMP response from host."
 msgstr ""
 
+#: src/library/os/linux/dns.cc:96
+msgid "No data"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:97
+msgid "No data for ${hostname}"
+msgstr ""
+
 #: src/library/dns/state.cc:54
 msgid "No server"
 msgstr ""
 
-#: src/library/dns/state.cc:48
+#: src/library/os/linux/dns.cc:89
+msgid ""
+"Non recoverable errors, FORMERR, REFUSED, NOTIMP on query for ${hostname}"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:80
+msgid ""
+"Non-Authoritative Host not found, or SERVERFAIL on query for ${hostname}"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:69
+msgid "Not found"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:87
+msgid "Server failed"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:88
+msgid "Server has failed"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:62 src/library/dns/state.cc:48
 msgid "The DNS resolver state is invalid."
 msgstr ""
 
@@ -119,6 +204,10 @@ msgstr ""
 msgid "The hostname was resolved"
 msgstr ""
 
+#: src/library/os/linux/dns.cc:107
+msgid "The server was able to resolve ${hostname}"
+msgstr ""
+
 #: src/library/icmp/state.cc:72
 msgid ""
 "Time Exceeded. The ICMP request has been discarded because it was 'out of "
@@ -127,6 +216,10 @@ msgstr ""
 
 #: src/library/icmp/state.cc:70
 msgid "Timeout"
+msgstr ""
+
+#: src/library/os/linux/dns.cc:78
+msgid "Try again"
 msgstr ""
 
 #: src/library/icmp/state.cc:48
