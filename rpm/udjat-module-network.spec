@@ -2,7 +2,7 @@
 # spec file for package udjat-module-network
 #
 # Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
-# Copyright (C) <2008> <Banco do Brasil S.A.>
+# Copyright (C) 2023 Perry Werneck perry.werneck@gmail.com
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -13,12 +13,11 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://github.com/PerryWerneck/udjat-module-network
 #
 
 %define product_name %(pkg-config --variable=product_name libudjat)
 %define module_path %(pkg-config --variable=module_path libudjat)
-
 
 Summary:		Network module for %{product_name} 
 Name:			udjat-module-network
@@ -101,7 +100,19 @@ make all
 
 %files -n udjat-network-devel
 %defattr(-,root,root)
-%{_includedir}/udjat/tools/net/*.h
+
+%dir %{_includedir}/udjat/net
+%dir %{_includedir}/udjat/net/dns
+%dir %{_includedir}/udjat/net/ip
+%dir %{_includedir}/udjat/net/nic
+%dir %{_includedir}/udjat/net/linux
+
+%{_includedir}/udjat/net/*.h
+%{_includedir}/udjat/net/dns/*.h
+%{_includedir}/udjat/net/ip/*.h
+%{_includedir}/udjat/net/nic/*.h
+%{_includedir}/udjat/net/linux/*.h
+
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
