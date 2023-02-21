@@ -25,18 +25,15 @@
  #include <udjat/net/ip/address.h>
  #include <udjat/agent/state.h>
 
+ #ifdef _WIN32
+	#include <udjat/net/windows/icmp.h>
+ #else
+	#include <udjat/net/linux/icmp.h>
+ #endif // _WIN32
+
  namespace Udjat {
 
 	namespace ICMP {
-
-		enum Response : uint8_t {
-			invalid,
-			echo_reply,
-			destination_unreachable,
-			time_exceeded,
-			timeout,
-			network_unreachable
-		};
 
 		UDJAT_API Response ResponseFactory(const char *name);
 
@@ -59,80 +56,6 @@
 			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const ICMP::Response id);
 
 		};
-
-		class Controller;
-
-		class UDJAT_API Worker {
-		private:
-
-			friend class Controller;
-
-			struct Timers {
-				const time_t timeout;		///< @brief ICMP timeout.
-				const time_t interval;		///< @brief ICMP packet interval.
-
-				constexpr Timers(time_t t, time_t i) : timeout{t}, interval{i} {
-				}
-
-			} timers;
-
-			uint64_t time = 0;				///< @brief Time of last response.
-			bool busy = false;
-
-		protected:
-
-			virtual void set(const ICMP::Response response, const IP::Address &from) = 0;
-
-		public:
-			Worker(time_t timeout = 5, time_t interval = 1);
-			Worker(const pugi::xml_node &node);
-
-			virtual ~Worker();
-
-			inline time_t interval() const noexcept {
-				return timers.interval;
-			}
-
-			inline time_t timeout() const noexcept {
-				return timers.timeout;
-			}
-
-			inline bool running() const noexcept {
-				return busy;
-			}
-
-			void start(const IP::Address &addr);
-			void stop();
-		};
-
-		/*
-		// UDJAT_API Response ResponseFactory(const pugi::xml_node &node);
-
-		class UDJAT_API Host {
-		private:
-			class Controller;
-			friend class Controller;
-
-		protected:
-
-
-			/// @brief Start ICMP check.
-			void start();
-
-			virtual void set(const ICMP::Response response, const sockaddr_storage &from) = 0;
-
-		public:
-			Host();
-
-			constexpr Host(const sockaddr_storage &a) : addr{a} {
-			}
-
-			inline void set(const sockaddr_storage &a) {
-				addr = a;
-			}
-
-		};
-		*/
 
 	}
 

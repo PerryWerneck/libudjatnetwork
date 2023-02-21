@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <private/icmp/controller.h>
+ #include <private/linux/icmp_controller.h>
 
  #include <unistd.h>
  #include <netdb.h>
@@ -119,7 +119,7 @@
 				return;
 			}
 
-			debug("Response ",htons(in.packet.icmp.icmp_seq)," from ",std::to_string(addr));
+			Logger::String("Response ",htons(in.packet.icmp.icmp_seq)," from ",std::to_string(addr)).trace("icmp");
 
 			hosts.remove_if([&in,&addr](Host &host) {
 				if(host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload)) {

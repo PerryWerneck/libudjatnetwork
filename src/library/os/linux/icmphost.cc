@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <private/icmp/controller.h>
+ #include <private/linux/icmp_controller.h>
  #include <linux/icmp.h>
 
  namespace Udjat {

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,38 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/net/icmp.h>
- #include <udjat/tools/object.h>
+ #include <icmpapi.h>
+ #include <udjat/win32/handler.h>
 
- #ifdef _WIN32
-	#include <private/windows/icmp_controller.h>
- #else
-	#include <private/linux/icmp_controller.h>
- #endif // _WIN32
+ using namespace std;
+
+ // https://learn.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6createfile
 
  namespace Udjat {
 
-	ICMP::Worker::Worker(time_t timeout, time_t interval) : timers{timeout,interval} {
-	}
-
-	ICMP::Worker::Worker(const pugi::xml_node &node)
-		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
-	}
-
-	ICMP::Worker::~Worker() {
-		stop();
-	}
-
-	void ICMP::Worker::start(const IP::Address &addr) {
-		Controller::getInstance().insert(*this,addr);
-
-	}
-
-	void ICMP::Worker::stop() {
-		Controller::getInstance().remove(*this);
-	}
 
  }
 

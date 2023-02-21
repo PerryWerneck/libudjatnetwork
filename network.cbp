@@ -43,8 +43,10 @@
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/agents/nic.h" />
 		<Unit filename="src/include/private/icmp/controller.h" />
+		<Unit filename="src/include/private/linux/icmp_controller.h" />
 		<Unit filename="src/include/private/linux/netlink.h" />
 		<Unit filename="src/include/private/module.h" />
+		<Unit filename="src/include/private/windows/icmp_controller.h" />
 		<Unit filename="src/include/udjat/net/dns.h" />
 		<Unit filename="src/include/udjat/net/dns/agent.h" />
 		<Unit filename="src/include/udjat/net/dns/response.h" />
@@ -55,6 +57,7 @@
 		<Unit filename="src/include/udjat/net/ip/state.h" />
 		<Unit filename="src/include/udjat/net/ip/subnet.h" />
 		<Unit filename="src/include/udjat/net/linux/dns.h" />
+		<Unit filename="src/include/udjat/net/linux/icmp.h" />
 		<Unit filename="src/include/udjat/net/nic/agent.h" />
 		<Unit filename="src/include/udjat/net/nic/state.h" />
 		<Unit filename="src/include/udjat/net/windows/dns.h" />

@@ -30,6 +30,8 @@
  #include <udjat/net/icmp.h>
  #include <udjat/net/ip/address.h>
 
+ // https://learn.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6createfile
+
  namespace Udjat {
 
 	#pragma pack(1)
@@ -38,8 +40,6 @@
 		struct ICMP::Controller::Payload payload;
 	};
 	#pragma pack()
-
-	recursive_mutex ICMP::Controller::guard;
 
 	ICMP::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
 	}
