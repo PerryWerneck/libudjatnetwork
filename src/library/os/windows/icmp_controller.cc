@@ -18,47 +18,46 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+
+ #include <netmon.h>
+
  #include <private/icmp/controller.h>
 
- #include <unistd.h>
- #include <netdb.h>
- #include <fcntl.h>
- #include <sys/types.h>
- #include <sys/socket.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
  #include <udjat/net/icmp.h>
  #include <udjat/net/ip/address.h>
- #include <netinet/ip_icmp.h>
 
  namespace Udjat {
 
 	#pragma pack(1)
 	struct Packet {
-		struct icmp icmp;
+		::ICMP icmp;
 		struct ICMP::Controller::Payload payload;
 	};
 	#pragma pack()
+
+	recursive_mutex ICMP::Controller::guard;
 
 	ICMP::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
 	}
 
 	ICMP::Controller::~Controller() {
-		lock_guard<recursive_mutex> lock(guard);
 	 	stop();
 	}
 
 	uint64_t ICMP::Controller::getCurrentTime() noexcept {
 
-			struct timespec tm;
-			clock_gettime(CLOCK_MONOTONIC_RAW, &tm);
+		// https://stackoverflow.com/questions/1695288/getting-the-current-time-in-milliseconds-from-the-system-clock-in-windows
+		FILETIME tm;
+		GetSystemTimeAsFileTime(&tm);
 
-			uint64_t time = tm.tv_sec;
-			time *= 1000000;
-			time += tm.tv_nsec;
+		uint64_t time = (LONGLONG)tm.dwLowDateTime + ((LONGLONG)(tm.dwHighDateTime) << 32LL);
 
-			return time;
+		return time;
+
 	}
 
 	void ICMP::Controller::stop() {
@@ -130,7 +129,6 @@
 			});
 
 		}
-
 
 	}
 

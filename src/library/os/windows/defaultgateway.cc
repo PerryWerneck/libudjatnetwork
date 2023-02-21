@@ -17,33 +17,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ // References:
+ //
+ // https://www.linuxquestions.org/questions/linux-networking-3/howto-find-gateway-address-through-code-397078/
+ // https://gist.github.com/javiermon/6272065#file-gateway_netlink-c
+ //
+
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/net/icmp.h>
- #include <private/icmp/controller.h>
- #include <udjat/tools/object.h>
+ #include <udjat/net/gateway.h>
+ using namespace std;
 
  namespace Udjat {
 
-	ICMP::Worker::Worker(time_t timeout, time_t interval) : timers{timeout,interval} {
+	IP::Gateway::Gateway() : Udjat::IP::Agent{"gateway"} {
 	}
 
-	ICMP::Worker::Worker(const pugi::xml_node &node)
-		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
+	IP::Gateway::Gateway(const pugi::xml_node &node) : Udjat::IP::Agent{node} {
 	}
 
-	ICMP::Worker::~Worker() {
-		stop();
-	}
+	void IP::Gateway::start() {
 
-	void ICMP::Worker::start(const IP::Address &addr) {
-		Controller::getInstance().insert(*this,addr);
 
 	}
 
-	void ICMP::Worker::stop() {
-		Controller::getInstance().remove(*this);
+	void IP::Gateway::stop() {
+
+	}
+
+	bool IP::Gateway::detect() {
+
+		bool changed = false;
+
+#ifndef DEBUG
+		#error Pending implementation
+#endif // DEBUG
+
+		return changed;
+
 	}
 
  }
-

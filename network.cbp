@@ -84,8 +84,12 @@
 		<Unit filename="src/library/os/linux/nicagent.cc" />
 		<Unit filename="src/library/os/linux/nicdetect.cc" />
 		<Unit filename="src/library/os/linux/niclist.cc" />
+		<Unit filename="src/library/os/linux/nicstate.cc" />
 		<Unit filename="src/library/os/linux/subnet.cc" />
+		<Unit filename="src/library/os/windows/defaultgateway.cc" />
+		<Unit filename="src/library/os/windows/icmp_controller.cc" />
 		<Unit filename="src/library/os/windows/ipaddress.cc" />
+		<Unit filename="src/library/os/windows/subnet.cc" />
 		<Unit filename="src/library/range.cc" />
 		<Unit filename="src/module/init.cc" />
 		<Unit filename="src/testprogram/testprogram.cc" />

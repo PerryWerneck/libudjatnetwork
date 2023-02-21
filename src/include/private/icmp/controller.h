@@ -46,7 +46,7 @@
 
 	private:
 
-		static recursive_mutex guard;
+		recursive_mutex guard;
 
 		struct Host {
 
@@ -86,10 +86,12 @@
 		void on_timer() override;
 		void handle_event(const Event event) override;
 
-
 	public:
 
-		static Controller & getInstance();
+		static Controller & getInstance() {
+			static Controller instance;
+			return instance;
+		}
 
 		~Controller();
 
