@@ -93,14 +93,17 @@
 
 	Udjat::Value & IP::Agent::getProperties(Value &value) const noexcept {
 
+		if(icmp.check) {
+			ICMP::Worker::getProperties(value);
+		}
 
 		return super::getProperties(value);
 	}
 
 	bool IP::Agent::getProperty(const char *key, std::string &value) const noexcept {
 
-		if(!strcasecmp(key,"ip")) {
-			value = std::to_string((IP::Address) *this);
+		if(ICMP::Worker::getProperty(key, value)) {
+			return true;
 		}
 
 		return super::getProperty(key,value);

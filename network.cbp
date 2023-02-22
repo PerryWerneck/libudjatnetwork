@@ -66,7 +66,6 @@
 		<Unit filename="src/library/dns/linux/record.cc" />
 		<Unit filename="src/library/dns/linux/resolver.cc" />
 		<Unit filename="src/library/dns/linux/state.cc" />
-		<Unit filename="src/library/icmp/controller.cc" />
 		<Unit filename="src/library/icmp/response.cc" />
 		<Unit filename="src/library/icmp/state.cc" />
 		<Unit filename="src/library/icmp/worker.cc" />
@@ -79,7 +78,6 @@
 		<Unit filename="src/library/nic/list.cc" />
 		<Unit filename="src/library/nic/state.cc" />
 		<Unit filename="src/library/os/linux/defaultgateway.cc" />
-		<Unit filename="src/library/os/linux/dns.cc" />
 		<Unit filename="src/library/os/linux/icmp_controller.cc" />
 		<Unit filename="src/library/os/linux/icmphost.cc" />
 		<Unit filename="src/library/os/linux/netlink.cc" />

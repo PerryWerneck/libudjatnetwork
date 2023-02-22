@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <pugixml.hpp>
  #include <udjat/net/ip/address.h>
+ #include <udjat/tools/value.h>
 
  namespace Udjat {
 
@@ -79,6 +80,9 @@
 			inline bool running() const noexcept {
 				return busy;
 			}
+
+			Value & getProperties(Value &value) const noexcept;
+			bool getProperty(const char *key, std::string &value) const noexcept;
 
 		};
 

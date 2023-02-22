@@ -59,5 +59,33 @@
 		Controller::getInstance().remove(*this);
 	}
 
+	bool ICMP::Worker::getProperty(const char *key, std::string &value) const noexcept {
+
+		if(!strcasecmp(key,"ip")) {
+			value = std::to_string((IP::Address) *this);
+			return true;
+		}
+
+		return false;
+
+	}
+
+	Value & ICMP::Worker::getProperties(Value &value) const noexcept {
+
+#ifdef _WIN32
+
+#else
+
+		value["icmp-timeout"] = timers.timeout;
+		value["icmp-interval"] = timers.interval;
+		value["icmp-time"] = ( ((float) time) / ((float)1000000));
+		value["icmp-running"] = busy;
+
+#endif // _WIN32
+
+		return value;
+
+	}
+
  }
 
