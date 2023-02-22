@@ -34,14 +34,8 @@
 	IP::Agent::Agent(const char *name) : Abstract::Agent(name) {
 	}
 
-	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : IP::Address{addr}, Abstract::Agent{node}, ICMP::Worker{node} {
+	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : Abstract::Agent{node}, ICMP::Worker{node,addr} {
 		icmp.check = getAttribute(node,"icmp",icmp.check);
-
-		auto attr = node.attribute("ip");
-		if(attr) {
-			IP::Address::set(attr.as_string());
-		}
-
 	}
 
 	void IP::Agent::start() {
@@ -153,7 +147,7 @@
 		}
 
 		if(icmp.check && !ICMP::Worker::running()) {
-			ICMP::Worker::start(*this);
+			ICMP::Worker::start();
 		}
 
 		return false;

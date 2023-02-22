@@ -51,14 +51,13 @@
 		struct Host {
 
 			ICMP::Worker &worker;
-			const IP::Address address;
 			uint16_t id;
 
 			time_t timeout;
 			uint16_t packets = 0;
 			time_t next = 0;
 
-			Host(ICMP::Worker &h, const IP::Address &a);
+			Host(ICMP::Worker &h);
 
 			bool onTimer();
 			void send() noexcept;
@@ -95,7 +94,7 @@
 
 		~Controller();
 
-		void insert(ICMP::Worker &host, const IP::Address &address);
+		void insert(ICMP::Worker &host);
 		void remove(ICMP::Worker &host);
 
 		void send(const sockaddr_storage &addr, const Payload &payload);

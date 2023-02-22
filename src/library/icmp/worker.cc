@@ -33,17 +33,26 @@
 	ICMP::Worker::Worker(time_t timeout, time_t interval) : timers{timeout,interval} {
 	}
 
-	ICMP::Worker::Worker(const pugi::xml_node &node)
+	ICMP::Worker::Worker(const pugi::xml_node &node, const char *addr)
 		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
+
+		if(addr && *addr) {
+			IP::Address::set(addr);
+		} else {
+			auto attr = node.attribute("ip");
+			if(attr) {
+				IP::Address::set(attr.as_string());
+			}
+		}
+
 	}
 
 	ICMP::Worker::~Worker() {
 		stop();
 	}
 
-	void ICMP::Worker::start(const IP::Address &addr) {
-		Controller::getInstance().insert(*this,addr);
-
+	void ICMP::Worker::start() {
+		Controller::getInstance().insert(*this);
 	}
 
 	void ICMP::Worker::stop() {

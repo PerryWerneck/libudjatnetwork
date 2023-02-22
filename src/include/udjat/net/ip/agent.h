@@ -30,7 +30,7 @@
 
 	namespace IP {
 
-		class UDJAT_API Agent : public Udjat::IP::Address, public Abstract::Agent, private ICMP::Worker  {
+		class UDJAT_API Agent : public Abstract::Agent, public ICMP::Worker  {
 		private:
 
 			struct {

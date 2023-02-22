@@ -38,7 +38,7 @@
 
 		class Controller;
 
-		class UDJAT_API Worker {
+		class UDJAT_API Worker : public Udjat::IP::Address {
 		private:
 
 			friend class Controller;
@@ -59,9 +59,12 @@
 
 			virtual void set(const ICMP::Response response, const IP::Address &from) = 0;
 
+			void start();
+			void stop();
+
 		public:
 			Worker(time_t timeout = 5, time_t interval = 1);
-			Worker(const pugi::xml_node &node);
+			Worker(const pugi::xml_node &node, const char *addr = nullptr);
 
 			virtual ~Worker();
 
@@ -77,8 +80,6 @@
 				return busy;
 			}
 
-			void start(const IP::Address &addr);
-			void stop();
 		};
 
 	}

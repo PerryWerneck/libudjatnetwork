@@ -212,17 +212,17 @@
 
 	}
 
-	void ICMP::Controller::insert(ICMP::Worker &host, const IP::Address &addr) {
+	void ICMP::Controller::insert(ICMP::Worker &worker) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
-		if(host.busy) {
+		if(worker.busy) {
 			throw std::system_error(EBUSY, std::system_category(), "ICMP Listener is already active");
 		}
 
 		start();
-		host.busy = true;
-		hosts.emplace_back(host,addr);
+		worker.busy = true;
+		hosts.emplace_back(worker);
 
 	}
 
