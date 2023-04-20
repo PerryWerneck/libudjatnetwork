@@ -92,8 +92,8 @@
 
 			bool refresh() override;
 
-			Udjat::Value & getProperties(Value &value) const noexcept override;
-			bool getProperty(const char *key, std::string &value) const noexcept override;
+			Udjat::Value & getProperties(Value &value) const override;
+			bool getProperty(const char *key, std::string &value) const override;
 
 			bool getProperties(const char *path, Value &value) const override;
 

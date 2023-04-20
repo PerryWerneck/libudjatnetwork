@@ -67,7 +67,7 @@
 
 	}
 
-	Value & Nic::List::getProperties(Value &value) const noexcept {
+	Value & Nic::List::getProperties(Value &value) const {
 
 		Abstract::Object::getProperty("nics",value["nics"]);
 		Abstract::Object::getProperty("active",value["active"]);

@@ -91,7 +91,7 @@
 		return value;
 	}
 
-	Udjat::Value & IP::Agent::getProperties(Value &value) const noexcept {
+	Udjat::Value & IP::Agent::getProperties(Value &value) const {
 
 		if(icmp.check) {
 			ICMP::Worker::getProperties(value);
@@ -100,7 +100,7 @@
 		return super::getProperties(value);
 	}
 
-	bool IP::Agent::getProperty(const char *key, std::string &value) const noexcept {
+	bool IP::Agent::getProperty(const char *key, std::string &value) const {
 
 		if(ICMP::Worker::getProperty(key, value)) {
 			return true;

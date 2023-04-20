@@ -59,7 +59,7 @@
 		Controller::getInstance().remove(*this);
 	}
 
-	bool ICMP::Worker::getProperty(const char *key, std::string &value) const noexcept {
+	bool ICMP::Worker::getProperty(const char *key, std::string &value) const {
 
 		if(!strcasecmp(key,"ip")) {
 			value = std::to_string((IP::Address) *this);
@@ -70,7 +70,7 @@
 
 	}
 
-	Value & ICMP::Worker::getProperties(Value &value) const noexcept {
+	Value & ICMP::Worker::getProperties(Value &value) const {
 
 #ifdef _WIN32
 

@@ -80,7 +80,7 @@
 
 	}
 
-	Udjat::Value & DNS::Agent::getProperties(Value &value) const noexcept {
+	Udjat::Value & DNS::Agent::getProperties(Value &value) const {
 
 		if(state) {
 			value["dns"] = state->to_string();
@@ -91,7 +91,7 @@
 		return IP::Agent::getProperties(value);
 	}
 
-	bool DNS::Agent::getProperty(const char *key, std::string &value) const noexcept {
+	bool DNS::Agent::getProperty(const char *key, std::string &value) const {
 
 		if(!strcasecmp(key,"hostname")) {
 			value = hostname;
