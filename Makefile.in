@@ -11,6 +11,7 @@ LIBRARY_SOURCES= \
 	$(wildcard src/library/os/@OSNAME@/*.cc) \
 	$(wildcard src/library/icmp/*.cc) \
 	$(wildcard src/library/dns/*.cc) \
+	$(wildcard src/library/dns/@OSNAME@/*.cc) \
 	$(wildcard src/library/nic/*.cc)
 
 MODULE_SOURCES= \

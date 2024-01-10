@@ -95,7 +95,7 @@
 			"no-data",
 			N_("No data"),
 			N_("No data for ${hostname}"),
-			N_("")
+			""
 		},
 
 		{
@@ -171,19 +171,6 @@
 		}
 		Object::properties.summary = hstrerror(code);
 	}
-
-	/*
-	std::shared_ptr<DNS::State> DNS::State::Factory(const pugi::xml_node &node, int code) {
-		for(const DNSState &state : dnsstates) {
-			if(state.code == code) {
-				return make_shared<KnownState>(node,state);
-			}
-		}
-
-		debug("No internal state for code '",code,"'");
-		return make_shared<DNS::State>(node,code);
-	}
-	*/
 
 	std::shared_ptr<DNS::State> DNS::State::Factory(const Udjat::Abstract::Object &object, const pugi::xml_node &node) {
 

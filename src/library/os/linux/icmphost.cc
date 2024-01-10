@@ -19,12 +19,12 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <private/icmp/controller.h>
+ #include <private/linux/icmp_controller.h>
  #include <linux/icmp.h>
 
  namespace Udjat {
 
-	ICMP::Controller::Host::Host(ICMP::Worker &w, const IP::Address &a) : worker{w}, address{a} {
+	ICMP::Controller::Host::Host(ICMP::Worker &w) : worker{w} {
 		static uint16_t id = 0;
 		this->id = id++;
 		timeout = time(0) + worker.interval();
@@ -36,7 +36,7 @@
  		time_t now = ::time(0);
 
 		if(now > timeout) {
-			worker.set(Response::timeout,address);
+			worker.set(Response::timeout,IP::Address{});
 			return false;
 		}
 
@@ -53,11 +53,11 @@
 
 			switch(code) {
 			case ENETUNREACH:	// Network is unreachable
-				worker.set(Response::network_unreachable,address);
+				worker.set(Response::network_unreachable,IP::Address{});
 				return true;
 
 			default:
-				cerr << "icmp\tError '" << strerror(code) << "' searching " << address << endl;
+				cerr << "icmp\tError '" << strerror(code) << "' searching " << worker << endl;
 
 			}
 
@@ -127,7 +127,7 @@
 			packet.seq	= ++this->packets;
 			packet.time = getCurrentTime();
 
-			Controller::getInstance().send(address,packet);
+			Controller::getInstance().send(worker,packet);
 
 		} catch(const exception &e) {
 

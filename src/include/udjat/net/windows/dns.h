@@ -20,6 +20,120 @@
  #pragma once
 
  #include <udjat/defs.h>
+
+ namespace Udjat {
+
+	namespace DNS {
+
+		class Resolver;
+
+		/// @brief DNS Record
+		class UDJAT_API Record {
+		private:
+			friend class Resolver;
+
+			/// @brief TTL value from the record
+			uint32_t ttl;
+
+			std::string name;
+
+			int type;
+			int cls;
+
+			/// @brief IP address
+			sockaddr_storage addr;
+
+			/// @brief Record value
+			std::string value;
+
+		public:
+			Record();
+
+			/// @brief Get TTL value from the record;
+			inline uint32_t getTTL() const noexcept {
+				return this->ttl;
+			}
+
+			inline const char * getName() const noexcept {
+				return this->name.c_str();
+			}
+
+			inline auto getType() const noexcept {
+				return this->type;
+			}
+
+			inline auto getClass() const noexcept {
+				return this->cls;
+			}
+
+			inline const sockaddr_storage & getAddr() const {
+				return this->addr;
+			}
+
+			inline std::string toString() const {
+				return value;
+			}
+
+			inline const char * c_str() const {
+				return value.c_str();
+			}
+
+			inline operator sockaddr_storage() const {
+				return this->addr;
+			}
+
+		};
+
+		class UDJAT_API Resolver {
+		private:
+			static std::mutex guard;
+			std::vector<Record> records;
+
+		public:
+
+			Resolver();
+			Resolver(const struct sockaddr_storage &server);
+			~Resolver();
+
+			inline auto begin() const {
+				return records.begin();
+			}
+
+			inline auto end() const {
+				return records.end();
+			}
+
+			inline bool empty() const noexcept {
+				return records.empty();
+			}
+
+			inline size_t size() const noexcept {
+				return records.size();
+			}
+
+			/// @brief Set Address of the nameserver.
+			void set(const struct sockaddr_storage &server);
+
+			/// @brief Query service hosts.
+			///
+			/// @param cls		The class of data being looked for.
+			/// @param type	The type of request being made.
+			/// @param domain	The pointer to the domain name.
+			///
+			// Resolver & query(ns_class cls, ns_type type, const char *name);
+
+			/// @brief Run DNS query.
+			inline Resolver & query(const char *name) {
+				return *this;
+			}
+
+		};
+
+	}
+
+ }
+
+/*
  #include <resolv.h>
  #include <arpa/nameser.h>
  #include <mutex>
@@ -140,3 +254,4 @@
 	}
 
  }
+*/

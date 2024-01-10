@@ -56,7 +56,7 @@
 		return active;
 	}
 
-	bool Nic::List::getProperty(const char *key, std::string &value) const noexcept {
+	bool Nic::List::getProperty(const char *key, std::string &value) const {
 
 		if(!strcasecmp(key,"active")) {
 			// Find first active nic.

@@ -20,41 +20,71 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/net/icmp.h>
- #include <private/icmp/controller.h>
  #include <udjat/tools/object.h>
 
- /*
- #include <controller.h>
- #include <udjat/net/ip/address.h>
- #include <udjat/tools/threadpool.h>
- #include <cstring>
- #include <sys/types.h>
- #include <unistd.h>
- #include <private/agents/host.h>
- #include <udjat/tools/logger.h>
- #include <netinet/ip_icmp.h>
- */
+ #ifdef _WIN32
+	#include <private/windows/icmp_controller.h>
+ #else
+	#include <private/linux/icmp_controller.h>
+ #endif // _WIN32
 
  namespace Udjat {
 
 	ICMP::Worker::Worker(time_t timeout, time_t interval) : timers{timeout,interval} {
 	}
 
-	ICMP::Worker::Worker(const pugi::xml_node &node)
+	ICMP::Worker::Worker(const pugi::xml_node &node, const char *addr)
 		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
+
+		if(addr && *addr) {
+			IP::Address::set(addr);
+		} else {
+			auto attr = node.attribute("ip");
+			if(attr) {
+				IP::Address::set(attr.as_string());
+			}
+		}
+
 	}
 
 	ICMP::Worker::~Worker() {
 		stop();
 	}
 
-	void ICMP::Worker::start(const IP::Address &addr) {
-		Controller::getInstance().insert(*this,addr);
-
+	void ICMP::Worker::start() {
+		Controller::getInstance().insert(*this);
 	}
 
 	void ICMP::Worker::stop() {
 		Controller::getInstance().remove(*this);
+	}
+
+	bool ICMP::Worker::getProperty(const char *key, std::string &value) const {
+
+		if(!strcasecmp(key,"ip")) {
+			value = std::to_string((IP::Address) *this);
+			return true;
+		}
+
+		return false;
+
+	}
+
+	Value & ICMP::Worker::getProperties(Value &value) const {
+
+#ifdef _WIN32
+
+#else
+
+		value["icmp-timeout"] = timers.timeout;
+		value["icmp-interval"] = timers.interval;
+		value["icmp-time"] = ( ((float) time) / ((float)1000000));
+		value["icmp-running"] = busy;
+
+#endif // _WIN32
+
+		return value;
+
 	}
 
  }

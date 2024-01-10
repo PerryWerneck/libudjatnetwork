@@ -30,7 +30,7 @@
 
 	namespace IP {
 
-		class UDJAT_API Agent : public Udjat::IP::Address, public Abstract::Agent, private ICMP::Worker  {
+		class UDJAT_API Agent : public Abstract::Agent, public ICMP::Worker  {
 		private:
 
 			struct {
@@ -73,8 +73,8 @@
 
 			Udjat::Value & get(Udjat::Value &value) const override;
 
-			Udjat::Value & getProperties(Value &value) const noexcept override;
-			bool getProperty(const char *key, std::string &value) const noexcept override;
+			Udjat::Value & getProperties(Value &value) const override;
+			bool getProperty(const char *key, std::string &value) const override;
 
 		};
 

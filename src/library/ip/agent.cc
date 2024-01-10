@@ -34,14 +34,8 @@
 	IP::Agent::Agent(const char *name) : Abstract::Agent(name) {
 	}
 
-	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : IP::Address{addr}, Abstract::Agent{node}, ICMP::Worker{node} {
+	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : Abstract::Agent{node}, ICMP::Worker{node,addr} {
 		icmp.check = getAttribute(node,"icmp",icmp.check);
-
-		auto attr = node.attribute("ip");
-		if(attr) {
-			IP::Address::set(attr.as_string());
-		}
-
 	}
 
 	void IP::Agent::start() {
@@ -97,16 +91,19 @@
 		return value;
 	}
 
-	Udjat::Value & IP::Agent::getProperties(Value &value) const noexcept {
+	Udjat::Value & IP::Agent::getProperties(Value &value) const {
 
+		if(icmp.check) {
+			ICMP::Worker::getProperties(value);
+		}
 
 		return super::getProperties(value);
 	}
 
-	bool IP::Agent::getProperty(const char *key, std::string &value) const noexcept {
+	bool IP::Agent::getProperty(const char *key, std::string &value) const {
 
-		if(!strcasecmp(key,"ip")) {
-			value = std::to_string((IP::Address) *this);
+		if(ICMP::Worker::getProperty(key, value)) {
+			return true;
 		}
 
 		return super::getProperty(key,value);
@@ -153,7 +150,7 @@
 		}
 
 		if(icmp.check && !ICMP::Worker::running()) {
-			ICMP::Worker::start(*this);
+			ICMP::Worker::start();
 		}
 
 		return false;

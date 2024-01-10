@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <private/icmp/controller.h>
+ #include <private/linux/icmp_controller.h>
 
  #include <unistd.h>
  #include <netdb.h>
@@ -41,20 +41,12 @@
 	};
 	#pragma pack()
 
-	recursive_mutex ICMP::Controller::guard;
-
 	ICMP::Controller::Controller() : MainLoop::Handler(-1, MainLoop::Handler::oninput) {
 	}
 
 	ICMP::Controller::~Controller() {
 		lock_guard<recursive_mutex> lock(guard);
 	 	stop();
-	}
-
-	ICMP::Controller & ICMP::Controller::getInstance() {
-		lock_guard<recursive_mutex> lock(guard);
-		static Controller instance;
-		return instance;
 	}
 
 	uint64_t ICMP::Controller::getCurrentTime() noexcept {
@@ -127,7 +119,7 @@
 				return;
 			}
 
-			debug("Response ",htons(in.packet.icmp.icmp_seq)," from ",std::to_string(addr));
+			Logger::String("Response ",htons(in.packet.icmp.icmp_seq)," from ",std::to_string(addr)).trace("icmp");
 
 			hosts.remove_if([&in,&addr](Host &host) {
 				if(host.onResponse(in.packet.icmp.icmp_type,addr,in.packet.payload)) {
@@ -220,17 +212,17 @@
 
 	}
 
-	void ICMP::Controller::insert(ICMP::Worker &host, const IP::Address &addr) {
+	void ICMP::Controller::insert(ICMP::Worker &worker) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
-		if(host.busy) {
+		if(worker.busy) {
 			throw std::system_error(EBUSY, std::system_category(), "ICMP Listener is already active");
 		}
 
 		start();
-		host.busy = true;
-		hosts.emplace_back(host,addr);
+		worker.busy = true;
+		hosts.emplace_back(worker);
 
 	}
 

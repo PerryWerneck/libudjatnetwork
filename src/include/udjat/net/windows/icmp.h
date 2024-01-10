@@ -18,48 +18,37 @@
  */
 
  #pragma once
+
  #include <udjat/defs.h>
- #include <udjat/agent/state.h>
- #include <stdexcept>
+ #include <pugixml.hpp>
+ #include <udjat/net/ip/address.h>
+ #include <udjat/win32/handler.h>
 
- #ifdef _WIN32
-	#include <udjat/net/windows/dns.h>
- #else
-	#include <udjat/net/linux/dns.h>
- #endif // _WIN32
+ namespace Udjat {
 
-  namespace Udjat {
+	namespace ICMP {
 
-	namespace DNS {
+		enum Response : uint8_t {
+			invalid,
+			echo_reply,
+			destination_unreachable,
+			time_exceeded,
+			timeout,
+			network_unreachable
+		};
 
-		class Exception : public std::runtime_error {
+		class UDJAT_API Worker : Win32::Handler {
 		private:
-			int err;
+
+		protected:
 
 		public:
-			Exception(int c);
 
-			inline int code() const noexcept {
-				return err;
-			}
+			void handle(bool abandoned) override;
 
 
 		};
-
-		class UDJAT_API State : public Udjat::State<int> {
-		public:
-
-			State(const int code);
-			State(const pugi::xml_node &node, const int code);
-
-			// static std::shared_ptr<State> Factory(const pugi::xml_node &node, const int code);
-			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const pugi::xml_node &node);
-			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const int code);
-
-		};
-
 
 	}
 
-  }
-
+ }

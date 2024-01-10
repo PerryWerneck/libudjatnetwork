@@ -18,48 +18,24 @@
  */
 
  #pragma once
+ #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/agent/state.h>
- #include <stdexcept>
+ #include <icmpapi.h>
+ #include <udjat/win32/handler.h>
 
- #ifdef _WIN32
-	#include <udjat/net/windows/dns.h>
- #else
-	#include <udjat/net/linux/dns.h>
- #endif // _WIN32
+ using namespace std;
 
-  namespace Udjat {
+ // https://learn.microsoft.com/en-us/windows/win32/api/icmpapi/nf-icmpapi-icmp6createfile
 
-	namespace DNS {
+ namespace Udjat {
 
-		class Exception : public std::runtime_error {
-		private:
-			int err;
+	namespace Udjat {
 
-		public:
-			Exception(int c);
+		namespace ICMP {
 
-			inline int code() const noexcept {
-				return err;
-			}
-
-
-		};
-
-		class UDJAT_API State : public Udjat::State<int> {
-		public:
-
-			State(const int code);
-			State(const pugi::xml_node &node, const int code);
-
-			// static std::shared_ptr<State> Factory(const pugi::xml_node &node, const int code);
-			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const pugi::xml_node &node);
-			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const int code);
-
-		};
-
+		}
 
 	}
 
-  }
+ }
 

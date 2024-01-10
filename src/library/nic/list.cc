@@ -47,22 +47,27 @@
 
 		}
 
+#ifdef _WIN32
+
+		// FIX-ME: Why Network::Interface::for_each isnt working on windows?
+		return false;
+
+#else
 		return Network::Interface::for_each([&value,path](const Network::Interface &interface) {
 			if(!strcasecmp(interface.name(),path)) {
 
-#ifndef _WIN32
 				value["carrier"] = stoi(File::Text{String{"/sys/class/net/",interface.name(),"/carrier"}}.c_str()) != 0;
-#endif // _WIN32
 
 				interface.getProperties(value);
 				return true;
 			}
 			return false;
 		});
+#endif // _WIN32
 
 	}
 
-	Value & Nic::List::getProperties(Value &value) const noexcept {
+	Value & Nic::List::getProperties(Value &value) const {
 
 		Abstract::Object::getProperty("nics",value["nics"]);
 		Abstract::Object::getProperty("active",value["active"]);

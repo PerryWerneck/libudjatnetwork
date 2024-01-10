@@ -27,8 +27,10 @@
  #include <udjat/net/dns/agent.h>
  #include <udjat/agent/state.h>
  #include <iostream>
- #include <netdb.h>
 
+#ifndef _WIN32
+  #include <netdb.h>
+#endif // _WIN32
 
  using namespace std;
 
@@ -78,9 +80,7 @@
 
 	}
 
-	Udjat::Value & DNS::Agent::getProperties(Value &value) const noexcept {
-
-		debug("----------------------------------------------- ",name(),"::",__FUNCTION__);
+	Udjat::Value & DNS::Agent::getProperties(Value &value) const {
 
 		if(state) {
 			value["dns"] = state->to_string();
@@ -91,7 +91,7 @@
 		return IP::Agent::getProperties(value);
 	}
 
-	bool DNS::Agent::getProperty(const char *key, std::string &value) const noexcept {
+	bool DNS::Agent::getProperty(const char *key, std::string &value) const {
 
 		if(!strcasecmp(key,"hostname")) {
 			value = hostname;
@@ -103,13 +103,13 @@
 
 	bool DNS::Agent::set(int code, const char *name) {
 
-		if(state && *state == code) {
+		if(state && state->compare(code)) {
 			debug("DNS State not changed");
 			return false;
 		}
 
 		for(auto state : states) {
-			if(*state == code) {
+			if(state->compare(code)) {
 				debug("Found predefined state for response ",code);
 				this->state = state;
 				info() << name << ": " << state->to_string() << endl;
@@ -142,7 +142,7 @@
 				if(resolver.empty()) {
 					IP::Address::clear();
 #ifdef _WIN32
-					#error Implement
+					#warning Implement
 #else
 					set(HOST_NOT_FOUND,server.name);
 #endif // _WIN32
@@ -160,7 +160,7 @@
 				if(resolver.empty()) {
 					IP::Address::clear();
 #ifdef _WIN32
-					#error Implement
+					#warning Implement
 #else
 					set(HOST_NOT_FOUND,server.name);
 #endif // _WIN32
@@ -175,7 +175,7 @@
 				if(resolver.empty()) {
 					IP::Address::clear();
 #ifdef _WIN32
-					#error Implement
+					#warning Implement
 #else
 					set(HOST_NOT_FOUND,server.name);
 #endif // _WIN32
@@ -185,7 +185,7 @@
 			}
 
 #ifdef _WIN32
-			#error Implement
+			#warning Implement
 #else
 			set(NETDB_SUCCESS,server.name);
 #endif // _WIN32

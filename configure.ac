@@ -57,6 +57,7 @@ case "$host" in
 	*-mingw32)
 		LDFLAGS="$LDFLAGS -pthread"
 		DLL_LDFLAGS="-shared -Wl,--output-def,\$(@D)/udjatnetw.def"
+		LIBS="$LIBS -lws2_32"
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(OSNAME,windows)
