@@ -60,7 +60,7 @@
 		struct msghdr msg = { (void *) &snl, sizeof snl, &iov, 1, NULL, 0, 0 };
 		struct nlmsghdr *h;
 
-		int status = recvmsg(this->fd, &msg, 0);
+		int status = recvmsg(Handler::values.fd, &msg, 0);
 		if (status < 0) {
 			if(errno == EWOULDBLOCK || errno == EAGAIN)
 				return;
@@ -106,15 +106,15 @@
 		lock_guard<mutex> lock(guard);
 		listeners.emplace_back(object,message,method);
 
-		if(this->fd != -1) {
+		if(Handler::values.fd != -1) {
 			return;
 		}
 
 		// Start watcher.
 		Logger::String{"Starting watcher"}.trace("netlink");
 
-		this->fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
-		if(this->fd < 0) {
+		Handler::values.fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
+		if(Handler::values.fd < 0) {
 			throw system_error(errno,std::system_category(),"Cant get netlink socket");
 		}
 
@@ -124,7 +124,7 @@
 		addr.nl_pid = getpid ();
 		addr.nl_groups = RTMGRP_LINK | RTMGRP_IPV4_IFADDR | RTMGRP_IPV6_IFADDR | RTMGRP_IPV4_ROUTE | RTMGRP_IPV6_ROUTE;
 
-		if(bind(this->fd, (struct sockaddr *) &addr, sizeof (addr)) < 0) {
+		if(bind(Handler::values.fd, (struct sockaddr *) &addr, sizeof (addr)) < 0) {
 			throw system_error(errno,std::system_category(),"Cant bind netlink socket");
 		}
 
@@ -146,8 +146,8 @@
 
 		Logger::String{"Stopping watcher"}.trace("netlink");
 		Handler::disable();
-		::close(this->fd);
-		this->fd = -1;
+		::close(Handler::values.fd);
+		Handler::values.fd = -1;
 	}
 
 

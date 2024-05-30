@@ -28,6 +28,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/handler.h>
  #include <udjat/net/icmp.h>
  #include <udjat/net/ip/address.h>
  #include <netinet/ip_icmp.h>
@@ -91,7 +92,7 @@
 			memset(&in,0,sizeof(in));
 			memset(&addr,0,sizeof(addr));
 
-			int rc = recvfrom(fd,&in,sizeof(in),MSG_DONTWAIT,(struct sockaddr *) &addr,&szAddr);
+			int rc = recvfrom(fd(),&in,sizeof(in),MSG_DONTWAIT,(struct sockaddr *) &addr,&szAddr);
 			if(rc < 0) {
 				cerr << "ICMP\tError '" << strerror(errno) << "' receiving ICMP packet" << endl;
 				return;
@@ -165,7 +166,7 @@
 			Logger::String{"Starting Listener"}.write(Logger::Trace,"ICMP");
 
 			// Create socket
-			if(fd <= 0) {
+			if(Handler::values.fd <= 0) {
 
 				// Reference: https://github.com/schweikert/fping/blob/develop/src/socket4.c
 				protoent * proto = getprotobyname("icmp");
@@ -173,19 +174,19 @@
 					throw runtime_error("ICMP: Unknown protocol");
 				}
 
-				fd = socket(AF_INET, SOCK_RAW, proto->p_proto);
-				if(fd < 0) {
+				Handler::values.fd = socket(AF_INET, SOCK_RAW, proto->p_proto);
+				if(Handler::values.fd < 0) {
 					throw std::system_error(errno, std::system_category(), "Cant create ICMP socket");
 				}
 
 				// Set non-blocking
 				int flags;
 
-				if ((flags = fcntl(fd, F_GETFL, 0)) < 0) {
+				if ((flags = fcntl(Handler::values.fd, F_GETFL, 0)) < 0) {
 					throw std::system_error(errno, std::system_category(), "Cant get ICMP socket flags");
 				}
 
-				if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0){
+				if (fcntl(Handler::values.fd, F_SETFL, flags | O_NONBLOCK) < 0){
 					throw std::system_error(errno, std::system_category(), "Cant set ICMP socket flags");
 				}
 
@@ -269,7 +270,7 @@
 
 	void ICMP::Controller::send(const sockaddr_storage &addr, const Payload &payload) {
 
-		if(fd < 0) {
+		if(Handler::values.fd < 0) {
 			throw runtime_error("ICMP Controller is not available");
 		}
 
@@ -279,7 +280,7 @@
 				Logger::String(
 					"Sending ICMP ", payload.id ,".", payload.seq, " to ", std::to_string(addr)
 #ifdef DEBUG
-					, " on socket ", fd
+					, " on socket ", Handler::values.fd
 #endif // DEBUG
 				).write(Logger::Debug,"ICMP");
 
@@ -295,7 +296,7 @@
 				packet.icmp.icmp_id = htons(getpid());
 				packet.icmp.icmp_cksum = in_chksum((unsigned short *) &packet, sizeof(packet));
 
-				if(sendto(fd, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
+				if(sendto(Handler::values.fd, (char *) &packet, sizeof(packet), 0, (const sockaddr *) &addr, sizeof(addr)) != sizeof(packet)) {
 
 					int code = errno;
 
