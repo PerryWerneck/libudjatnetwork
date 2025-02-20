@@ -20,13 +20,13 @@
 %define module_path %(pkg-config --variable=module_path libudjat)
 
 Summary:		Network module for %{product_name} 
-Name:			udjat-module-network
+Name:			libudjatnetwork
 Version:		1.0
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
 
-URL:			https://github.com/PerryWerneck/udjat-module-network
+URL:			https://github.com/PerryWerneck/libudjatnetwork
 
 Group:			Development/Libraries/C and C++
 BuildRoot:		/var/tmp/%{name}-%{version}
@@ -42,8 +42,7 @@ BuildRequires:	binutils
 BuildRequires:	coreutils
 BuildRequires:	gcc-c++
 
-BuildRequires:	pkgconfig(libudjat)
-BuildRequires:	pkgconfig(pugixml)
+BuildRequires:	pkgconfig(libudjat) >= 2.0.0
 
 %description
 Network module for udjat.
@@ -52,24 +51,24 @@ Add factory for %{product_name} network validation and check agents.
 
 #---[ Library ]-------------------------------------------------------------------------------------------------------
 
-%package -n libudjatnetw%{_libvrs}
+%package -n libudjatnetwork%{_libvrs}
 Summary:	UDJat network library
 
-%description -n libudjatnetw%{_libvrs}
+%description -n libudjatnetwork%{_libvrs}
 Network abstraction library for %{product_name}
 
 #---[ Development ]---------------------------------------------------------------------------------------------------
 
-%package -n udjat-network-devel
+%package -n libudjatnetwork-devel
 Summary:	Development files for %{name}
 Requires:	pkgconfig(libudjat)
 Requires:	libudjatnetw%{_libvrs} = %{version}
 
-%description -n udjat-network-devel
+%description -n libudjatnetwork-devel
 
 Development files for Udjat's network abstraction library.
 
-%lang_package -n libudjatnetw%{_libvrs}
+%lang_package -n libudjatnetwork%{_libvrs}
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
@@ -92,11 +91,11 @@ make all
 %defattr(-,root,root)
 %{module_path}/*.so
 
-%files -n libudjatnetw%{_libvrs}
+%files -n libudjatnetwork%{_libvrs}
 %defattr(-,root,root)
-%{_libdir}/libudjatnetw.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
+%{_libdir}/libudjatnetwork.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
-%files -n libudjatnetw%{_libvrs}-lang -f langfiles
+%files -n libudjatnetwork%{_libvrs}-lang -f langfiles
 
 %files -n udjat-network-devel
 %defattr(-,root,root)
@@ -114,14 +113,14 @@ make all
 %{_includedir}/udjat/net/linux/*.h
 
 %{_libdir}/*.so
-%{_libdir}/*.a
+%exclude %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
 
-%pre -n libudjatnetw%{_libvrs} -p /sbin/ldconfig
+%pre -n libudjatnetwork%{_libvrs} -p /sbin/ldconfig
 
-%post -n libudjatnetw%{_libvrs} -p /sbin/ldconfig
+%post -n libudjatnetwork%{_libvrs} -p /sbin/ldconfig
 
-%postun -n libudjatnetw%{_libvrs} -p /sbin/ldconfig
+%postun -n libudjatnetwork%{_libvrs} -p /sbin/ldconfig
 
 %changelog
 
