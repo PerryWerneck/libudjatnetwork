@@ -18,11 +18,11 @@
  */
 
  #include <private/module.h>
- #include <udjat/tools/ip.h>
-// #include <udjat/tools/inet.h>
+ #include <udjat/net/ip/address.h>
 
  namespace Udjat {
 
+	/*
 	Network::Range::Range(const pugi::xml_node &node) : State(node) {
 
 
@@ -113,5 +113,6 @@
 		return netmask;
 
 	}
+	*/
 
  }

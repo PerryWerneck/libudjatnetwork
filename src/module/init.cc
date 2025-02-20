@@ -20,13 +20,17 @@
  #include <config.h>
  #include <private/module.h>
  #include <udjat/module.h>
- #include <private/agents/host.h>
- #include <private/agents/nic.h>
  #include <unistd.h>
  #include <sys/types.h>
- #include <linux/capability.h>
- #include <sys/syscall.h>
  #include <udjat/moduleinfo.h>
+
+ #include <udjat/net/ip/agent.h>
+ #include <udjat/net/nic/agent.h>
+
+ #ifndef _WIN32
+	#include <linux/capability.h>
+	#include <sys/syscall.h>
+ #endif // _WIN32
 
  using namespace Udjat;
 
@@ -35,10 +39,34 @@
  /// @brief Register udjat module.
  Udjat::Module * udjat_module_init() {
 
+	/// @brief Nic agent factor.
+	class NicFactory : public Factory {
+	public:
+		NicFactory() : Udjat::Factory("network-interface",moduleinfo) {
+		}
+
+		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &, const pugi::xml_node &node) const {
+			return Nic::Agent::Factory(node);
+		}
+
+	};
+
+	/// @brief IP based agents factory.
+	class HostFactory : public Factory {
+	public:
+		HostFactory() : Udjat::Factory("network-host",moduleinfo) {
+		}
+
+		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &, const pugi::xml_node &node) const {
+			return IP::Agent::Factory(node);
+		}
+
+	};
+
 	class Module : public Udjat::Module {
 	private:
-		Network::HostAgent::Factory hostFactory;
-		Network::Agent::Factory 	nicFactory;
+		HostFactory hFactory;
+		NicFactory nFactory;
 
 	public:
 
@@ -50,6 +78,7 @@
 
 	};
 
+#ifndef _WIN32
 	if(getuid()) {
 
 		// Non root, do we have CAP_NET_RAW
@@ -78,6 +107,7 @@
 		}
 
 	}
+#endif // _WIN32
 
 	return new Module();
  }

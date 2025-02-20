@@ -18,105 +18,24 @@
  */
 
  #pragma once
-
+ #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/factory.h>
- #include <udjat/agent.h>
- #include <udjat/agent/state.h>
- #include <udjat/tools/net/nic.h>
- #include <sys/socket.h>
- #include <list>
+ #include <udjat/net/nic/agent.h>
+// #include <udjat/tools/singleton.h>
 
  namespace Udjat {
 
-	namespace Network {
+	namespace Nic {
 
-		enum NIC_STATE : unsigned short {
+		class UDJAT_PRIVATE AutoDetect : public Nic::Agent {
+		public:
+			AutoDetect(const pugi::xml_node &node);
+			virtual ~AutoDetect();
 
-			NIC_STATE_UNDEFINED,	///< @brief Undefined state.
-
-			NIC_STATE_OFFLINE,		///< @brief No active interface.
-			NIC_STATE_ONLINE,		///< @brief Just one active interface.
-			NIC_STATE_MULTIPLE,		///< @brief More than one active interface.
-			NIC_STATE_NOT_FOUND,	///< @brief NIC was not found.
+			void start() override;
+			void stop() override;
 
 		};
-
-		NIC_STATE NicStateFactory(const char *name);
-		NIC_STATE NicStateFactory(const pugi::xml_node &node);
-
-		namespace Agent {
-
-			/// @brief Test if interface has an active link.
-			bool has_link(const char *name);
-
-			/// @brief Network agent factory.
-			class UDJAT_API Factory : public Udjat::Factory {
-			public:
-				Factory();
-				std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const override;
-			};
-
-			/// @brief State of one single interface.
-			class UDJAT_API Interface : public Udjat::Agent<unsigned short> {
-			private:
-				std::shared_ptr<Udjat::Network::Interface> intf;
-
-			public:
-
-				Interface(const pugi::xml_node &node);
-				virtual ~Interface();
-
-				std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
-
-				bool refresh() override;
-
-				std::string to_string() const noexcept override;
-
-				void start() override;
-
-			};
-
-			/// @brief State of ALL network interfaces (except loopback).
-			class UDJAT_API Interfaces : public Udjat::Agent<unsigned short> {
-			private:
-
-				/// @brief Network interfaces.
-				struct Interface {
-					std::string name;
-					bool active = false;
-
-					Interface(const char *n) : name{n} {
-					}
-
-				};
-
-				std::list<Interface> interfaces;
-
-				/// @brief Find interface by name, insert one if needed.
-				struct Interface & find_interface(const char *name);
-
-				/// @brief Count active nics.
-				unsigned short count();
-
-				NIC_STATE computeValue();
-
-			public:
-
-				Interfaces(const pugi::xml_node &node);
-				virtual ~Interfaces();
-
-				std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
-
-				bool refresh() override;
-
-				bool getProperty(const char *key, std::string &value) const noexcept override;
-
-				void start() override;
-
-			};
-
-		}
 
 	}
 
