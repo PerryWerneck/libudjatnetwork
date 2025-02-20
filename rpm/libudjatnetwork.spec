@@ -97,7 +97,7 @@ make all
 
 %files -n libudjatnetwork%{_libvrs}-lang -f langfiles
 
-%files -n udjat-network-devel
+%files -n libudjatnetwork-devel
 %defattr(-,root,root)
 
 %dir %{_includedir}/udjat/net
