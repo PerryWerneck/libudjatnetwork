@@ -61,7 +61,7 @@ case "$host" in
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(OSNAME,windows)
-		AC_SUBST(SONAME,udjatnetw.dll)
+		AC_SUBST(SONAME,udjatnetwork.dll)
 		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
 		AC_CONFIG_FILES(sdk/windows/static.pc)
 		;;
@@ -73,7 +73,7 @@ case "$host" in
 		AC_SUBST(LIBEXT,.so)
 		AC_SUBST(EXEEXT)
 		AC_SUBST(OSNAME,linux)
-		AC_SUBST(SONAME,libudjatnetw.so.$app_vrs_major.$app_vrs_minor)
+		AC_SUBST(SONAME,libudjatnetwork.so.$app_vrs_major.$app_vrs_minor)
 		AC_CONFIG_FILES(sdk/linux/dynamic.pc)
 		AC_CONFIG_FILES(sdk/linux/static.pc)
 

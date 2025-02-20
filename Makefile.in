@@ -2,7 +2,7 @@
 #---[ Library configuration ]------------------------------------------------------------
 
 PACKAGE_NAME=@PACKAGE_NAME@
-LIBRARY_NAME="netw"
+LIBRARY_NAME="network"
 SONAME=@SONAME@
 
 LIBRARY_SOURCES= \

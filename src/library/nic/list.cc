@@ -22,7 +22,7 @@
  #include <udjat/net/nic/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/net/interface.h>
- #include <udjat/tools/file.h>
+ #include <udjat/tools/file/text.h>
  #include <udjat/tools/string.h>
 
  using namespace std;
