@@ -185,7 +185,7 @@ else
   pkg.generate(
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
-    libraries: [ '-l:lib' + meson.project_name() + '.a' ]
+    libraries: [ '-l:lib' + meson.project_name() + '.a', '-lresolv' ]
   )
 
   lib_src += [
@@ -263,12 +263,15 @@ else
     cpp_args: [ '-ffat-lto-objects' ],    
     gnu_symbol_visibility: 'hidden',
     dependencies: lib_deps,
+    link_args: [ 
+      '-lresolv',
+    ],
     include_directories: includes_dir
   )
 
   # https://mesonbuild.com/Reference-manual_functions.html#shared_library
   module = shared_library(
-    'http', 
+    'network', 
     config_src + module_src,
     name_prefix: 'udjat-module-',
     install: true,

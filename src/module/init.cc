@@ -23,6 +23,7 @@
  #include <unistd.h>
  #include <sys/types.h>
  #include <udjat/moduleinfo.h>
+ #include <udjat/agent/abstract.h>
 
  #include <udjat/net/ip/agent.h>
  #include <udjat/net/nic/agent.h>
@@ -33,6 +34,7 @@
  #endif // _WIN32
 
  using namespace Udjat;
+ using Factory = Udjat::Abstract::Agent::Factory;
 
  const ModuleInfo moduleinfo{ "Network monitor" };
 
@@ -42,10 +44,10 @@
 	/// @brief Nic agent factor.
 	class NicFactory : public Factory {
 	public:
-		NicFactory() : Udjat::Factory("network-interface",moduleinfo) {
+		NicFactory() : Factory("network-interface") {
 		}
 
-		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &, const pugi::xml_node &node) const {
+		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &, const pugi::xml_node &node) const override {
 			return Nic::Agent::Factory(node);
 		}
 
@@ -54,10 +56,10 @@
 	/// @brief IP based agents factory.
 	class HostFactory : public Factory {
 	public:
-		HostFactory() : Udjat::Factory("network-host",moduleinfo) {
+		HostFactory() : Factory("network-host") {
 		}
 
-		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &, const pugi::xml_node &node) const {
+		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &, const pugi::xml_node &node) const override{
 			return IP::Agent::Factory(node);
 		}
 
