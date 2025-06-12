@@ -18,7 +18,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 project(
-	'libudjatnetwork', 
+	'udjatnetwork', 
 	['cpp'],
 	version: '1.2.0',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
