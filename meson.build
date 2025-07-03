@@ -153,13 +153,13 @@ if host_machine.system() == 'windows'
     name: 'lib' + meson.project_name(),
     description: project_description,
     requires: [ 'libudjat' ],
-    libraries: [ '-l' + meson.project_name() + '.dll' ]
+    libraries: [ '-l' + meson.project_name() + '.dll' ],
+    libraries_private: [ '-lws2_32 ']
   )
 
   pkg.generate(
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
-    requires: [ json_c ],
     libraries: [ 
       '-l' + meson.project_name(),
       '-lws2_32',
@@ -175,11 +175,13 @@ if host_machine.system() == 'windows'
 
 else
 
+  # https://mesonbuild.com/Pkgconfig-module.html
   pkg.generate(
     name: 'lib' + meson.project_name(),
     description: project_description,
     requires: [ 'libudjat' ],
-    libraries: [ '-l' + meson.project_name() ]
+    libraries: [ '-l' + meson.project_name() ],
+    libraries_private: [ '-lresolv' ]
   )
 
   pkg.generate(
@@ -238,6 +240,22 @@ if host_machine.system() == 'windows'
     include_directories: includes_dir
   )
 
+  static_library = declare_dependency(
+    link_with:static_library(
+      meson.project_name(), 
+      config_src + lib_src,
+      install: true,
+      dependencies: lib_deps,
+      cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
+      include_directories: includes_dir
+    ),
+      dependencies: lib_deps,
+      link_args: [ 
+        '-lws2_32',
+      ],
+      include_directories: includes_dir
+  )
+
   # https://mesonbuild.com/Reference-manual_functions.html#shared_library
   module = shared_library(
     'http', 
@@ -245,7 +263,7 @@ if host_machine.system() == 'windows'
     name_prefix: 'udjat-module-',
     install: true,
     install_tag: 'module',
-    link_with: dynamic,
+    link_with: dynamic, 
     install_dir: libudjat.get_variable('module_path'),
     gnu_symbol_visibility: 'hidden',
     dependencies: lib_deps,
@@ -269,6 +287,23 @@ else
     include_directories: includes_dir
   )
 
+  static_library = declare_dependency(
+    link_with:static_library(
+      meson.project_name(), 
+      config_src + lib_src,
+      install: true,
+      dependencies: lib_deps,
+      cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
+      gnu_symbol_visibility: 'hidden',
+      include_directories: includes_dir
+    ),
+    dependencies: lib_deps,
+    link_args: [ 
+    '-lresolv',
+    ],
+    include_directories: includes_dir
+  )
+
   # https://mesonbuild.com/Reference-manual_functions.html#shared_library
   module = shared_library(
     'network', 
@@ -284,13 +319,9 @@ else
 
 endif
 
-static_library(
-  meson.project_name(), 
-  config_src + lib_src,
-  install: true,
-  dependencies: lib_deps,
-  cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-  include_directories: includes_dir
+dynamic_library = declare_dependency(
+  link_with: dynamic,
+  include_directories: includes_dir,
 )
 
 executable(

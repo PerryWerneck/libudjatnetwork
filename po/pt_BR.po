@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: udjathttp 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 17:37-0300\n"
-"PO-Revision-Date: 2025-06-12 17:39-0300\n"
+"POT-Creation-Date: 2025-07-02 22:03-0300\n"
+"PO-Revision-Date: 2025-07-02 22:07-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 
 #: src/library/icmp/state.cc:46
 msgid "Invalid IP"
@@ -64,7 +64,7 @@ msgstr ""
 
 #: src/library/icmp/state.cc:71
 msgid "${name} is not acessible"
-msgstr ""
+msgstr "${name} não está acessível"
 
 #: src/library/icmp/state.cc:72
 msgid ""
@@ -74,19 +74,19 @@ msgstr ""
 
 #: src/library/icmp/state.cc:78
 msgid "Unavailable"
-msgstr ""
+msgstr "Indisponível"
 
 #: src/library/icmp/state.cc:79
 msgid "${name} is not available"
-msgstr ""
+msgstr "${name} não está disponível"
 
 #: src/library/icmp/state.cc:80
 msgid "No ICMP response from host."
-msgstr ""
+msgstr "Nenhuma resposta ICMP do host."
 
 #: src/library/icmp/state.cc:87
 msgid "Network is not reachable"
-msgstr ""
+msgstr "Rede não está acessível"
 
 #: src/library/icmp/state.cc:88
 msgid "The entire network is unreachable."
@@ -106,7 +106,7 @@ msgstr ""
 
 #: src/library/os/linux/defaultgateway.cc:145
 msgid "Error in received packet"
-msgstr ""
+msgstr "Erro no pacote recebido"
 
 #: src/library/os/linux/defaultgateway.cc:195
 msgid "Invalid size on RTA_GATEWAY"
@@ -114,23 +114,23 @@ msgstr ""
 
 #: src/library/dns/linux/state.cc:60
 msgid "Invalid DNS"
-msgstr ""
+msgstr "DNS inválido"
 
 #: src/library/dns/linux/state.cc:61
 msgid "Invalid DNS response"
-msgstr ""
+msgstr "Resposta DNS inválida"
 
 #: src/library/dns/linux/state.cc:62
 msgid "The DNS resolver state is invalid."
-msgstr ""
+msgstr "Estado do resolvedor DNS é inválido."
 
 #: src/library/dns/linux/state.cc:69
 msgid "Not found"
-msgstr ""
+msgstr "Não encontrado"
 
 #: src/library/dns/linux/state.cc:70
 msgid "Cant find ${hostname}"
-msgstr ""
+msgstr "Não encontrei ${hostname}"
 
 #: src/library/dns/linux/state.cc:71
 msgid "Authoritative Answer 'Host not found' response on query for ${hostname}"
@@ -138,7 +138,7 @@ msgstr ""
 
 #: src/library/dns/linux/state.cc:78
 msgid "Try again"
-msgstr ""
+msgstr "Tente novamente"
 
 #: src/library/dns/linux/state.cc:79
 msgid "Host not found/Server Fail"
@@ -151,7 +151,7 @@ msgstr ""
 
 #: src/library/dns/linux/state.cc:87
 msgid "Server failed"
-msgstr ""
+msgstr "Servidor falhou"
 
 #: src/library/dns/linux/state.cc:88
 msgid "Server has failed"
@@ -168,7 +168,7 @@ msgstr ""
 
 #: src/library/dns/linux/state.cc:97
 msgid "No data for ${hostname}"
-msgstr ""
+msgstr "Nenhuma informação para ${hostname}"
 
 #: src/library/dns/linux/state.cc:105
 msgid "DNS Ok"
@@ -176,11 +176,11 @@ msgstr ""
 
 #: src/library/dns/linux/state.cc:106
 msgid "Got ${hostname}"
-msgstr ""
+msgstr "Obtive ${hostname}"
 
 #: src/library/dns/linux/state.cc:107
 msgid "The server was able to resolve ${hostname}"
-msgstr ""
+msgstr "O servidor foi capaz de resolver ${hostname}"
 
 #~ msgid "HTTP operation failed"
 #~ msgstr "Requisição HTTP falhou"
