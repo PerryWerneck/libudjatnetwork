@@ -329,7 +329,6 @@ executable(
   config_src + test_src,
   install: false,
   link_with : [ dynamic, module ],
-  link_args: [ '-l:libudjat-loader.a' ],
   dependencies: [ libudjat ],
   include_directories: includes_dir
 )
