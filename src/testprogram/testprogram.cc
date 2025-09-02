@@ -18,6 +18,17 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/loader.h>
+ 
+ using namespace Udjat;
+
+ int main(int argc, char **argv) {
+	return loader(argc,argv);
+ }
+
+ /*
+ #include <config.h>
 
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
@@ -47,3 +58,4 @@ int main(int argc, char **argv) {
 	return 0;
 
 }
+ */

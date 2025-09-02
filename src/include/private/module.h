@@ -22,8 +22,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/moduleinfo.h>
- #include <udjat/factory.h>
-
+ 
  using namespace std;
 
  extern const Udjat::ModuleInfo moduleinfo;

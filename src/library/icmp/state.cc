@@ -159,7 +159,7 @@
 
 				Object::properties.label = dgettext(GETTEXT_PACKAGE,state.label);
 #else
-				summary = state.summary);
+				summary = state.summary;
 				body = state.body;
 
 				Object::properties.label = state.label;

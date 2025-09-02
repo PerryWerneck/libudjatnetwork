@@ -1,0 +1,189 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <perry.werneck@gmail.com>, 2022.
+# Perry Werneck <perry.werneck@gmail.com>, 2022-2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: udjathttp 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-02 22:03-0300\n"
+"PO-Revision-Date: 2025-07-02 22:07-0300\n"
+"Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
+"Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 3.6\n"
+
+#: src/library/icmp/state.cc:46
+msgid "Invalid IP"
+msgstr "IP inválido"
+
+#: src/library/icmp/state.cc:47
+msgid "${name} address is invalid"
+msgstr "Endereço ${name} é inváido"
+
+#: src/library/icmp/state.cc:48
+msgid "Unable to get a valid IP address for ${name}."
+msgstr "Não foi possível obter um endereço IP válido para ${name}"
+
+#: src/library/icmp/state.cc:54
+msgid "Active"
+msgstr "Ativo"
+
+#: src/library/icmp/state.cc:55
+msgid "${name} is active"
+msgstr "${name} está ativo"
+
+#: src/library/icmp/state.cc:56
+msgid "Got ICMP echo reply from host."
+msgstr "Obtive eco ICMP do host."
+
+#: src/library/icmp/state.cc:62 src/library/icmp/state.cc:86
+msgid "Unreachable"
+msgstr "Inacessível"
+
+#: src/library/icmp/state.cc:63
+msgid "${name} is not reachable"
+msgstr "${name} não está acessível"
+
+#: src/library/icmp/state.cc:64
+msgid ""
+"Destination Unreachable. The gateway doesnt know how to get to the defined "
+"network."
+msgstr ""
+
+#: src/library/icmp/state.cc:70
+msgid "Timeout"
+msgstr ""
+
+#: src/library/icmp/state.cc:71
+msgid "${name} is not acessible"
+msgstr "${name} não está acessível"
+
+#: src/library/icmp/state.cc:72
+msgid ""
+"Time Exceeded. The ICMP request has been discarded because it was 'out of "
+"time'."
+msgstr ""
+
+#: src/library/icmp/state.cc:78
+msgid "Unavailable"
+msgstr "Indisponível"
+
+#: src/library/icmp/state.cc:79
+msgid "${name} is not available"
+msgstr "${name} não está disponível"
+
+#: src/library/icmp/state.cc:80
+msgid "No ICMP response from host."
+msgstr "Nenhuma resposta ICMP do host."
+
+#: src/library/icmp/state.cc:87
+msgid "Network is not reachable"
+msgstr "Rede não está acessível"
+
+#: src/library/icmp/state.cc:88
+msgid "The entire network is unreachable."
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:100
+msgid "Cant get netlink socket"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:124
+msgid "Cant send netlink message"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:138
+msgid "Cant receive netlink response"
+msgstr ""
+
+#: src/library/os/linux/defaultgateway.cc:145
+msgid "Error in received packet"
+msgstr "Erro no pacote recebido"
+
+#: src/library/os/linux/defaultgateway.cc:195
+msgid "Invalid size on RTA_GATEWAY"
+msgstr ""
+
+#: src/library/dns/linux/state.cc:60
+msgid "Invalid DNS"
+msgstr "DNS inválido"
+
+#: src/library/dns/linux/state.cc:61
+msgid "Invalid DNS response"
+msgstr "Resposta DNS inválida"
+
+#: src/library/dns/linux/state.cc:62
+msgid "The DNS resolver state is invalid."
+msgstr "Estado do resolvedor DNS é inválido."
+
+#: src/library/dns/linux/state.cc:69
+msgid "Not found"
+msgstr "Não encontrado"
+
+#: src/library/dns/linux/state.cc:70
+msgid "Cant find ${hostname}"
+msgstr "Não encontrei ${hostname}"
+
+#: src/library/dns/linux/state.cc:71
+msgid "Authoritative Answer 'Host not found' response on query for ${hostname}"
+msgstr ""
+
+#: src/library/dns/linux/state.cc:78
+msgid "Try again"
+msgstr "Tente novamente"
+
+#: src/library/dns/linux/state.cc:79
+msgid "Host not found/Server Fail"
+msgstr ""
+
+#: src/library/dns/linux/state.cc:80
+msgid ""
+"Non-Authoritative Host not found, or SERVERFAIL on query for ${hostname}"
+msgstr ""
+
+#: src/library/dns/linux/state.cc:87
+msgid "Server failed"
+msgstr "Servidor falhou"
+
+#: src/library/dns/linux/state.cc:88
+msgid "Server has failed"
+msgstr ""
+
+#: src/library/dns/linux/state.cc:89
+msgid ""
+"Non recoverable errors, FORMERR, REFUSED, NOTIMP on query for ${hostname}"
+msgstr ""
+
+#: src/library/dns/linux/state.cc:96
+msgid "No data"
+msgstr ""
+
+#: src/library/dns/linux/state.cc:97
+msgid "No data for ${hostname}"
+msgstr "Nenhuma informação para ${hostname}"
+
+#: src/library/dns/linux/state.cc:105
+msgid "DNS Ok"
+msgstr ""
+
+#: src/library/dns/linux/state.cc:106
+msgid "Got ${hostname}"
+msgstr "Obtive ${hostname}"
+
+#: src/library/dns/linux/state.cc:107
+msgid "The server was able to resolve ${hostname}"
+msgstr "O servidor foi capaz de resolver ${hostname}"
+
+#~ msgid "HTTP operation failed"
+#~ msgstr "Requisição HTTP falhou"
+
+#~ msgid "Invalid or unsupported http verb"
+#~ msgstr "Verbo HTTP inválido ou não suportado"
