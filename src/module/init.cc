@@ -47,7 +47,7 @@
 		NicFactory() : Factory("network-interface") {
 		}
 
-		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &, const pugi::xml_node &node) const override {
+		std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override {
 			return Nic::Agent::Factory(node);
 		}
 
@@ -59,7 +59,7 @@
 		HostFactory() : Factory("network-host") {
 		}
 
-		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &, const pugi::xml_node &node) const override{
+		std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override{
 			return IP::Agent::Factory(node);
 		}
 
