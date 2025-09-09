@@ -20,42 +20,14 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/loader.h>
- 
+ #include <udjat/module/abstract.h>
+
  using namespace Udjat;
 
  int main(int argc, char **argv) {
-	return loader(argc,argv);
+
+	return loader(argc,argv, [](Application &app) -> int {
+		return run_unit_test("");
+	});
  }
 
- /*
- #include <config.h>
-
- #include <udjat/tools/systemservice.h>
- #include <udjat/tools/application.h>
- #include <udjat/agent.h>
- #include <udjat/factory.h>
- #include <udjat/module.h>
- #include <iostream>
- #include <memory>
- #include <udjat/tools/logger.h>
- #include <udjat/net/ip/subnet.h>
-
- using namespace std;
- using namespace Udjat;
-
-//---[ Implement ]------------------------------------------------------------------------------------------
-
-int main(int argc, char **argv) {
-
-	Logger::verbosity(9);
-	Logger::console(true);
-	Logger::redirect();
-
-	udjat_module_init();
-
-	Application{}.run(argc,argv,"./test.xml");
-
-	return 0;
-
-}
- */

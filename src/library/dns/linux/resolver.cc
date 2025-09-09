@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/net/dns.h>
+ #include <errno.h>
  #include <cstring>
  #include <netdb.h>
  #include <iostream>
@@ -31,6 +32,39 @@
  namespace Udjat {
 
 	mutex DNS::Resolver::guard;
+
+	int UDJAT_API DNS::wait(const char *hostname, time_t timeout, time_t interval) {
+
+		try {
+
+			time_t limit = time(nullptr) + timeout;
+
+			while(time(nullptr) < limit) {
+
+				DNS::Resolver resolver;
+				resolver.query(hostname);
+
+				if(!resolver.empty()) {
+					return 0;
+				}
+
+				sleep(interval);
+
+			}
+
+
+		} catch(system_error &e) {
+			Logger::String{"Error resolving ",hostname,": ",e.what()}.trace();
+			return e.code().value();
+		} catch(const exception &e) {
+			Logger::String{"Unexpected error resolving ",hostname,": ",e.what()}.trace();
+			return -1;
+		}
+
+		return ETIMEDOUT;
+
+	}
+
 
 	DNS::Exception::Exception(int code) : runtime_error{hstrerror(code)}, err{code} {
 	}
@@ -78,7 +112,7 @@
 	}
 
 	/// @brief Run DNS query.
-	DNS::Resolver & DNS::Resolver::query(ns_class cls, ns_type type, const char *name) {
+	DNS::Resolver & DNS::Resolver::query(ns_class cls, ns_type type, const char *name, bool except) {
 
 		debug("Resolving '",name,"'");
 
@@ -95,7 +129,11 @@
 		int szResponse = res_nquery(&this->state, name, cls, type, query_buffer, sizeof(query_buffer));
 
 		if (szResponse < 0) {
-			throw DNS::Exception(h_errno);
+			if(except) {
+				throw DNS::Exception(h_errno);
+			}
+			records.clear();
+			return *this;
 		}
 
 		ns_msg	msg;

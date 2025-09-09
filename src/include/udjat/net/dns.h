@@ -32,6 +32,13 @@
 
 	namespace DNS {
 
+		/// @brief Wait for hostname resolution.
+		/// @param hostname The hostname to resolve.
+		/// @param timeout Timeout in seconds.
+		/// @param interval Interval in seconds between retries.
+		/// @return 0 on success, error code otherwise.
+		int UDJAT_API wait(const char *hostname, time_t timeout = 60, time_t interval = 5);
+
 		class Exception : public std::runtime_error {
 		private:
 			int err;

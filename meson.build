@@ -20,8 +20,8 @@
 project(
 	'udjatnetwork', 
 	['cpp'],
-	version: '1.3.0',
-	default_options : ['c_std=c11', 'cpp_std=c++17'],
+	version: '1.3.1',
+	default_options : ['cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
 
@@ -63,25 +63,15 @@ if time_epoch == ''
   time_epoch = run_command('date','+%Y%m%d', check: true).stdout().strip()
 endif
 
-compiler_flags = [
+add_project_arguments(cxx.get_supported_arguments([
   '-ggdb3',
   '-fvisibility=hidden',
   '-fPIC',
   '-DHAVE_CONFIG_H=1',
+  '-Wno-overloaded-virtual',
   '-DBUILD_DATE='+time_epoch,
-]
-
-if enable_debug
-  compiler_flags += [
-	  '-DDEBUG=1'
-  ]
-else
-  compiler_flags += [
-	'-DNDEBUG=1'
-  ]
-endif
-
-add_project_arguments(cxx.get_supported_arguments(compiler_flags), language: 'cpp')
+  get_option('buildtype').contains('debug') ? '-DDEBUG=1' : '-DNDEBUG=1',
+]), language: 'cpp')
 
 #
 # Configuration
@@ -94,7 +84,7 @@ app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 
-app_conf.set_quoted('LOG_DOMAIN', 'http')
+app_conf.set_quoted('LOG_DOMAIN', 'network')
 
 app_conf.set('PRODUCT_NAME', libudjat.get_variable('product_name'))
 app_conf.set('PRODUCT_VERSION', libudjat.version())
@@ -125,6 +115,7 @@ lib_src = [
   'src/library/nic/factory.cc',
   'src/library/nic/list.cc',
   'src/library/range.cc',
+  'src/library/testprogram.cc',
 ]
 
 module_src = [
