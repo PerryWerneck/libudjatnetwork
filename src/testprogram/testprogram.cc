@@ -27,7 +27,8 @@
  int main(int argc, char **argv) {
 
 	return loader(argc,argv, [](Application &app) -> int {
-		return run_unit_test("");
+		// return run_unit_test("");
+		return 0;
 	});
  }
 

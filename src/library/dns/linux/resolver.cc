@@ -35,6 +35,8 @@
 
 	int UDJAT_API DNS::wait(const char *hostname, time_t timeout, time_t interval) {
 
+		Logger::String{"Waiting for hostname ",hostname," to resolve..."}.trace();
+
 		try {
 
 			time_t limit = time(nullptr) + timeout;
@@ -42,9 +44,12 @@
 			while(time(nullptr) < limit) {
 
 				DNS::Resolver resolver;
-				resolver.query(hostname);
+
+				debug("Trying to resolve ",hostname);
+				resolver.query(hostname,false);
 
 				if(!resolver.empty()) {
+					Logger::String{"Hostname ",hostname," resolved to ",resolver.size()," records."}.trace();
 					return 0;
 				}
 
@@ -61,6 +66,7 @@
 			return -1;
 		}
 
+		Logger::String{"Timeout waiting for hostname ",hostname," to resolve."}.trace();
 		return ETIMEDOUT;
 
 	}
