@@ -34,11 +34,21 @@
 	debug("--------------------------------------------------------------------");
 	{
 		DNS::Resolver resolver;
+
+		if(resolver.wait("localhost",10,1)) {
+			Logger::String{"Failed to resolve localhost"}.error();
+			return -1;
+		}
+
+		if(resolver.wait("invalid_host.invalid",5,1) != ETIMEDOUT) {
+			Logger::String{"Got unexpected response resolving invalid_host.invalid"}.error();
+			return -1;
+		}
+
+		/*
 		resolver.query("localhost",true);
 
 		if(resolver.empty()) {
-			Logger::String{"Failed to resolve localhost"}.error();
-			return -1;
 		}
 
 		Logger::String{"Resolved localhost to ", resolver.size(), " records."}.info();
@@ -51,6 +61,7 @@
 		}
 
 		DNS::wait("localhost.invalid");
+		*/
 
 	}
 	debug("--------------------------------------------------------------------");

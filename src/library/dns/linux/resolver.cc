@@ -34,8 +34,14 @@
 	mutex DNS::Resolver::guard;
 
 	int UDJAT_API DNS::wait(const char *hostname, time_t timeout, time_t interval) {
+		return DNS::Resolver{}.wait(hostname,timeout,interval);
+	}
+	
+	int UDJAT_API DNS::Resolver::wait(const char *hostname, time_t timeout, time_t interval) {
 
 		Logger::String{"Waiting for hostname ",hostname," to resolve..."}.trace();
+
+		records.clear();
 
 		try {
 
@@ -43,13 +49,11 @@
 
 			while(time(nullptr) < limit) {
 
-				DNS::Resolver resolver;
-
 				debug("Trying to resolve ",hostname);
-				resolver.query(hostname,false);
+				query(hostname,false);
 
-				if(!resolver.empty()) {
-					Logger::String{"Hostname ",hostname," resolved to ",resolver.size()," records."}.trace();
+				if(!empty()) {
+					Logger::String{"Hostname ",hostname," resolved to ",size()," records."}.trace();
 					return 0;
 				}
 

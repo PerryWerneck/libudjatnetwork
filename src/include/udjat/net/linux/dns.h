@@ -31,7 +31,6 @@
 
 	namespace DNS {
 
-
 		class Resolver;
 
 		/// @brief DNS Record
@@ -103,6 +102,18 @@
 			Resolver();
 			Resolver(const struct sockaddr_storage &server);
 			~Resolver();
+
+			/// @brief Wait for a hostname to resolve.
+			/// @note This function clears any previous query results.
+			/// @param hostname The hostname to resolve. 
+			/// @param timeout Timeout in seconds.
+			/// @param interval Interval between retries in seconds.
+			/// @return 0 on success, non zero on failure or timeout.
+			/// @see DNS::wait()
+			/// @retval 0 Hostname resolved.
+			/// @retval ETIMEDOUT Timeout reached.
+			/// @retval -1 Unexpected error.
+			int wait(const char *hostname, time_t timeout = 60, time_t interval = 5);
 
 			inline std::vector<Record>::const_iterator begin() const {
 				return records.begin();
