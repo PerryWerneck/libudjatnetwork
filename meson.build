@@ -93,7 +93,10 @@ if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
   app_conf.set('HAVE_UNISTD_H', 1)
 endif
 
-includes_dir = include_directories('src/include')
+includes_dir = include_directories(
+  'src/include',
+  'src/include/os/' + host_machine.system().to_lower(),
+)
 
 #
 # Sources
@@ -324,19 +327,11 @@ executable(
   include_directories: includes_dir
 )
 
-install_headers(
-  'src/include/udjat/net/dns.h',
+install_headers( 
   'src/include/udjat/net/gateway.h',
-  'src/include/udjat/net/icmp.h',
-  'src/include/udjat/net/' + host_machine.system() + '/dns.h',
-  'src/include/udjat/net/' + host_machine.system() + '/icmp.h',
+  'src/include/os/' + host_machine.system() + '/udjat/net/dns.h',
+  'src/include/os/' + host_machine.system() + '/udjat/net/icmp.h',
   subdir: 'udjat/net'  
-)
-
-install_headers(
-  'src/include/udjat/net/' + host_machine.system() + '/dns.h',
-  'src/include/udjat/net/' + host_machine.system() + '/icmp.h',
-  subdir: 'udjat/net/' + host_machine.system()
 )
 
 install_headers(

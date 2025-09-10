@@ -21,8 +21,11 @@
 
  #include <udjat/defs.h>
  #include <pugixml.hpp>
- #include <udjat/net/ip/address.h>
  #include <udjat/win32/handler.h>
+
+ #include <iostream>
+ #include <udjat/net/ip/address.h>
+ #include <udjat/agent/state.h>
 
  namespace Udjat {
 
@@ -49,6 +52,39 @@
 
 		};
 
+		UDJAT_API Response ResponseFactory(const char *name);
+
+		class UDJAT_API State : public Abstract::State {
+		public:
+			const ICMP::Response id;
+
+			State(const pugi::xml_node &node, const ICMP::Response i) : Abstract::State{node}, id{i} {
+			}
+
+			State(const char *name, const Level level, const ICMP::Response i)
+				: Abstract::State{name,level}, id{i} {
+			}
+
+			State(const char *name, const Level level, const char *summary, const char *body, const ICMP::Response i)
+				: Abstract::State{name,level,summary,body}, id{i} {
+			}
+
+			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const ICMP::Response id);
+
+		};
+
 	}
 
  }
+
+ namespace std {
+
+	UDJAT_API const char * to_string(const Udjat::ICMP::Response response);
+
+	inline ostream & operator<< (ostream& os, const Udjat::ICMP::Response response) {
+		return os << ((const char *) to_string(response));
+	}
+
+ }
+

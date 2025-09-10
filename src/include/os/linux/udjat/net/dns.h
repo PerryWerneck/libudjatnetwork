@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -20,6 +20,8 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/agent/state.h>
+ #include <stdexcept>
  #include <resolv.h>
  #include <arpa/nameser.h>
  #include <mutex>
@@ -146,6 +148,42 @@
 			inline Resolver & query(const char *name, bool except = true) {
 				return query(ns_c_in, ns_t_a, name, except);
 			}
+
+		};
+
+		/// @brief Wait for hostname resolution.
+		/// @param hostname The hostname to resolve.
+		/// @param timeout Timeout in seconds.
+		/// @param interval Interval in seconds between retries.
+		/// @return 0 on success, error code otherwise.
+		/// @retval 0 Hostname resolved.
+		/// @retval ETIMEDOUT Timeout reached.
+		/// @retval -1 Unexpected error.
+		int UDJAT_API wait(const char *hostname, time_t timeout = 60, time_t interval = 5);
+
+		class Exception : public std::runtime_error {
+		private:
+			int err;
+
+		public:
+			Exception(int c);
+
+			inline int code() const noexcept {
+				return err;
+			}
+
+
+		};
+
+		class UDJAT_API State : public Udjat::State<int> {
+		public:
+
+			State(const int code);
+			State(const pugi::xml_node &node, const int code);
+
+			// static std::shared_ptr<State> Factory(const pugi::xml_node &node, const int code);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const pugi::xml_node &node);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const int code);
 
 		};
 
