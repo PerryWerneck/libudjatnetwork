@@ -55,7 +55,7 @@ install: build
 	DESTDIR=$(PWD)/debian/$(PACKAGE_NAME)-dev meson install -C .build --tags devel
 
 	# Install module
-	DESTDIR=$(PWD)/debian/udjat-module-http meson install -C .build --tags module
+	DESTDIR=$(PWD)/debian/udjat-module-network meson install -C .build --tags module
   
 	# --- end custom part for installing
 
