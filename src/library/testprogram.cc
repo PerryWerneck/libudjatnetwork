@@ -28,7 +28,7 @@
  using namespace std;
 
  #ifdef DEBUG 
- UDJAT_API int run_unit_test(const char *name) {
+ UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	// Test valid hostname resolution
 	debug("--------------------------------------------------------------------");
