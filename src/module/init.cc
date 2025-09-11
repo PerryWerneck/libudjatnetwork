@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <private/module.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <unistd.h>
  #include <sys/types.h>
  #include <udjat/moduleinfo.h>
