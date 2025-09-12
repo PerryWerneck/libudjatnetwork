@@ -118,6 +118,7 @@ lib_src = [
   'src/library/nic/factory.cc',
   'src/library/nic/list.cc',
   'src/library/range.cc',
+  'src/library/module.cc',
   'src/library/testprogram.cc',
 ]
 
@@ -346,6 +347,11 @@ install_headers(
   'src/include/udjat/net/ip/state.h',
   'src/include/udjat/net/ip/subnet.h',
   subdir: 'udjat/net'  
+)
+
+install_headers(
+  'src/include/udjat/module/network.h',
+  subdir: 'udjat/module'  
 )
 
 

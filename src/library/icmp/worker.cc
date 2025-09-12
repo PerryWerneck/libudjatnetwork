@@ -25,17 +25,54 @@
  #ifdef _WIN32
 	#include <private/windows/icmp_controller.h>
  #else
+	#include <linux/capability.h>
+	#include <sys/syscall.h>
 	#include <private/linux/icmp_controller.h>
  #endif // _WIN32
 
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H	
+
  namespace Udjat {
 
+	static void check_capabilities(const char *name) {
+
+#ifndef _WIN32
+		if(getuid()) {
+
+			// Non root, do we have CAP_NET_RAW
+			struct __user_cap_header_struct caphdr = {
+				.version=_LINUX_CAPABILITY_VERSION_3,
+				.pid=0,
+			};
+
+			struct __user_cap_data_struct cap[_LINUX_CAPABILITY_U32S_3];
+
+			if (!syscall(SYS_capget,&caphdr,cap)) {
+
+				if (cap[CAP_TO_INDEX(CAP_NET_RAW)].effective&CAP_TO_MASK(CAP_NET_RAW)) {
+					Logger::String{"Running as user with CAP_NET_RAW capability"}.warning(name);
+				} else {
+					Logger::String{"Running as user without CAP_NET_RAW capability"}.trace(name);
+				}
+
+			}
+
+		}
+#endif // _WIN32
+
+	}
+
 	ICMP::Worker::Worker(time_t timeout, time_t interval) : timers{timeout,interval} {
+		check_capabilities("icmp");
 	}
 
 	ICMP::Worker::Worker(const pugi::xml_node &node, const char *addr)
 		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
 
+		check_capabilities(String{node,"name","icmp"}.c_str());
+		
 		if(addr && *addr) {
 			IP::Address::set(addr);
 		} else {
