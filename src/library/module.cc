@@ -37,9 +37,11 @@
 		class NicFactory : public Udjat::Abstract::Agent::Factory {
 		public:
 			NicFactory() : Factory("network-interface") {
+				debug("---> Network::Module::NicFactory()");
 			}
 
 			std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override {
+				debug("Building Nic::Agent '",String{node,"name"}.c_str(),"' from XML");
 				return Nic::Agent::Factory(node);
 			}
 
@@ -49,9 +51,11 @@
 		class HostFactory : public Udjat::Abstract::Agent::Factory {
 		public:
 			HostFactory() : Factory("network-host") {
+				debug("---> Network::Module::HostFactory()");
 			}
 
 			std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override{
+				debug("Building IP::Agent '",String{node,"name"}.c_str(),"' from XML");
 				return IP::Agent::Factory(node);
 			}
 
@@ -65,6 +69,7 @@
 		public:
 
 			Module(const char *name) : Udjat::Module(name,moduleinfo) {
+				debug("---> Network::Module::Module()");
 			};
 
 			~Module() override {
