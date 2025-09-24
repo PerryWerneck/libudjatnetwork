@@ -47,7 +47,13 @@ subdir('po')
 # Required libraries
 #
 # libresolv, resolv.h?
-libudjat = dependency('libudjat')
+libudjat = dependency(
+  'libudjat',
+  required: true, 
+  version: '>=2.0.0',
+  fallback: ['libudjat', 'static_library'],
+)
+
 lib_deps = [
   libudjat,
 ]

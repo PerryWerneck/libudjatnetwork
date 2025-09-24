@@ -17,15 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #define LOG_DOMAIN "network"
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/module/abstract.h>
  #include <udjat/module/network.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/tools/actions/abstract.h>
  #include <udjat/net/ip/agent.h>
  #include <udjat/net/nic/agent.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
+ #include <udjat/net/dns.h>
+ #include <memory>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -48,15 +55,82 @@
 		};
 
 		/// @brief IP based agents factory.
-		class HostFactory : public Udjat::Abstract::Agent::Factory {
+		class HostFactory : public Udjat::Abstract::Agent::Factory, public Udjat::Action::Factory {
 		public:
-			HostFactory() : Factory("network-host") {
+			HostFactory() : Abstract::Agent::Factory("network-host"), Action::Factory("wait-for-host") {
 				debug("---> Network::Module::HostFactory()");
 			}
 
 			std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override{
 				debug("Building IP::Agent '",String{node,"name"}.c_str(),"' from XML");
 				return IP::Agent::Factory(node);
+			}
+
+			std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override {
+
+				class WaitForHost : public Action {
+				private:
+					const char *hostname;
+					time_t timeout;
+					time_t interval;
+
+				public:
+					WaitForHost(const XML::Node &node) 
+					: Action{node}, hostname{String{node,"host"}.as_quark()}, timeout{node.attribute("timeout").as_uint(120)},
+						 interval{node.attribute("interval").as_uint(5)} {
+
+						if(!(hostname && *hostname)) {
+							throw std::runtime_error("Required attribute 'host' is missing or empty.");
+						}
+
+					}
+					
+					~WaitForHost() override {
+					}
+
+					int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
+
+						response["host"] = hostname;
+
+						try {
+
+							int status = DNS::Resolver{}.wait(hostname,timeout,interval);
+							response["reachable"] = status;
+
+						} catch(const std::exception &e) {
+
+							response.failed(e);
+
+							if(except) {
+								throw;
+							}
+
+							return -1;
+
+						}
+
+						return 0;
+					}
+
+					bool activate() noexcept override {
+
+						Logger::String{"Waiting for host '",hostname,"'..."}.trace();
+					
+						DNS::Resolver resolver;
+
+						if(resolver.wait(hostname,timeout,interval) == 0) {
+							Logger::String{"Host '",hostname,"' is reachable."}.info();
+						} else {
+							Logger::String{"Timeout reached waiting for host '",hostname,"'."}.warning();
+							return false;
+						}
+
+						return true;
+					}
+				};
+
+				return make_shared<WaitForHost>(node);
+
 			}
 
 		};
@@ -89,106 +163,4 @@
 
 
  }
-
-
- 
- /*
- #include <config.h>
- #include <private/module.h>
- #include <udjat/module/abstract.h>
- #include <unistd.h>
- #include <sys/types.h>
- #include <udjat/moduleinfo.h>
- #include <udjat/agent/abstract.h>
-
- #include <udjat/net/ip/agent.h>
- #include <udjat/net/nic/agent.h>
-
- #ifndef _WIN32
-	#include <linux/capability.h>
-	#include <sys/syscall.h>
- #endif // _WIN32
-
- using namespace Udjat;
- using Factory = Udjat::Abstract::Agent::Factory;
-
- static const ModuleInfo moduleinfo{ "Network monitor" };
-
- /// @brief Register udjat module.
- Udjat::Module * udjat_module_init() {
-
-	/// @brief Nic agent factor.
-	class NicFactory : public Factory {
-	public:
-		NicFactory() : Factory("network-interface") {
-		}
-
-		std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override {
-			return Nic::Agent::Factory(node);
-		}
-
-	};
-
-	/// @brief IP based agents factory.
-	class HostFactory : public Factory {
-	public:
-		HostFactory() : Factory("network-host") {
-		}
-
-		std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override{
-			return IP::Agent::Factory(node);
-		}
-
-	};
-
-	class Module : public Udjat::Module {
-	private:
-		HostFactory hFactory;
-		NicFactory nFactory;
-
-	public:
-
-		Module() : Udjat::Module("network",moduleinfo) {
-		};
-
-		~Module() {
-		};
-
-	};
-
-#ifndef _WIN32
-	if(getuid()) {
-
-		// Non root, do we have CAP_NET_RAW
-		struct __user_cap_header_struct caphdr = {
-			.version=_LINUX_CAPABILITY_VERSION_3,
-			.pid=0,
-		};
-
-		struct __user_cap_data_struct cap[_LINUX_CAPABILITY_U32S_3];
-
-		if (!syscall(SYS_capget,&caphdr,cap)) {
-
-			if (cap[CAP_TO_INDEX(CAP_NET_RAW)].effective&CAP_TO_MASK(CAP_NET_RAW)) {
-
-				cout << "network\tRunning as user with CAP_NET_RAW capability." << endl;
-
-			} else {
-
-#ifdef DEBUG
-				cerr << "module\tThis module requires root privileges or CAP_NET_RAW capability." << endl;
-#else
-				throw runtime_error("This module requires root privileges or CAP_NET_RAW capability.");
-#endif // DEBUG
-			}
-
-		}
-
-	}
-#endif // _WIN32
-
-	return new Module();
- }
- */
-
 

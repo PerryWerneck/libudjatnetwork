@@ -53,7 +53,7 @@
 				query(hostname,false);
 
 				if(!empty()) {
-					Logger::String{"Hostname ",hostname," resolved to ",size()," records."}.trace();
+						Logger::String{"Hostname ",hostname," resolved to ",size()," records."}.trace();
 					return 0;
 				}
 
