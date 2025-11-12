@@ -26,6 +26,7 @@
  #include <udjat/net/dns.h>
  #include <udjat/net/dns/agent.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/string.h>
  #include <iostream>
 
 #ifndef _WIN32
@@ -40,10 +41,8 @@
 	}
 
 	DNS::Agent::Agent(const pugi::xml_node &node) : IP::Agent{node} {
-
-		server.name = getAttribute(node,"dns","");
-		hostname = getAttribute(node,"hostname","");
-
+		server.name = String(node,"dns","").as_quark();
+		hostname = String(node,"hostname","").as_quark();
 	}
 
 	std::shared_ptr<Abstract::State> DNS::Agent::computeState() {
@@ -70,7 +69,7 @@
 
 	std::shared_ptr<Abstract::State> DNS::Agent::StateFactory(const pugi::xml_node &node) {
 
-		if(Object::getAttribute(node,"dns-state")) {
+		if(node.attribute("dns-state")) {
 			auto state = DNS::State::Factory(*this,node);
 			states.push_back(state);
 			return state;

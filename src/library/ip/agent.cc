@@ -66,13 +66,13 @@
 
 	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const pugi::xml_node &node) {
 
-		if(Object::getAttribute(node,"icmp-response")) {
+		if(node.attribute("icmp-response")) {
 			auto state = ICMP::State::Factory(node);
 			icmp.states.push_back(state);
 			return state;
 		}
 
-		if(Object::getAttribute(node,"subnet")) {
+		if(node.attribute("subnet")) {
 			auto state = IP::State::Factory(node);
 			ip.states.push_back(state);
 			return state;

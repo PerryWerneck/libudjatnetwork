@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/net/icmp.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/string.h>
 
  #ifdef _WIN32
 	#include <private/windows/icmp_controller.h>
