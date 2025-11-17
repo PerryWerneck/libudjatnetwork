@@ -110,7 +110,7 @@ AS_VAR_POPDEF([CACHEVAR])dnl
 AX_CHECK_COMPILE_FLAG([-std=c++1z], [CPPFLAGS="$CPPFLAGS -std=c++1z"], [app_cv_c17=no])
 
 if test "$app_cv_c17" == "no"; then
-	AX_CHECK_COMPILE_FLAG([-std=c++11], [CPPFLAGS="$CPPFLAGS -std=c++11 -DLIBUDJAT_LEGACY=1"], [app_cv_c11=no])
+	AX_CHECK_COMPILE_FLAG([-std=c++11], [CPPFLAGS="$CPPFLAGS -std=c++11 -DLEGACY_BUILD=1"], [app_cv_c11=no])
 fi
 
 dnl ---------------------------------------------------------------------------
@@ -229,7 +229,6 @@ PKG_CHECK_MODULES(PUGIXML, pugixml, AC_DEFINE(HAVE_PUGIXML,[],[Do we have PUGIXM
 
 AC_SUBST(PUGIXML_LIBS)
 AC_SUBST(PUGIXML_CFLAGS)
-
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.
