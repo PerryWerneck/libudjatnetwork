@@ -50,7 +50,7 @@ dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
 
-CFLAGS="$CFLAGS -I$ac_pwd/src/include"
+CPPFLAGS="$CPPFLAGS -I$ac_pwd/src/include"
 
 case "$host" in
 	*-mingw32)
@@ -66,7 +66,7 @@ case "$host" in
 		;;
 
  	*)
-		CFLAGS="$CFLAGS -pthread"
+		CPPFLAGS="$CPPFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread"
 		DLL_LDFLAGS="-shared"
 		AC_SUBST(LIBEXT,.so)

@@ -71,7 +71,8 @@ DEPENDS= \
 	Makefile
 
 CFLAGS= \
-	@CXXFLAGS@ \
+	@CPPFLAGS@ \
+	-Isrc/include/os/@OSNAME@ \
 	-Isrc/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
 	@UDJAT_CFLAGS@ \
