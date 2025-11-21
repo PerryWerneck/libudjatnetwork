@@ -27,6 +27,10 @@
  #include <arpa/nameser.h>
  #include <resolv.h>
 
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif
+
  using namespace std;
 
  namespace Udjat {
