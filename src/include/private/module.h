@@ -21,11 +21,8 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/moduleinfo.h>
  
  using namespace std;
-
- extern const Udjat::ModuleInfo moduleinfo;
 
  namespace Udjat {
 

@@ -36,8 +36,6 @@
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo{ "Network module" };
-	
 	Udjat::Module * Network::Module::Factory(const char *name) {
 
 		/// @brief Nic agent factor.
@@ -142,7 +140,7 @@
 
 		public:
 
-			Module(const char *name) : Udjat::Module(name,moduleinfo) {
+			Module(const char *name) : Udjat::Module(name,PACKAGE_DESCRIPTION) {
 				debug("---> Network::Module::Module()");
 			};
 
@@ -155,7 +153,7 @@
 
 	}
 
-	Network::Module::Module(const char *name) : Udjat::Module{name,moduleinfo} {
+	Network::Module::Module(const char *name) : Udjat::Module{name,PACKAGE_DESCRIPTION} {
 	}
 
 	Network::Module::~Module() {

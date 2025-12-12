@@ -22,7 +22,6 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/module/abstract.h>
- #include <udjat/module/info.h>
  #include <memory>
 
  namespace Udjat {
