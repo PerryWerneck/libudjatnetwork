@@ -12,10 +12,10 @@ Provides: libudjatnetwork (= ${binary:Version})
 Description: Udjat core library.
  Udjat core library.
 
-Package: udjat-module-http
+Package: udjat-module-network
 Architecture: any
 Section: libs
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, libudjatnetwork (= ${binary:Version}), ${shlibs:Depends}
 Description: Udjat core library.
  Udjat core library.
 

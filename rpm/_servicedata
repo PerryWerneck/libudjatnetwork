@@ -1,0 +1,4 @@
+<servicedata>
+<service name="tar_scm">
+                <param name="url">https://github.com/PerryWerneck/libudjatnetwork</param>
+              <param name="changesrevision">c641ed15a5b23460787207691400e0557f474d9b</param></service></servicedata>

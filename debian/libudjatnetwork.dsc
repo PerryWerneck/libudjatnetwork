@@ -1,6 +1,6 @@
 Format: 1.0
 Source: libudjatnetwork
-Version: 2.0.1+git20250704
+Version: 1.3.2+git20251212
 Binary: libudjatnetwork
 Maintainer: Perry Werneck <perry.werneck@gmail.com>
 Architecture: any

@@ -19,7 +19,7 @@
 
 Summary:		Network library for %{udjat_product_name}  
 Name:			libudjat%{module_name}
-Version: 1.3.2
+Version:		1.3.2+git20251212
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
@@ -90,11 +90,11 @@ C++ Network classes for use with lib%{product_name}
 
 %dir %{_includedir}/udjat/net
 %dir %{_includedir}/udjat/net/dns
-%dir %{_includedir}/udjat/net/linux
+%dir %{_includedir}/udjat/module
 
 %{_includedir}/udjat/net/*.h
 %{_includedir}/udjat/net/dns/*.h
-%{_includedir}/udjat/net/linux/*.h
+%{_includedir}/udjat/module/*.h
 
 %post -n %{udjat_library} -p /sbin/ldconfig
 
