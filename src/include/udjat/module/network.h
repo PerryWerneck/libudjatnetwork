@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,13 +17,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
+
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/module/network.h>
+ #include <udjat/module/abstract.h>
+ #include <memory>
 
- /// @brief Register udjat module.
- Udjat::Module * udjat_module_init() {
-	return Udjat::Network::Module::Factory();
+ namespace Udjat {
+
+	namespace Network {
+
+		/// @brief Generic network module.
+		class UDJAT_API Module : public Udjat::Module {			
+		public:
+
+			static Udjat::Module * Factory(const char *name = "http");
+
+			Module(const char *name);
+			virtual ~Module();
+
+		};
+
+	}
+
  }
-
-

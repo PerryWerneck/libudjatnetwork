@@ -31,6 +31,7 @@
 
 	std::shared_ptr<Abstract::Agent> IP::Agent::Factory(const pugi::xml_node &node) {
 
+		
 		switch(String{node,"type","host"}.select("host","default-gateway",nullptr)) {
 		case 0:	// IP based host
 			return make_shared<Udjat::IP::Agent>(node);

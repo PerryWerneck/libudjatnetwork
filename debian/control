@@ -1,0 +1,35 @@
+Source: libudjatnetwork
+Section: unknown
+Priority: optional
+Maintainer: Perry Werneck <perry.werneck@gmail.com>
+Build-Depends: debhelper (>= 7), meson, pkg-config, libudjat2-dev
+
+Package: libudjatnetwork
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Provides: libudjatnetwork (= ${binary:Version})
+Description: Udjat core library.
+ Udjat core library.
+
+Package: udjat-module-network
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, libudjatnetwork (= ${binary:Version}), ${shlibs:Depends}
+Description: Udjat core library.
+ Udjat core library.
+
+Package: libudjatnetwork-dev
+Architecture: any
+Provides: libudjatnetwork-dev (= ${binary:Version})
+Section: libdevel
+Depends: ${misc:Depends}, pkg-config, libudjatnetwork (= ${binary:Version})
+Description: Libudjat development files.
+ Development headers for libudjatnetwork
+
+Package: libudjatnetwork-dbg
+Architecture: any
+Depends: libudjatnetwork (= ${binary:Version})
+Description: Debugging symbols for libudjatnetwork
+ This package contains the debugging symbols for libudjatnetwork.
+

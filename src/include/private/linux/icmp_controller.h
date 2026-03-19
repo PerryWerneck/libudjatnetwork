@@ -50,14 +50,19 @@
 
 		struct Host {
 
+#if __cplusplus >= 201703L			
 			ICMP::Worker &worker;
+			Host(ICMP::Worker &worker);
+#else
+			std::shared_ptr<ICMP::Worker> worker;
+			Host(std::shared_ptr<ICMP::Worker>worker);
+#endif // C++17
+
 			uint16_t id;
 
 			time_t timeout;
 			uint16_t packets = 0;
 			time_t next = 0;
-
-			Host(ICMP::Worker &h);
 
 			bool onTimer();
 			void send() noexcept;

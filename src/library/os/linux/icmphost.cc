@@ -24,12 +24,22 @@
 
  namespace Udjat {
 
+#if __cplusplus >= 201703L			
 	ICMP::Controller::Host::Host(ICMP::Worker &w) : worker{w} {
 		static uint16_t id = 0;
 		this->id = id++;
 		timeout = time(0) + worker.interval();
 		send();
 	}
+#else
+	ICMP::Controller::Host::Host(std::shared_ptr<ICMP::Worker> &w) {
+		worker = w;
+		static uint16_t id = 0;
+		this->id = id++;
+		timeout = time(0) + worker.interval();
+		send();
+	}
+#endif // C++17
 
 	bool ICMP::Controller::Host::onTimer() {
 

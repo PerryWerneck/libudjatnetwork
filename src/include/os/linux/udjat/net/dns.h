@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -20,6 +20,8 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/agent/state.h>
+ #include <stdexcept>
  #include <resolv.h>
  #include <arpa/nameser.h>
  #include <mutex>
@@ -31,30 +33,19 @@
 
 	namespace DNS {
 
-		/*
-		enum Response : int8_t {
-
-			/// @brief DNS in invalid state.
-			invalid	= -1,
-
-			/// @brief Authoritative Answer Host not found.
-			not_found = HOST_NOT_FOUND,
-
-			/// @brief Non-Authoritative Host not found, or SERVERFAIL.
-			try_again = TRY_AGAIN,
-
-			/// @brief Non recoverable errors, FORMERR, REFUSED, NOTIMP.
-			no_recovery = NO_RECOVERY,
-
-			/// @brief Valid name, no data record of requested type.
-			no_data = NO_DATA,
-
-			/// @brief No problem;
-			dns_ok = NETDB_SUCCESS
-		};
-		*/
-
 		class Resolver;
+
+		/// @brief Wait for a hostname to resolve.
+		/// @note This function clears any previous query results.
+		/// @param hostname The hostname to resolve. 
+		/// @param timeout Timeout in seconds.
+		/// @param interval Interval between retries in seconds.
+		/// @return 0 on success, non zero on failure or timeout.
+		/// @see DNS::wait()
+		/// @retval 0 Hostname resolved.
+		/// @retval ETIMEDOUT Timeout reached.
+		/// @retval -1 Unexpected error.
+		int wait(const char *hostname, time_t timeout = 60, time_t interval = 5);
 
 		/// @brief DNS Record
 		class UDJAT_API Record {
@@ -126,6 +117,18 @@
 			Resolver(const struct sockaddr_storage &server);
 			~Resolver();
 
+			/// @brief Wait for a hostname to resolve.
+			/// @note This function clears any previous query results.
+			/// @param hostname The hostname to resolve. 
+			/// @param timeout Timeout in seconds.
+			/// @param interval Interval between retries in seconds.
+			/// @return 0 on success, non zero on failure or timeout.
+			/// @see DNS::wait()
+			/// @retval 0 Hostname resolved.
+			/// @retval ETIMEDOUT Timeout reached.
+			/// @retval -1 Unexpected error.
+			int wait(const char *hostname, time_t timeout = 60, time_t interval = 5);
+
 			inline std::vector<Record>::const_iterator begin() const {
 				return records.begin();
 			}
@@ -151,12 +154,38 @@
 			/// @param type	The type of request being made.
 			/// @param domain	The pointer to the domain name.
 			///
-			Resolver & query(ns_class cls, ns_type type, const char *name);
+			Resolver & query(ns_class cls, ns_type type, const char *name, bool except = true);
 
 			/// @brief Run DNS query.
-			inline Resolver & query(const char *name) {
-				return query(ns_c_in, ns_t_a, name);
+			inline Resolver & query(const char *name, bool except = true) {
+				return query(ns_c_in, ns_t_a, name, except);
 			}
+
+		};
+
+		class Exception : public std::runtime_error {
+		private:
+			int err;
+
+		public:
+			Exception(int c);
+
+			inline int code() const noexcept {
+				return err;
+			}
+
+
+		};
+
+		class UDJAT_API State : public Udjat::State<int> {
+		public:
+
+			State(const int code);
+			State(const pugi::xml_node &node, const int code);
+
+			// static std::shared_ptr<State> Factory(const pugi::xml_node &node, const int code);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const pugi::xml_node &node);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const int code);
 
 		};
 

@@ -20,8 +20,8 @@
 project(
 	'udjatnetwork', 
 	['cpp'],
-	version: '1.2.0',
-	default_options : ['c_std=c11', 'cpp_std=c++17'],
+	version: '1.3.2',
+	default_options : ['cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
 
@@ -47,7 +47,13 @@ subdir('po')
 # Required libraries
 #
 # libresolv, resolv.h?
-libudjat = dependency('libudjat')
+libudjat = dependency(
+  'libudjat',
+  required: true, 
+  version: '>=2.0.0',
+  fallback: ['libudjat', 'static_library'],
+)
+
 lib_deps = [
   libudjat,
 ]
@@ -63,25 +69,15 @@ if time_epoch == ''
   time_epoch = run_command('date','+%Y%m%d', check: true).stdout().strip()
 endif
 
-compiler_flags = [
+add_project_arguments(cxx.get_supported_arguments([
   '-ggdb3',
   '-fvisibility=hidden',
   '-fPIC',
   '-DHAVE_CONFIG_H=1',
+  '-Wno-overloaded-virtual',
   '-DBUILD_DATE='+time_epoch,
-]
-
-if enable_debug
-  compiler_flags += [
-	  '-DDEBUG=1'
-  ]
-else
-  compiler_flags += [
-	'-DNDEBUG=1'
-  ]
-endif
-
-add_project_arguments(cxx.get_supported_arguments(compiler_flags), language: 'cpp')
+  get_option('buildtype').contains('debug') ? '-DDEBUG=1' : '-DNDEBUG=1',
+]), language: 'cpp')
 
 #
 # Configuration
@@ -94,7 +90,7 @@ app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 
-app_conf.set_quoted('LOG_DOMAIN', 'http')
+app_conf.set_quoted('LOG_DOMAIN', 'network')
 
 app_conf.set('PRODUCT_NAME', libudjat.get_variable('product_name'))
 app_conf.set('PRODUCT_VERSION', libudjat.version())
@@ -103,7 +99,10 @@ if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
   app_conf.set('HAVE_UNISTD_H', 1)
 endif
 
-includes_dir = include_directories('src/include')
+includes_dir = include_directories(
+  'src/include',
+  'src/include/os/' + host_machine.system().to_lower(),
+)
 
 #
 # Sources
@@ -125,6 +124,8 @@ lib_src = [
   'src/library/nic/factory.cc',
   'src/library/nic/list.cc',
   'src/library/range.cc',
+  'src/library/module.cc',
+  'src/library/testprogram.cc',
 ]
 
 module_src = [
@@ -333,19 +334,11 @@ executable(
   include_directories: includes_dir
 )
 
-install_headers(
-  'src/include/udjat/net/dns.h',
+install_headers( 
   'src/include/udjat/net/gateway.h',
-  'src/include/udjat/net/icmp.h',
-  'src/include/udjat/net/' + host_machine.system() + '/dns.h',
-  'src/include/udjat/net/' + host_machine.system() + '/icmp.h',
+  'src/include/os/' + host_machine.system() + '/udjat/net/dns.h',
+  'src/include/os/' + host_machine.system() + '/udjat/net/icmp.h',
   subdir: 'udjat/net'  
-)
-
-install_headers(
-  'src/include/udjat/net/' + host_machine.system() + '/dns.h',
-  'src/include/udjat/net/' + host_machine.system() + '/icmp.h',
-  subdir: 'udjat/net/' + host_machine.system()
 )
 
 install_headers(
@@ -360,6 +353,11 @@ install_headers(
   'src/include/udjat/net/ip/state.h',
   'src/include/udjat/net/ip/subnet.h',
   subdir: 'udjat/net'  
+)
+
+install_headers(
+  'src/include/udjat/module/network.h',
+  subdir: 'udjat/module'  
 )
 
 
