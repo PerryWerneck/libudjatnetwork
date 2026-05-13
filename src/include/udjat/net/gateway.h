@@ -45,7 +45,7 @@
 			void start() override;
 			void stop() override;
 
-			bool refresh() override;
+			bool refresh(bool) override;
 
 		};
 

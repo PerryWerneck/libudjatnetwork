@@ -134,7 +134,7 @@
 	}
 
 
-	bool IP::Agent::refresh() {
+	bool IP::Agent::refresh(bool) {
 
 		// Check IP state
 		if(IP::Address::empty()) {

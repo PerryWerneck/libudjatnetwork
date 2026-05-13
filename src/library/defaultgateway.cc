@@ -31,11 +31,11 @@
 
  namespace Udjat {
 
-	bool IP::Gateway::refresh() {
+	bool IP::Gateway::refresh(bool ondemand) {
 
 		bool changed = detect();
 
-		if(IP::Agent::refresh()) {
+		if(IP::Agent::refresh(ondemand)) {
 			changed = true;
 		}
 

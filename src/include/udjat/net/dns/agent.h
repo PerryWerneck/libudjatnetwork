@@ -59,7 +59,7 @@
 
 			/// @brief Do a DNS check
 			/// @return true if the state has changed.
-			bool refresh() override;
+			bool refresh(bool) override;
 
 			Udjat::Value & getProperties(Value &value) const override;
 			bool getProperty(const char *key, std::string &value) const override;

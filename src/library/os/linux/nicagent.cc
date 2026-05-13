@@ -95,7 +95,7 @@
 
 	void Nic::Agent::start() {
 
-		if(refresh()) {
+		if(refresh(false)) {
 			Abstract::Agent::updated(true);
 		}
 
@@ -180,7 +180,7 @@
 		NetLink::Controller::getInstance().remove(this);
 	}
 
-	bool Nic::Agent::refresh() {
+	bool Nic::Agent::refresh(bool) {
 
 		bool rc = false;
 

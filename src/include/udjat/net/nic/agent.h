@@ -61,7 +61,7 @@
 
 			void start() override;
 			void stop() override;
-			bool refresh() override;
+			bool refresh(bool) override;
 
 			/// @brief Check for interface link.
 			/// @return true if the interface is 'up' and has an active link.
@@ -90,7 +90,7 @@
 			/// @brief Get number of active interfaces.
 			size_t active();
 
-			bool refresh() override;
+			bool refresh(bool) override;
 
 			Udjat::Value & getProperties(Value &value) const override;
 			bool getProperty(const char *key, std::string &value) const override;

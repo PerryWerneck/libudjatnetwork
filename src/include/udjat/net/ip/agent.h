@@ -67,7 +67,7 @@
 
 			/// @brief Do an ICMP check
 			/// @return true if the state has changed.
-			bool refresh() override;
+			bool refresh(bool) override;
 
 			std::string to_string() const noexcept override;
 

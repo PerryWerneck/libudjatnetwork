@@ -124,7 +124,7 @@
 	}
 
 
-	bool DNS::Agent::refresh() {
+	bool DNS::Agent::refresh(bool ondemand) {
 
 		bool rc = false;
 
@@ -205,7 +205,7 @@
 
 		}
 
-		if(IP::Agent::refresh()) {
+		if(IP::Agent::refresh(ondemand)) {
 			rc = true;
 		}
 
