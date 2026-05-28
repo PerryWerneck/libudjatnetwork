@@ -32,7 +32,7 @@
 		class UDJAT_API Module : public Udjat::Module {			
 		public:
 
-			static Udjat::Module * Factory(const char *name = "http");
+			static Udjat::Module * Factory(const char *name = "network");
 
 			Module(const char *name);
 			virtual ~Module();

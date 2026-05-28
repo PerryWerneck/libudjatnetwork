@@ -142,6 +142,7 @@
 
 			Module(const char *name) : Udjat::Module(name,PACKAGE_DESCRIPTION) {
 				debug("---> Network::Module::Module()");
+				autoclean();
 			};
 
 			~Module() override {
