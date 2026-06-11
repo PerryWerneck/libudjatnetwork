@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
- 	Nic::List::List(const pugi::xml_node &node) : Udjat::Agent<unsigned int>{node} {
+ 	Nic::List::List(const XML::Node &node) : Udjat::Agent<unsigned int>{node} {
 	}
 
 	bool Nic::List::refresh(bool) {

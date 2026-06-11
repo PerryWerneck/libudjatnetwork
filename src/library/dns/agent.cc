@@ -40,7 +40,7 @@
 	DNS::Agent::Agent(const char *name) : IP::Agent(name) {
 	}
 
-	DNS::Agent::Agent(const pugi::xml_node &node) : IP::Agent{node} {
+	DNS::Agent::Agent(const XML::Node &node) : IP::Agent{node} {
 		server.name = String(node,"dns","").as_quark();
 		hostname = String(node,"hostname","").as_quark();
 	}
@@ -67,7 +67,7 @@
 		return state;
 	}
 
-	std::shared_ptr<Abstract::State> DNS::Agent::StateFactory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::State> DNS::Agent::StateFactory(const XML::Node &node) {
 
 		if(node.attribute("dns-state")) {
 			auto state = DNS::State::Factory(*this,node);

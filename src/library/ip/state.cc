@@ -31,7 +31,7 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::IP::State> IP::State::Factory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::IP::State> IP::State::Factory(const XML::Node &node) {
 
 		const struct {
 			const char *name;
@@ -84,7 +84,7 @@
 			}
 
 		public:
-			Internal(const pugi::xml_node &node, bool r) : Abstract::IP::State{node}, revert{r} {
+			Internal(const XML::Node &node, bool r) : Abstract::IP::State{node}, revert{r} {
 			}
 
 			bool empty() const noexcept override {
@@ -113,7 +113,7 @@
 	IP::State::State(const char *subnet) : Abstract::IP::State{subnet}, IP::SubNet{subnet} {
 	}
 
-	IP::State::State(const pugi::xml_node &node) : Abstract::IP::State{node}, IP::SubNet{node} {
+	IP::State::State(const XML::Node &node) : Abstract::IP::State{node}, IP::SubNet{node} {
 	}
 
 	std::string IP::State::to_string() const noexcept {

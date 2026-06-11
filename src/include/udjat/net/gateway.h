@@ -40,7 +40,7 @@
 
 		public:
 			Gateway();
-			Gateway(const pugi::xml_node &node);
+			Gateway(const XML::Node &node);
 
 			void start() override;
 			void stop() override;

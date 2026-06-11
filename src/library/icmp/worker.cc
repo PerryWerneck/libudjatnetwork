@@ -69,7 +69,7 @@
 		check_capabilities("icmp");
 	}
 
-	ICMP::Worker::Worker(const pugi::xml_node &node, const char *addr)
+	ICMP::Worker::Worker(const XML::Node &node, const char *addr)
 		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
 
 		check_capabilities(String{node,"name","icmp"}.c_str());

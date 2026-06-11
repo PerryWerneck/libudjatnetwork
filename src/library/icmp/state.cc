@@ -90,7 +90,7 @@
 
 	};
 
-	std::shared_ptr<ICMP::State> ICMP::State::Factory(const pugi::xml_node &node) {
+	std::shared_ptr<ICMP::State> ICMP::State::Factory(const XML::Node &node) {
 
 		class State : public ICMP::State {
 		private:
@@ -98,7 +98,7 @@
 			Udjat::String body;
 
 		public:
-			State(const pugi::xml_node &node, const icmp_state &state) : ICMP::State{node,state.id} {
+			State(const XML::Node &node, const icmp_state &state) : ICMP::State{node,state.id} {
 
 				if(!Object::properties.label[0]) {
 #ifdef GETTEXT_PACKAGE

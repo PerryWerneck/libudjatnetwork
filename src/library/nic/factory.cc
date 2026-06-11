@@ -28,7 +28,7 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Agent> Nic::Agent::Factory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::Agent> Nic::Agent::Factory(const XML::Node &node) {
 
 		const char *device_name = node.attribute("device-name").as_string();
 

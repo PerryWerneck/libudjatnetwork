@@ -49,13 +49,13 @@
 			/// @return true if the state has changed.
 			virtual bool set(const int code, const char *name);
 
-			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override;
 			std::shared_ptr<Abstract::State> computeState() override;
 
 		public:
 
 			Agent(const char *name = "");
-			Agent(const pugi::xml_node &node);
+			Agent(const XML::Node &node);
 
 			/// @brief Do a DNS check
 			/// @return true if the state has changed.

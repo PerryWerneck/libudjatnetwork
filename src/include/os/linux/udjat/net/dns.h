@@ -181,10 +181,10 @@
 		public:
 
 			State(const int code);
-			State(const pugi::xml_node &node, const int code);
+			State(const XML::Node &node, const int code);
 
-			// static std::shared_ptr<State> Factory(const pugi::xml_node &node, const int code);
-			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const pugi::xml_node &node);
+			// static std::shared_ptr<State> Factory(const XML::Node &node, const int code);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const XML::Node &node);
 			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const int code);
 
 		};

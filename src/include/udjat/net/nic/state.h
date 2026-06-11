@@ -31,10 +31,10 @@
 		class UDJAT_API State : public Abstract::State {
 		public:
 
-			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
+			static std::shared_ptr<State> Factory(const XML::Node &node);
 
 			/// @brief Create state from XML node.
-			State(const pugi::xml_node &node) : Abstract::State{node} {
+			State(const XML::Node &node) : Abstract::State{node} {
 			}
 
 			virtual bool compare(const Nic::Agent &agent) = 0;

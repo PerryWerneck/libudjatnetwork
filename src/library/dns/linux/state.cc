@@ -41,7 +41,7 @@
 #endif // GETTEXT_PACKAGE
 	}
 
-	DNS::State::State(const pugi::xml_node &node, const int code) : Udjat::State<int>(node,code) {
+	DNS::State::State(const XML::Node &node, const int code) : Udjat::State<int>(node,code) {
 	}
 
 	static const struct DNSState {
@@ -132,7 +132,7 @@
 
 		}
 
-		KnownState(const Udjat::Abstract::Object &object, const pugi::xml_node &node, const DNSState &state) : DNS::State(node, state.code) {
+		KnownState(const Udjat::Abstract::Object &object, const XML::Node &node, const DNSState &state) : DNS::State(node, state.code) {
 
 			Object::properties.label = translate(Object::properties.label,state.label);
 
@@ -152,7 +152,7 @@
 	/// @brief The state for unknown codes.
 	class UnKnownState : public DNS::State {
 	public:
-		UnKnownState(const pugi::xml_node &node,const int code) : DNS::State(node, code) {
+		UnKnownState(const XML::Node &node,const int code) : DNS::State(node, code) {
 			if(!Object::properties.summary[0]) {
 				Object::properties.summary = hstrerror(code);
 			}
@@ -172,7 +172,7 @@
 		Object::properties.summary = hstrerror(code);
 	}
 
-	std::shared_ptr<DNS::State> DNS::State::Factory(const Udjat::Abstract::Object &object, const pugi::xml_node &node) {
+	std::shared_ptr<DNS::State> DNS::State::Factory(const Udjat::Abstract::Object &object, const XML::Node &node) {
 
 		const char *state_name = node.attribute("dns-state").as_string();
 		if(!*state_name) {

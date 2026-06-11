@@ -53,7 +53,7 @@
 	IP::Gateway::Gateway() : Udjat::IP::Agent{"gateway"} {
 	}
 
-	IP::Gateway::Gateway(const pugi::xml_node &node) : Udjat::IP::Agent{node} {
+	IP::Gateway::Gateway(const XML::Node &node) : Udjat::IP::Agent{node} {
 	}
 
 	void IP::Gateway::start() {

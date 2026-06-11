@@ -48,15 +48,15 @@
 			std::vector<std::shared_ptr<Nic::State>> states;			///< @brief XML defined NIC states.
 
 		protected:
-			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override;
 			std::shared_ptr<Abstract::State> computeState() override;
 
 		public:
 
-			static std::shared_ptr<Abstract::Agent> Factory(const pugi::xml_node &node);
+			static std::shared_ptr<Abstract::Agent> Factory(const XML::Node &node);
 
 			Agent(const char *name = "");
-			Agent(const pugi::xml_node &node, const char *name = "");
+			Agent(const XML::Node &node, const char *name = "");
 			virtual ~Agent();
 
 			void start() override;
@@ -82,7 +82,7 @@
 		/// @brief Container with all network interfaces.
 		class UDJAT_API List : public Udjat::Agent<unsigned int>  {
 		public:
-			List(const pugi::xml_node &node);
+			List(const XML::Node &node);
 
 			void start() override;
 			void stop() override;

@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::State> Nic::Agent::StateFactory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::State> Nic::Agent::StateFactory(const XML::Node &node) {
 		std::shared_ptr<Nic::State> state = Nic::State::Factory(node);
 		states.push_back(state);
 		return state;

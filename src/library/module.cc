@@ -45,7 +45,7 @@
 				debug("---> Network::Module::NicFactory()");
 			}
 
-			std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override {
+			std::shared_ptr<Abstract::Agent> AgentFactory(const XML::Node &node) const override {
 				debug("Building Nic::Agent '",String{node,"name"}.c_str(),"' from XML");
 				return Nic::Agent::Factory(node);
 			}
@@ -59,7 +59,7 @@
 				debug("---> Network::Module::HostFactory()");
 			}
 
-			std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const override{
+			std::shared_ptr<Abstract::Agent> AgentFactory(const XML::Node &node) const override{
 				debug("Building IP::Agent '",String{node,"name"}.c_str(),"' from XML");
 				return IP::Agent::Factory(node);
 			}

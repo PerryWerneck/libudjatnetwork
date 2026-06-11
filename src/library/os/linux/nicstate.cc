@@ -46,7 +46,7 @@
 		{ IFF_MULTICAST,		false,	"multicast",	"no-multicast"	},
 	};
 
-	std::shared_ptr<Nic::State> Nic::State::Factory(const pugi::xml_node &node) {
+	std::shared_ptr<Nic::State> Nic::State::Factory(const XML::Node &node) {
 
 		/// @brief Test if flag is 'on'
 		class StateActive : public Nic::State {
@@ -54,7 +54,7 @@
 			const unsigned int flags;
 
 		public:
-			StateActive(unsigned int f, const char *icon, const pugi::xml_node &node) : Nic::State{node}, flags{f} {
+			StateActive(unsigned int f, const char *icon, const XML::Node &node) : Nic::State{node}, flags{f} {
 				if(icon && !(Object::properties.icon && *Object::properties.icon)) {
 					Object::properties.icon = icon;
 				}
@@ -73,7 +73,7 @@
 			const unsigned int flags;
 
 		public:
-			StateInactive(unsigned int f, const char *icon, const pugi::xml_node &node) : Nic::State{node}, flags{f} {
+			StateInactive(unsigned int f, const char *icon, const XML::Node &node) : Nic::State{node}, flags{f} {
 				if(icon && !(Object::properties.icon && *Object::properties.icon)) {
 					Object::properties.icon = icon;
 				}
@@ -117,7 +117,7 @@
 			bool revert;
 
 		public:
-			StateExistant(const pugi::xml_node &node, bool r) : Nic::State{node}, revert{r} {
+			StateExistant(const XML::Node &node, bool r) : Nic::State{node}, revert{r} {
 
 				// https://specifications.freedesktop.org/icon-naming-spec/latest/ar01s04.html
 				if(!(Object::properties.icon && *Object::properties.icon)) {

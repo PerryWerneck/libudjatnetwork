@@ -42,7 +42,7 @@
 			State(const char *name, const Level level, const char *summary, const char *body) : Abstract::State(name,level,summary,body) {
 			}
 
-			State(const pugi::xml_node &node) : Abstract::State(node) {
+			State(const XML::Node &node) : Abstract::State(node) {
 			}
 
 			virtual ~State() {
@@ -72,7 +72,7 @@
 			static const sockaddr_in & getMask(sockaddr_in &netmask, uint16_t length);
 
 		public:
-			Range(const pugi::xml_node &node);
+			Range(const XML::Node &node);
 			virtual ~Range();
 
 		};
@@ -86,7 +86,7 @@
 			ICMPResponseState(const char *name, const Level level, const char *summary, const char *body, const ICMP::Response i) : Network::HostAgent::State(name,level,summary,body), id(i) {
 			}
 
-			ICMPResponseState(const pugi::xml_node &node, const ICMP::Response i) : Network::HostAgent::State(node), id(i) {
+			ICMPResponseState(const XML::Node &node, const ICMP::Response i) : Network::HostAgent::State(node), id(i) {
 			}
 
 			bool isValid(const ICMP::Response response) const noexcept override {

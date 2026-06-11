@@ -42,7 +42,7 @@
 			SubNet(const char *subnet);
 
 			/// @brief Create subnet from XML node.
-			SubNet(const pugi::xml_node &node, const char *attrname="subnet");
+			SubNet(const XML::Node &node, const char *attrname="subnet");
 
 			/// @brief Check if IPv4 address is in the subnet.
 			bool contains(const sockaddr_in &addr) const;

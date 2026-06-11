@@ -79,14 +79,14 @@
 	Nic::Agent::Agent(const char *name) : Abstract::Agent{name}, std::string{name} {
 	}
 
-	static std::string NameFactory(const pugi::xml_node &node, const char *name) {
+	static std::string NameFactory(const XML::Node &node, const char *name) {
 		if(name && *name) {
 			return name;
 		}
 		return node.attribute("device-name").as_string();
 	}
 
-	Nic::Agent::Agent(const pugi::xml_node &node, const char *name) : Abstract::Agent{node}, std::string{NameFactory(node,name)} {
+	Nic::Agent::Agent(const XML::Node &node, const char *name) : Abstract::Agent{node}, std::string{NameFactory(node,name)} {
 	}
 
 	Nic::Agent::~Agent() {

@@ -32,7 +32,7 @@
 		set(subnet);
 	}
 
-	IP::SubNet::SubNet(const pugi::xml_node &node, const char *attrname) {
+	IP::SubNet::SubNet(const XML::Node &node, const char *attrname) {
 		set(Object::getAttribute(node,attrname).as_string());
 	}
 

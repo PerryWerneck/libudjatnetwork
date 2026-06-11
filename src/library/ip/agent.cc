@@ -34,7 +34,7 @@
 	IP::Agent::Agent(const char *name) : Abstract::Agent(name) {
 	}
 
-	IP::Agent::Agent(const pugi::xml_node &node, const char *addr) : Abstract::Agent{node}, ICMP::Worker{node,addr} {
+	IP::Agent::Agent(const XML::Node &node, const char *addr) : Abstract::Agent{node}, ICMP::Worker{node,addr} {
 		icmp.check = getAttribute(node,"icmp",icmp.check);
 	}
 
@@ -64,7 +64,7 @@
 
 	}
 
-	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const XML::Node &node) {
 
 		if(node.attribute("icmp-response")) {
 			auto state = ICMP::State::Factory(node);

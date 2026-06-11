@@ -29,7 +29,7 @@
 
 		class UDJAT_PRIVATE AutoDetect : public Nic::Agent {
 		public:
-			AutoDetect(const pugi::xml_node &node);
+			AutoDetect(const XML::Node &node);
 			virtual ~AutoDetect();
 
 			void start() override;

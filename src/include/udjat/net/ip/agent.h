@@ -48,7 +48,7 @@
 		protected:
 
 			/// @brief Build and IP state from xml node.
-			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override;
 
 			/// @brief Set and ICMP state
 			virtual void set(const ICMP::Response response, const IP::Address &from) override;
@@ -60,10 +60,10 @@
 
 		public:
 
-			static std::shared_ptr<Abstract::Agent> Factory(const pugi::xml_node &node);
+			static std::shared_ptr<Abstract::Agent> Factory(const XML::Node &node);
 
 			Agent(const char *name = "");
-			Agent(const pugi::xml_node &node, const char *ipaddr = "");
+			Agent(const XML::Node &node, const char *ipaddr = "");
 
 			/// @brief Do an ICMP check
 			/// @return true if the state has changed.

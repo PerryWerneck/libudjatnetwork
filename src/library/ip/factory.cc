@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Agent> IP::Agent::Factory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::Agent> IP::Agent::Factory(const XML::Node &node) {
 
 		
 		switch(String{node,"type","host"}.select("host","default-gateway",nullptr)) {

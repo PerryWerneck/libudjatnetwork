@@ -67,7 +67,7 @@
 
 		public:
 			Worker(time_t timeout = 5, time_t interval = 1);
-			Worker(const pugi::xml_node &node, const char *addr = nullptr);
+			Worker(const XML::Node &node, const char *addr = nullptr);
 
 			virtual ~Worker();
 
@@ -94,7 +94,7 @@
 		public:
 			const ICMP::Response id;
 
-			State(const pugi::xml_node &node, const ICMP::Response i) : Abstract::State{node}, id{i} {
+			State(const XML::Node &node, const ICMP::Response i) : Abstract::State{node}, id{i} {
 			}
 
 			State(const char *name, const Level level, const ICMP::Response i)
@@ -105,7 +105,7 @@
 				: Abstract::State{name,level,summary,body}, id{i} {
 			}
 
-			static std::shared_ptr<State> Factory(const pugi::xml_node &node);
+			static std::shared_ptr<State> Factory(const XML::Node &node);
 			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const ICMP::Response id);
 
 		};

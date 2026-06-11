@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	Nic::AutoDetect::AutoDetect(const pugi::xml_node &node) : Nic::Agent{node} {
+	Nic::AutoDetect::AutoDetect(const XML::Node &node) : Nic::Agent{node} {
 
 		Network::Interface::for_each([this,node](const Network::Interface &interface) {
 			shared_ptr<Abstract::Agent> agent = make_shared<Nic::Agent>(node,interface.name());
