@@ -22,6 +22,7 @@
  #include <udjat/net/ip/subnet.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/properties.h>
  #include <stdexcept>
 
  using namespace std;
@@ -32,8 +33,8 @@
 		set(subnet);
 	}
 
-	IP::SubNet::SubNet(const XML::Node &node, const char *attrname) {
-		set(Object::getAttribute(node,attrname).as_string());
+	IP::SubNet::SubNet(const Properties &props, const char *attrname) {
+		set(props[attrname].c_str());
 	}
 
 	void IP::SubNet::set(const char *subnet) {

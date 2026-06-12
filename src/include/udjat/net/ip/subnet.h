@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/net/ip/address.h>
+ #include <udjat/tools/properties.h>
  #include <functional>
 
  namespace Udjat {
@@ -42,7 +43,7 @@
 			SubNet(const char *subnet);
 
 			/// @brief Create subnet from XML node.
-			SubNet(const XML::Node &node, const char *attrname="subnet");
+			SubNet(const Properties &props, const char *attrname="subnet");
 
 			/// @brief Check if IPv4 address is in the subnet.
 			bool contains(const sockaddr_in &addr) const;
