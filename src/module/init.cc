@@ -19,11 +19,12 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/module/network.h>
+ #include <udjat/tools/properties.h>
 
  /// @brief Register udjat module.
- Udjat::Module * udjat_module_init(const Udjat::XML::Node &) {
+ Udjat::Module * udjat_module_init(const Udjat::Properties &) {
 	return Udjat::Network::Module::Factory();
  }
 
