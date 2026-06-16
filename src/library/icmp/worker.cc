@@ -19,16 +19,17 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/net/icmp.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>
 
  #ifdef _WIN32
 	#include <private/windows/icmp_controller.h>
+	#include <os/windows/udjat/net/icmp.h>
  #else
 	#include <linux/capability.h>
 	#include <sys/syscall.h>
 	#include <private/linux/icmp_controller.h>
+	#include <os/linux/udjat/net/icmp.h>
  #endif // _WIN32
 
  #ifdef HAVE_UNISTD_H
@@ -69,18 +70,15 @@
 		check_capabilities("icmp");
 	}
 
-	ICMP::Worker::Worker(const XML::Node &node, const char *addr)
-		: Worker(Object::getAttribute(node,"icmp-timeout", (unsigned int) 5),Object::getAttribute(node,"icmp-interval", (unsigned int) 1)) {
+	ICMP::Worker::Worker(const Properties &props, const char *addr)
+		: Worker(props.get("icmp-timeout", (unsigned int) 5),props.get("icmp-interval", (unsigned int) 1)) {
 
-		check_capabilities(String{node,"name","icmp"}.c_str());
+		check_capabilities(props.get("name","icmp").c_str());
 		
 		if(addr && *addr) {
 			IP::Address::set(addr);
-		} else {
-			auto attr = node.attribute("ip");
-			if(attr) {
-				IP::Address::set(attr.as_string());
-			}
+		} else if(props.contains("ip")) {
+			IP::Address::set(props.get("ip"));
 		}
 
 	}

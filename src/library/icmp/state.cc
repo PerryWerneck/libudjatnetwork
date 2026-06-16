@@ -129,7 +129,7 @@
 
 		};
 
-		ICMP::Response id{ResponseFactory(node.attribute("icmp-response").as_string())};
+		ICMP::Response id{ResponseFactory(node["icmp-response"].c_str())};
 
 		for(const icmp_state &st : icmp_states) {
 

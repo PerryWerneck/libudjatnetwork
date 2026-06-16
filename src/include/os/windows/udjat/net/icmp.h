@@ -26,6 +26,7 @@
  #include <iostream>
  #include <udjat/net/ip/address.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/properties.h>
 
  namespace Udjat {
 

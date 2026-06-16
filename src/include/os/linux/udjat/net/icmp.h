@@ -24,6 +24,8 @@
  #include <udjat/net/ip/address.h>
  #include <udjat/tools/value.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/properties.h>
+ #include <udjat/tools/xml.h>
  #include <iostream>
 
  namespace Udjat {
@@ -67,7 +69,7 @@
 
 		public:
 			Worker(time_t timeout = 5, time_t interval = 1);
-			Worker(const XML::Node &node, const char *addr = nullptr);
+			Worker(const Properties &props, const char *addr = nullptr);
 
 			virtual ~Worker();
 
