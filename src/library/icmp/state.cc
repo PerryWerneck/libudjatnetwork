@@ -23,7 +23,6 @@
  #include <udjat/net/icmp.h>
  #include <udjat/net/ip/address.h>
  #include <iostream>
- #include <private/module.h>
  #include <udjat/tools/string.h>
  #include <udjat/agent/level.h>
 

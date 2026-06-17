@@ -21,8 +21,8 @@ src/library/dns/linux/resolver.cc
 src/library/dns/agent.cc
 src/library/ip/state.cc
 src/library/ip/subnet.cc
-src/library/ip/agent.cc
 src/library/ip/factory.cc
+src/library/ip/agent.cc
 src/library/nic/agent.cc
 src/library/nic/factory.cc
 src/library/nic/list.cc
@@ -33,7 +33,6 @@ src/include/private/agents/nic.h
 src/include/private/linux/netlink.h
 src/include/private/linux/icmp_controller.h
 src/include/private/windows/icmp_controller.h
-src/include/private/module.h
 src/include/udjat/net/dns/agent.h
 src/include/udjat/net/dns/response.h
 src/include/udjat/net/dns/state.h
