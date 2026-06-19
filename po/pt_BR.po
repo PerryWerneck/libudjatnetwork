@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: udjathttp 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-16 15:54-0300\n"
+"POT-Creation-Date: 2026-06-18 23:02-0300\n"
 "PO-Revision-Date: 2025-07-02 22:07-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -20,75 +20,75 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.6\n"
 
-#: src/library/icmp/state.cc:46
+#: src/library/icmp/state.cc:45
 msgid "Invalid IP"
 msgstr "IP inválido"
 
-#: src/library/icmp/state.cc:47
+#: src/library/icmp/state.cc:46
 msgid "${name} address is invalid"
 msgstr "Endereço ${name} é inváido"
 
-#: src/library/icmp/state.cc:48
+#: src/library/icmp/state.cc:47
 msgid "Unable to get a valid IP address for ${name}."
 msgstr "Não foi possível obter um endereço IP válido para ${name}"
 
-#: src/library/icmp/state.cc:54
+#: src/library/icmp/state.cc:53
 msgid "Active"
 msgstr "Ativo"
 
-#: src/library/icmp/state.cc:55
+#: src/library/icmp/state.cc:54
 msgid "${name} is active"
 msgstr "${name} está ativo"
 
-#: src/library/icmp/state.cc:56
+#: src/library/icmp/state.cc:55
 msgid "Got ICMP echo reply from host."
 msgstr "Obtive eco ICMP do host."
 
-#: src/library/icmp/state.cc:62 src/library/icmp/state.cc:86
+#: src/library/icmp/state.cc:61 src/library/icmp/state.cc:85
 msgid "Unreachable"
 msgstr "Inacessível"
 
-#: src/library/icmp/state.cc:63
+#: src/library/icmp/state.cc:62
 msgid "${name} is not reachable"
 msgstr "${name} não está acessível"
 
-#: src/library/icmp/state.cc:64
+#: src/library/icmp/state.cc:63
 msgid ""
 "Destination Unreachable. The gateway doesnt know how to get to the defined "
 "network."
 msgstr ""
 
-#: src/library/icmp/state.cc:70
+#: src/library/icmp/state.cc:69
 msgid "Timeout"
 msgstr ""
 
-#: src/library/icmp/state.cc:71
+#: src/library/icmp/state.cc:70
 msgid "${name} is not acessible"
 msgstr "${name} não está acessível"
 
-#: src/library/icmp/state.cc:72
+#: src/library/icmp/state.cc:71
 msgid ""
 "Time Exceeded. The ICMP request has been discarded because it was 'out of "
 "time'."
 msgstr ""
 
-#: src/library/icmp/state.cc:78
+#: src/library/icmp/state.cc:77
 msgid "Unavailable"
 msgstr "Indisponível"
 
-#: src/library/icmp/state.cc:79
+#: src/library/icmp/state.cc:78
 msgid "${name} is not available"
 msgstr "${name} não está disponível"
 
-#: src/library/icmp/state.cc:80
+#: src/library/icmp/state.cc:79
 msgid "No ICMP response from host."
 msgstr "Nenhuma resposta ICMP do host."
 
-#: src/library/icmp/state.cc:87
+#: src/library/icmp/state.cc:86
 msgid "Network is not reachable"
 msgstr "Rede não está acessível"
 
-#: src/library/icmp/state.cc:88
+#: src/library/icmp/state.cc:87
 msgid "The entire network is unreachable."
 msgstr ""
 

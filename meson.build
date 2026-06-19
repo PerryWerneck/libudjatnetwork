@@ -125,11 +125,11 @@ lib_src = [
   'src/library/nic/list.cc',
   'src/library/range.cc',
   'src/library/module.cc',
-  'src/library/testprogram.cc',
 ]
 
 module_src = [
   'src/module/init.cc',
+  'src/module/testprogram.cc',
 ]
 
 test_src = [
@@ -327,9 +327,9 @@ dynamic_library = declare_dependency(
 
 executable(
   meson.project_name(),
-  config_src + test_src,
+  test_src,
   install: false,
-  link_with : [ dynamic, module ],
+  link_with : [ dynamic ],
   dependencies: [ libudjat ],
   include_directories: includes_dir
 )
