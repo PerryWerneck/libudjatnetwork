@@ -51,13 +51,12 @@
 				}
 				
 				return true;
-			},
-
+			}
 		}
 	);
 
  }  
 
  #endif
- 
+
 
