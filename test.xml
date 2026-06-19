@@ -5,6 +5,7 @@
 	<!-- module name='http' required='no' / -->
 	<module name='civetweb' required='no' />
 	<module name='information' required='no' />
+	<module path='.build/udjat-module-network.so' required='yes' />
 
 	<attribute name='alert-type' value='file' />
 	<attribute name='alert-filename' value='/tmp/netwatcher.log' />

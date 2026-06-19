@@ -19,28 +19,18 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/loader.h>
+ #include <udjat/tools/loader.h>
  #include <udjat/module/abstract.h>
 
  using namespace Udjat;
 
- int main(int argc, char **argv) {
+ int main(const int argc, const char **argv) {
 
 	return loader(argc,argv, [](Application &app) -> int {
 
-		debug("Initializing " PACKAGE_NAME "...");
-		udjat_module_init();
-		debug("... initilization of " PACKAGE_NAME " is complete");
-
-		/*
-#ifdef DEBUG
-		return run_unit_test("");
-#else
-		return 0;
-#endif
-		*/
 
 		return 0;
 	});
- }
+
+}
 
