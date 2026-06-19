@@ -20,7 +20,7 @@
 project(
 	'udjatnetwork', 
 	['cpp'],
-	version: '1.4.0',
+	version: '1.4.1',
 	default_options : ['cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
@@ -51,11 +51,12 @@ libudjat = dependency(
   'libudjat',
   required: true, 
   version: '>=2.7.0',
-  fallback: ['libudjat', 'static_library'],
+  fallback: ['libudjat', 'dynamic_library'],
 )
 
 lib_deps = [
   libudjat,
+  dependency('pugixml',method : 'pkg-config',required: true)
 ]
 
 #

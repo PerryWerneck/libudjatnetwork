@@ -22,6 +22,10 @@
  #include <udjat/module/abstract.h>
  #include <udjat/module/network.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/logger.h>
+
+ #include <iostream>
+ using namespace std;
 
  /// @brief Register udjat module.
  Udjat::Module * udjat_module_init(const Udjat::Properties &) {

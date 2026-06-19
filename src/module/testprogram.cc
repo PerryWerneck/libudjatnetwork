@@ -44,55 +44,20 @@
 					throw runtime_error("Failed to resolve localhost");
 				}
 
+				Logger::String{"Resolved localhost to ", resolver.size(), " records."}.info();
+
 				if(resolver.wait("invalid_host.invalid",5,1) != ETIMEDOUT) {
 					throw runtime_error("Got unexpected response resolving invalid_host.invalid");
 				}
 				
 				return true;
-			}
+			},
+
 		}
 	);
 
  }  
 
-//  UDJAT_API int run_udjat_unit_test(const char *name) {
+ #endif
+ 
 
-// 	// Test valid hostname resolution
-// 	debug("--------------------------------------------------------------------");
-// 	{
-// 		DNS::Resolver resolver;
-
-// 		if(resolver.wait("localhost",10,1)) {
-// 			Logger::String{"Failed to resolve localhost"}.error();
-// 			return -1;
-// 		}
-
-// 		if(resolver.wait("invalid_host.invalid",5,1) != ETIMEDOUT) {
-// 			Logger::String{"Got unexpected response resolving invalid_host.invalid"}.error();
-// 			return -1;
-// 		}
-
-// 		/*
-// 		resolver.query("localhost",true);
-
-// 		if(resolver.empty()) {
-// 		}
-
-// 		Logger::String{"Resolved localhost to ", resolver.size(), " records."}.info();
-
-// 		resolver.query("invalid_host.invalid",false);
-
-// 		if(!resolver.empty()) {
-// 			Logger::String{"Got unexpected response resolving invalid_host.invalid"}.error();
-// 			return -1;
-// 		}
-
-// 		DNS::wait("localhost.invalid");
-// 		*/
-
-// 	}
-// 	debug("--------------------------------------------------------------------");
-
-// 	return 0;
-//  }
- #endif // DEBUG
