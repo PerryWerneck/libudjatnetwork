@@ -330,7 +330,7 @@ executable(
   meson.project_name(),
   test_src,
   install: false,
-  link_with : [ dynamic ],
+  #link_with : [ dynamic ],
   dependencies: [ libudjat ],
   include_directories: includes_dir
 )
