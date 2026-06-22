@@ -126,11 +126,11 @@ lib_src = [
   'src/library/nic/list.cc',
   'src/library/range.cc',
   'src/library/module.cc',
+  'src/library/testprogram.cc',
 ]
 
 module_src = [
   'src/module/init.cc',
-  'src/module/testprogram.cc',
 ]
 
 test_src = [
