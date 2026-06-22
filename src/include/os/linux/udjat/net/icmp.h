@@ -20,7 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <pugixml.hpp>
+ #include <udjat/tools/properties.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/tools/value.h>
  #include <udjat/agent/state.h>

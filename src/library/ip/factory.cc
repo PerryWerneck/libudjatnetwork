@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/properties.h>
  #include <memory>
 
  #include <udjat/net/gateway.h>
@@ -32,7 +33,7 @@
 	std::shared_ptr<Abstract::Agent> IP::Agent::Factory(const XML::Node &node) {
 
 		
-		switch(String{node,"type","host"}.select("host","default-gateway",nullptr)) {
+		switch(node.get("type","host").select("host","default-gateway",nullptr)) {
 		case 0:	// IP based host
 			return make_shared<Udjat::IP::Agent>(node);
 			break;

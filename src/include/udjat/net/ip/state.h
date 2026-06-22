@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/agent/state.h>
  #include <udjat/net/ip/address.h>
- #include <pugixml.hpp>
+ #include <udjat/tools/properties.h>
  #include <udjat/net/ip/subnet.h>
 
  namespace Udjat {

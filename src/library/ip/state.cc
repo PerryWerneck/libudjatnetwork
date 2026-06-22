@@ -22,7 +22,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/object.h>
- #include <pugixml.hpp>
+ #include <udjat/tools/properties.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/ip/state.h>
  #include <udjat/net/interface.h>

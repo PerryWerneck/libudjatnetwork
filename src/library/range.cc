@@ -17,7 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <private/module.h>
  #include <udjat/net/ip/address.h>
 
  namespace Udjat {

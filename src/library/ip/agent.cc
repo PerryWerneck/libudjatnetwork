@@ -19,12 +19,12 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <pugixml.hpp>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/ip/agent.h>
  #include <udjat/net/icmp.h>
  #include <udjat/net/dns.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/properties.h>
  #include <iostream>
 
  using namespace std;
@@ -35,7 +35,7 @@
 	}
 
 	IP::Agent::Agent(const XML::Node &node, const char *addr) : Abstract::Agent{node}, ICMP::Worker{node,addr} {
-		icmp.check = getAttribute(node,"icmp",icmp.check);
+		icmp.check = node.get("icmp",icmp.check);
 	}
 
 	void IP::Agent::start() {
@@ -66,13 +66,13 @@
 
 	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const XML::Node &node) {
 
-		if(node.attribute("icmp-response")) {
+		if(node.contains("icmp-response")) {
 			auto state = ICMP::State::Factory(node);
 			icmp.states.push_back(state);
 			return state;
 		}
 
-		if(node.attribute("subnet")) {
+		if(node.contains("subnet")) {
 			auto state = IP::State::Factory(node);
 			ip.states.push_back(state);
 			return state;

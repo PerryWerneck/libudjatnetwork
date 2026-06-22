@@ -24,7 +24,7 @@
  #include <udjat/module/abstract.h>
  #include <udjat/module/network.h>
  #include <udjat/agent/abstract.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/net/ip/agent.h>
  #include <udjat/net/nic/agent.h>
  #include <udjat/tools/logger.h>

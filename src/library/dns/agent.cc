@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <pugixml.hpp>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/ip/agent.h>
  #include <udjat/net/icmp.h>
@@ -27,6 +26,7 @@
  #include <udjat/net/dns/agent.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/properties.h>
  #include <iostream>
 
 #ifndef _WIN32
@@ -69,7 +69,7 @@
 
 	std::shared_ptr<Abstract::State> DNS::Agent::StateFactory(const XML::Node &node) {
 
-		if(node.attribute("dns-state")) {
+		if(node.contains("dns-state")) {
 			auto state = DNS::State::Factory(*this,node);
 			states.push_back(state);
 			return state;
