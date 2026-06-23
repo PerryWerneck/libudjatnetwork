@@ -24,8 +24,8 @@ src/library/ip/subnet.cc
 src/library/ip/factory.cc
 src/library/ip/agent.cc
 src/library/nic/agent.cc
-src/library/nic/factory.cc
 src/library/nic/list.cc
+src/library/nic/factory.cc
 src/library/range.cc
 src/library/module.cc
 src/module/init.cc
