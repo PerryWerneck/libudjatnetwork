@@ -20,17 +20,12 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/loader.h>
- #include <udjat/module/abstract.h>
 
  using namespace Udjat;
 
  int main(const int argc, const char **argv) {
 
-	return loader(argc,argv, [](Application &app) -> int {
-
-
-		return 0;
-	});
+	return loader(argc,argv);
 
 }
 

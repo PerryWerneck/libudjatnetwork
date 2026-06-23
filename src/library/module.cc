@@ -21,7 +21,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/module/network.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/action.h>
