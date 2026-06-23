@@ -21,15 +21,14 @@
  #include <udjat/defs.h>
  #include <udjat/module.h>
  #include <udjat/module/network.h>
- #include <udjat/tools/properties.h>
- #include <udjat/tools/logger.h>
-
- #include <iostream>
- using namespace std;
-
+ 
  /// @brief Register udjat module.
  Udjat::Module * udjat_module_init(const Udjat::Properties &) {
+#ifdef LIBUDJAT_STATIC
+        throw logic_error("Cant use modules on static libudjat");
+#else
 	return Udjat::Network::Module::Factory();
- }
+#endif // LIBUDJAT_STATIS
+}
 
 
