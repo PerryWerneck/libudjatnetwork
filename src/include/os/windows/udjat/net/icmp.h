@@ -59,7 +59,7 @@
 		public:
 			const ICMP::Response id;
 
-			State(const XML::Node &node, const ICMP::Response i) : Abstract::State{node}, id{i} {
+			State(const Properties &props, const ICMP::Response i) : Abstract::State{props}, id{i} {
 			}
 
 			State(const char *name, const Level level, const ICMP::Response i)
@@ -70,7 +70,7 @@
 				: Abstract::State{name,level,summary,body}, id{i} {
 			}
 
-			static std::shared_ptr<State> Factory(const XML::Node &node);
+			static std::shared_ptr<State> Factory(const Properties &props);
 			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const ICMP::Response id);
 
 		};

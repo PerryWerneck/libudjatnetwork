@@ -20,8 +20,8 @@
 project(
 	'udjatnetwork', 
 	['cpp'],
-	version: '1.4.1',
-	default_options : ['cpp_std=c++17'],
+	version: '2.0.0',
+	default_options : ['cpp_std=c++17', 'buildtype=release'],
 	license: 'GPL-3.0-or-later',
 )
 
@@ -50,7 +50,7 @@ subdir('po')
 libudjat = dependency(
   'libudjat',
   required: true, 
-  version: '>=2.7.0',
+  version: '>=3.0.0',
   fallback: ['libudjat'],
 )
 
@@ -126,7 +126,7 @@ lib_src = [
   'src/library/nic/list.cc',
   'src/library/range.cc',
   'src/library/module.cc',
-  'src/library/testprogram.cc',
+  'src/library/testcases.cc',
 ]
 
 module_src = [

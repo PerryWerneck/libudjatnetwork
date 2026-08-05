@@ -40,7 +40,7 @@
 
 		public:
 			Gateway();
-			Gateway(const XML::Node &node);
+			Gateway(const Properties &props);
 
 			void start() override;
 			void stop() override;

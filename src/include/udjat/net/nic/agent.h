@@ -19,7 +19,6 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
  #include <udjat/net/nic/state.h>
 
@@ -48,15 +47,15 @@
 			std::vector<std::shared_ptr<Nic::State>> states;			///< @brief XML defined NIC states.
 
 		protected:
-			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const Properties &props) override;
 			std::shared_ptr<Abstract::State> computeState() override;
 
 		public:
 
-			static std::shared_ptr<Abstract::Agent> Factory(const XML::Node &node);
+			static std::shared_ptr<Abstract::Agent> Factory(const Properties &props);
 
 			Agent(const char *name = "");
-			Agent(const XML::Node &node, const char *name = "");
+			Agent(const Properties &props, const char *name = "");
 			virtual ~Agent();
 
 			void start() override;
@@ -82,7 +81,7 @@
 		/// @brief Container with all network interfaces.
 		class UDJAT_API List : public Udjat::Agent<unsigned int>  {
 		public:
-			List(const XML::Node &node);
+			List(const Properties &props);
 
 			void start() override;
 			void stop() override;
@@ -92,10 +91,8 @@
 
 			bool refresh(bool) override;
 
-			Udjat::Value & getProperties(Value &value) const override;
-			bool getProperty(const char *key, std::string &value) const override;
-
-			bool getProperties(const char *path, Value &value) const override;
+			Udjat::Variant & get_properties(Variant &value) const override;
+			bool get_property(const char *key, Variant &value) const override;
 
 		};
 

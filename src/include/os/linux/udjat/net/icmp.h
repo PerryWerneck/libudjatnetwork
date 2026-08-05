@@ -22,10 +22,9 @@
  #include <udjat/defs.h>
  #include <udjat/tools/properties.h>
  #include <udjat/net/ip/address.h>
- #include <udjat/tools/value.h>
+ #include <udjat/tools/variant.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/properties.h>
- #include <udjat/tools/xml.h>
  #include <iostream>
 
  namespace Udjat {
@@ -85,8 +84,8 @@
 				return busy;
 			}
 
-			Value & getProperties(Value &value) const;
-			bool getProperty(const char *key, std::string &value) const;
+			Variant & get_properties(Variant &value) const;
+			bool get_property(const char *key, Variant &value) const;
 
 		};
 
@@ -96,7 +95,7 @@
 		public:
 			const ICMP::Response id;
 
-			State(const XML::Node &node, const ICMP::Response i) : Abstract::State{node}, id{i} {
+			State(const Properties &props, const ICMP::Response i) : Abstract::State{props}, id{i} {
 			}
 
 			State(const char *name, const Level level, const ICMP::Response i)
@@ -107,7 +106,7 @@
 				: Abstract::State{name,level,summary,body}, id{i} {
 			}
 
-			static std::shared_ptr<State> Factory(const XML::Node &node);
+			static std::shared_ptr<State> Factory(const Properties &props);
 			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const ICMP::Response id);
 
 		};

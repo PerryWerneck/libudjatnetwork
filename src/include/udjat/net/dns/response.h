@@ -19,21 +19,18 @@
 
  #pragma once
  #include <udjat/defs.h>
+ #include <cstdint>
 
-  namespace Udjat {
+ namespace Udjat::DNS {
 
-	namespace DNS {
+	enum Response : uint8_t {
+		invalid,
+		cant_resolve_server_address,
+		cant_resolve_address,
+		dns_ok
+	};
 
-		enum Response : uint8_t {
-			invalid,
-			cant_resolve_server_address,
-			cant_resolve_address,
-			dns_ok
-		};
+	UDJAT_API Response ResponseFactory(const char *name);
 
-		UDJAT_API Response ResponseFactory(const char *name);
-
-	}
-
-  }
+ }
 

@@ -22,7 +22,7 @@
  namespace Udjat {
 
 	/*
-	Network::Range::Range(const XML::Node &node) : State(node) {
+	Network::Range::Range(const Properties &props) : State(props) {
 
 
 	}

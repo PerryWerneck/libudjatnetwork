@@ -40,9 +40,9 @@
 	DNS::Agent::Agent(const char *name) : IP::Agent(name) {
 	}
 
-	DNS::Agent::Agent(const XML::Node &node) : IP::Agent{node} {
-		server.name = String(node,"dns","").as_quark();
-		hostname = String(node,"hostname","").as_quark();
+	DNS::Agent::Agent(const Properties &props) : IP::Agent{props} {
+		server.name = props["dns"].as_quark();
+		hostname = props["hostname"].as_quark();
 	}
 
 	std::shared_ptr<Abstract::State> DNS::Agent::computeState() {
@@ -67,19 +67,19 @@
 		return state;
 	}
 
-	std::shared_ptr<Abstract::State> DNS::Agent::StateFactory(const XML::Node &node) {
+	std::shared_ptr<Abstract::State> DNS::Agent::StateFactory(const Properties &props) {
 
-		if(node.contains("dns-state")) {
-			auto state = DNS::State::Factory(*this,node);
+		if(props.contains("dns-state")) {
+			auto state = DNS::State::Factory(*this,props);
 			states.push_back(state);
 			return state;
 		}
 
-		return IP::Agent::StateFactory(node);
+		return IP::Agent::StateFactory(props);
 
 	}
 
-	Udjat::Value & DNS::Agent::getProperties(Value &value) const {
+	Udjat::Variant & DNS::Agent::get_properties(Variant &value) const {
 
 		if(state) {
 			value["dns"] = state->to_string();
@@ -87,17 +87,17 @@
 			value["dns"] = "";
 		}
 
-		return IP::Agent::getProperties(value);
+		return IP::Agent::get_properties(value);
 	}
 
-	bool DNS::Agent::getProperty(const char *key, std::string &value) const {
+	bool DNS::Agent::get_property(const char *key, Variant &value) const {
 
 		if(!strcasecmp(key,"hostname")) {
 			value = hostname;
 			return true;
 		}
 
-		return IP::Agent::getProperty(key,value);
+		return IP::Agent::get_property(key,value);
 	}
 
 	bool DNS::Agent::set(int code, const char *name) {
@@ -111,14 +111,14 @@
 			if(state->compare(code)) {
 				debug("Found predefined state for response ",code);
 				this->state = state;
-				info() << name << ": " << state->to_string() << endl;
+				Logger::String{state->to_string()}.info(this->name());
 				return true;
 			}
 		}
 
 		debug("Using standard state for response ",code);
 		this->state = DNS::State::Factory(*this,code);
-		info() << state->to_string() << endl;
+		Logger::String{state->to_string()}.info(this->name());
 
 		return true;
 	}

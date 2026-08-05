@@ -33,7 +33,7 @@
 	IP::Gateway::Gateway() : Udjat::IP::Agent{"gateway"} {
 	}
 
-	IP::Gateway::Gateway(const XML::Node &node) : Udjat::IP::Agent{node} {
+	IP::Gateway::Gateway(const Properties &props) : Udjat::IP::Agent{props} {
 	}
 
 	void IP::Gateway::start() {

@@ -34,8 +34,8 @@
 	IP::Agent::Agent(const char *name) : Abstract::Agent(name) {
 	}
 
-	IP::Agent::Agent(const XML::Node &node, const char *addr) : Abstract::Agent{node}, ICMP::Worker{node,addr} {
-		icmp.check = node.get("icmp",icmp.check);
+	IP::Agent::Agent(const Properties &props, const char *addr) : Abstract::Agent{props}, ICMP::Worker{props,addr} {
+		icmp.check = props.get("icmp",icmp.check);
 	}
 
 	void IP::Agent::start() {
@@ -64,21 +64,21 @@
 
 	}
 
-	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const XML::Node &node) {
+	std::shared_ptr<Abstract::State> IP::Agent::StateFactory(const Properties &props) {
 
-		if(node.contains("icmp-response")) {
-			auto state = ICMP::State::Factory(node);
+		if(props.contains("icmp-response")) {
+			auto state = ICMP::State::Factory(props);
 			icmp.states.push_back(state);
 			return state;
 		}
 
-		if(node.contains("subnet")) {
-			auto state = IP::State::Factory(node);
+		if(props.contains("subnet")) {
+			auto state = IP::State::Factory(props);
 			ip.states.push_back(state);
 			return state;
 		}
 
-		return super::StateFactory(node);
+		return super::StateFactory(props);
 
 	}
 
@@ -91,22 +91,22 @@
 		return value;
 	}
 
-	Udjat::Value & IP::Agent::getProperties(Value &value) const {
+	Udjat::Variant & IP::Agent::get_properties(Variant &value) const {
 
 		if(icmp.check) {
-			ICMP::Worker::getProperties(value);
+			ICMP::Worker::get_properties(value);
 		}
 
-		return super::getProperties(value);
+		return super::get_properties(value);
 	}
 
-	bool IP::Agent::getProperty(const char *key, std::string &value) const {
+	bool IP::Agent::get_property(const char *key, Variant &value) const {
 
-		if(ICMP::Worker::getProperty(key, value)) {
+		if(ICMP::Worker::get_property(key, value)) {
 			return true;
 		}
 
-		return super::getProperty(key,value);
+		return super::get_property(key,value);
 	}
 
 	std::shared_ptr<Abstract::State> IP::Agent::computeState() {
@@ -140,7 +140,7 @@
 		if(IP::Address::empty()) {
 
 			if(ip.state) {
-				info() << "No IP address, resetting state" << endl;
+				Logger::String {"No IP address, resetting state"}.info(name());
 				ip.state.reset();
 				set(ICMP::invalid,(IP::Address) *this);
 			}

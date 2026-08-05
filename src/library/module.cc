@@ -23,7 +23,7 @@
  #include <udjat/defs.h>
  #include <udjat/module.h>
  #include <udjat/module/network.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/action.h>
  #include <udjat/net/ip/agent.h>
  #include <udjat/net/nic/agent.h>
@@ -45,9 +45,9 @@
 				debug("---> Network::Module::NicFactory()");
 			}
 
-			std::shared_ptr<Abstract::Agent> AgentFactory(const XML::Node &node) const override {
-				debug("Building Nic::Agent '",String{node,"name"}.c_str(),"' from XML");
-				return Nic::Agent::Factory(node);
+			std::shared_ptr<Abstract::Agent> AgentFactory(const Properties &props) const override {
+				debug("Building Nic::Agent '",props["name"].c_str(),"' from XML");
+				return Nic::Agent::Factory(props);
 			}
 
 		};
@@ -59,12 +59,12 @@
 				debug("---> Network::Module::HostFactory()");
 			}
 
-			std::shared_ptr<Abstract::Agent> AgentFactory(const XML::Node &node) const override{
-				debug("Building IP::Agent '",String{node,"name"}.c_str(),"' from XML");
-				return IP::Agent::Factory(node);
+			std::shared_ptr<Abstract::Agent> AgentFactory(const Properties &props) const override{
+				debug("Building IP::Agent '",props["name"].c_str(),"' from XML");
+				return IP::Agent::Factory(props);
 			}
 
-			std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override {
+			std::shared_ptr<Action> ActionFactory(const Properties &props) const override {
 
 				class WaitForHost : public Action {
 				private:
@@ -73,9 +73,9 @@
 					time_t interval;
 
 				public:
-					WaitForHost(const XML::Node &node) 
-					: Action{node}, hostname{String{node,"host"}.as_quark()}, timeout{node.attribute("timeout").as_uint(120)},
-						 interval{node.attribute("interval").as_uint(5)} {
+					WaitForHost(const Properties &props) 
+					: Action{props}, hostname{props["host"].as_quark()}, timeout{props.get("timeout",120)},
+						 interval{props.get("interval",5)} {
 
 						if(!(hostname && *hostname)) {
 							throw std::runtime_error("Required attribute 'host' is missing or empty.");
@@ -127,7 +127,7 @@
 					}
 				};
 
-				return make_shared<WaitForHost>(node);
+				return make_shared<WaitForHost>(props);
 
 			}
 

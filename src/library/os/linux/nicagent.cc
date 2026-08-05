@@ -79,14 +79,14 @@
 	Nic::Agent::Agent(const char *name) : Abstract::Agent{name}, std::string{name} {
 	}
 
-	static std::string NameFactory(const XML::Node &node, const char *name) {
+	static std::string NameFactory(const Properties &props, const char *name) {
 		if(name && *name) {
 			return name;
 		}
-		return node.attribute("device-name").as_string();
+		return props["device-name"];
 	}
 
-	Nic::Agent::Agent(const XML::Node &node, const char *name) : Abstract::Agent{node}, std::string{NameFactory(node,name)} {
+	Nic::Agent::Agent(const Properties &props, const char *name) : Abstract::Agent{props}, std::string{NameFactory(props,name)} {
 	}
 
 	Nic::Agent::~Agent() {
@@ -195,11 +195,7 @@
 
 		if (ioctl(sock, SIOCGIFFLAGS, (caddr_t)&ifr) < 0) {
 
-			if(errno == ENODEV) {
-				warning() << strerror(errno) << endl;
- 			} else {
- 				error() << strerror(errno) << endl;
- 			}
+			Logger::String{strerror(errno)}.write((errno == ENODEV ? Logger::Warning : Logger::Error),name());
 
  			if(intf.flags != 0 || intf.index != -1 || intf.exist) {
 				rc = true;

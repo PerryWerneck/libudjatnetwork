@@ -89,7 +89,7 @@
 
 	};
 
-	std::shared_ptr<ICMP::State> ICMP::State::Factory(const XML::Node &node) {
+	std::shared_ptr<ICMP::State> ICMP::State::Factory(const Properties &props) {
 
 		class State : public ICMP::State {
 		private:
@@ -97,7 +97,7 @@
 			Udjat::String body;
 
 		public:
-			State(const XML::Node &node, const icmp_state &state) : ICMP::State{node,state.id} {
+			State(const Properties &props, const icmp_state &state) : ICMP::State{props,state.id} {
 
 				if(!Object::properties.label[0]) {
 #ifdef GETTEXT_PACKAGE
@@ -128,12 +128,12 @@
 
 		};
 
-		ICMP::Response id{ResponseFactory(node["icmp-response"].c_str())};
+		ICMP::Response id{ResponseFactory(props["icmp-response"].c_str())};
 
 		for(const icmp_state &st : icmp_states) {
 
 			if(st.id == id) {
-				return make_shared<State>(node,st);
+				return make_shared<State>(props,st);
 			}
 
 		}

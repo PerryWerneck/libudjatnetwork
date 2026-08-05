@@ -41,7 +41,7 @@
 #endif // GETTEXT_PACKAGE
 	}
 
-	DNS::State::State(const XML::Node &node, const int code) : Udjat::State<int>(node,code) {
+	DNS::State::State(const Properties &props, const int code) : Udjat::State<int>(props,code) {
 	}
 
 	static const struct DNSState {
@@ -132,17 +132,17 @@
 
 		}
 
-		KnownState(const Udjat::Abstract::Object &object, const XML::Node &node, const DNSState &state) : DNS::State(node, state.code) {
+		KnownState(const Udjat::Abstract::Object &object, const Properties &props, const DNSState &state) : DNS::State(props, state.code) {
 
 			Object::properties.label = translate(Object::properties.label,state.label);
 
 			summary = translate(Object::properties.summary,state.summary);
-			summary.expand(node);
+			summary.expand(props);
 			summary.expand(object);
 			Object::properties.summary = summary.c_str();
 
 			body = translate(properties.body,state.body);
-			body.expand(node);
+			body.expand(props);
 			body.expand(object);
 			properties.body = body.c_str();
 
@@ -152,7 +152,7 @@
 	/// @brief The state for unknown codes.
 	class UnKnownState : public DNS::State {
 	public:
-		UnKnownState(const XML::Node &node,const int code) : DNS::State(node, code) {
+		UnKnownState(const Properties &props,const int code) : DNS::State(props, code) {
 			if(!Object::properties.summary[0]) {
 				Object::properties.summary = hstrerror(code);
 			}
@@ -172,17 +172,17 @@
 		Object::properties.summary = hstrerror(code);
 	}
 
-	std::shared_ptr<DNS::State> DNS::State::Factory(const Udjat::Abstract::Object &object, const XML::Node &node) {
+	std::shared_ptr<DNS::State> DNS::State::Factory(const Udjat::Abstract::Object &object, const Properties &props) {
 
-		const char *state_name = node.attribute("dns-state").as_string();
-		if(!*state_name) {
+		auto state_name = props["dns-state"];
+		if(state_name.empty()) {
 			throw std::system_error(EINVAL, std::system_category(), "Required attribute 'dns-state' is missing");
 		}
 
 		for(const DNSState &state : dnsstates) {
 
-			if(!strcasecmp(state_name,state.name)) {
-				return make_shared<KnownState>(object,node,state);
+			if(!strcasecmp(state_name.c_str(),state.name)) {
+				return make_shared<KnownState>(object,props,state);
 			}
 
 		}

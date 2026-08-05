@@ -21,6 +21,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/net/nic/agent.h>
+ #include <udjat/tools/properties.h>
 // #include <udjat/tools/singleton.h>
 
  namespace Udjat {
@@ -29,7 +30,7 @@
 
 		class UDJAT_PRIVATE AutoDetect : public Nic::Agent {
 		public:
-			AutoDetect(const XML::Node &node);
+			AutoDetect(const Properties &props);
 			virtual ~AutoDetect();
 
 			void start() override;

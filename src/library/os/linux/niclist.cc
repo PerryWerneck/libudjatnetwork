@@ -56,9 +56,10 @@
 		return active;
 	}
 
-	bool Nic::List::getProperty(const char *key, std::string &value) const {
+	bool Nic::List::get_property(const char *key, Variant &value) const {
 
 		if(!strcasecmp(key,"active")) {
+
 			// Find first active nic.
 			Network::Interface::for_each([&value](const Network::Interface &interface) {
 				if(!interface.loopback() && interface.up() && carrier(interface.name())) {
@@ -67,28 +68,34 @@
 				}
 				return false;
 			});
-
 			return true;
 
 		}
 
 		if(!strcasecmp(key,"nics")) {
+
 			// Get all interfaces.
+			value.clear(Value::Array);
 			Network::Interface::for_each([&value](const Network::Interface &interface) {
 				if(!interface.loopback()) {
-					if(!value.empty()) {
-						value += ",";
-					}
-					value += interface.name();
+					value.append(interface.name());
 				}
 				return false;
 			});
-
 			return true;
+
 		}
 
-		return super::getProperty(key,value);
+		return super::get_property(key,value);
 	}
 
+	Udjat::Variant & Nic::List::get_properties(Variant &value) const {
+
+		for(const char *prop : { "active", "nics" }) {
+			get_property(prop,value[prop]);
+		}
+		return super::get_properties(value);
+
+	}
 
  }

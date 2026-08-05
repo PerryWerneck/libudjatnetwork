@@ -53,7 +53,7 @@
 	IP::Gateway::Gateway() : Udjat::IP::Agent{"gateway"} {
 	}
 
-	IP::Gateway::Gateway(const XML::Node &node) : Udjat::IP::Agent{node} {
+	IP::Gateway::Gateway(const Properties &props) : Udjat::IP::Agent{props} {
 	}
 
 	void IP::Gateway::start() {
@@ -220,7 +220,7 @@
 		bool changed = !equal(gateway,*this);
 		if(changed) {
 			IP::Address::set(gateway);
-			info() << "Default gateway changed to " << to_string() << endl;
+			Logger::String{"Default gateway changed to ",to_string()}.info(name());
 		}
 
 		return changed;

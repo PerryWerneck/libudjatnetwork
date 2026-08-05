@@ -31,10 +31,10 @@
 		class UDJAT_API State : public Abstract::State {
 		public:
 
-			static std::shared_ptr<State> Factory(const XML::Node &node);
+			static std::shared_ptr<State> Factory(const Properties &props);
 
 			/// @brief Create state from XML node.
-			State(const XML::Node &node) : Abstract::State{node} {
+			State(const Properties &props) : Abstract::State{props} {
 			}
 
 			virtual bool compare(const Nic::Agent &agent) = 0;

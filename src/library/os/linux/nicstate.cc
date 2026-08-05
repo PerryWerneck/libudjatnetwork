@@ -46,7 +46,7 @@
 		{ IFF_MULTICAST,		false,	"multicast",	"no-multicast"	},
 	};
 
-	std::shared_ptr<Nic::State> Nic::State::Factory(const XML::Node &node) {
+	std::shared_ptr<Nic::State> Nic::State::Factory(const Properties &props) {
 
 		/// @brief Test if flag is 'on'
 		class StateActive : public Nic::State {
@@ -54,7 +54,7 @@
 			const unsigned int flags;
 
 		public:
-			StateActive(unsigned int f, const char *icon, const XML::Node &node) : Nic::State{node}, flags{f} {
+			StateActive(unsigned int f, const char *icon, const Properties &props) : Nic::State{props}, flags{f} {
 				if(icon && !(Object::properties.icon && *Object::properties.icon)) {
 					Object::properties.icon = icon;
 				}
@@ -73,7 +73,7 @@
 			const unsigned int flags;
 
 		public:
-			StateInactive(unsigned int f, const char *icon, const XML::Node &node) : Nic::State{node}, flags{f} {
+			StateInactive(unsigned int f, const char *icon, const Properties &props) : Nic::State{props}, flags{f} {
 				if(icon && !(Object::properties.icon && *Object::properties.icon)) {
 					Object::properties.icon = icon;
 				}
@@ -86,26 +86,26 @@
 
 		};
 
-		const char * state = node.attribute("device-state").as_string(node.attribute("name").as_string());
-		if(!state[0]) {
+		auto state = props.get("device-state",props["name"].c_str());
+		if(state.empty()) {
 			throw runtime_error("The required attribute 'device-state' is missing");
 		}
 
 		for(size_t ix = 0; ix < N_ELEMENTS(flagstates); ix++) {
 
-			if(!strcasecmp(state,flagstates[ix].active)) {
+			if(!strcasecmp(state.c_str(),flagstates[ix].active)) {
 				return make_shared<StateActive>(
 								flagstates[ix].flag,
 								(flagstates[ix].standard_icon ? "network-transmit-receive" : nullptr),
-								node
+								props
 							);
 			}
 
-			if(!strcasecmp(state,flagstates[ix].inactive)) {
+			if(!strcasecmp(state.c_str(),flagstates[ix].inactive)) {
 				return make_shared<StateInactive>(
 								flagstates[ix].flag,
 								(flagstates[ix].standard_icon ? "network-error" : nullptr),
-								node
+								props
 							);
 			}
 
@@ -117,7 +117,7 @@
 			bool revert;
 
 		public:
-			StateExistant(const XML::Node &node, bool r) : Nic::State{node}, revert{r} {
+			StateExistant(const Properties &props, bool r) : Nic::State{props}, revert{r} {
 
 				// https://specifications.freedesktop.org/icon-naming-spec/latest/ar01s04.html
 				if(!(Object::properties.icon && *Object::properties.icon)) {
@@ -132,14 +132,13 @@
 
 		};
 
-		if(!strcasecmp(state,"found")) {
-			return make_shared<StateExistant>(node,false);
+		if(!strcasecmp(state.c_str(),"found")) {
+			return make_shared<StateExistant>(props,false);
 		}
 
-		if(!strcasecmp(state,"not-found")) {
-			return make_shared<StateExistant>(node,true);
+		if(!strcasecmp(state.c_str(),"not-found")) {
+			return make_shared<StateExistant>(props,true);
 		}
-
 
 		throw runtime_error("Required attribute 'device-state' is missing or invalid");
 

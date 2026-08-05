@@ -20,14 +20,14 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/net/nic/agent.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::State> Nic::Agent::StateFactory(const XML::Node &node) {
-		std::shared_ptr<Nic::State> state = Nic::State::Factory(node);
+	std::shared_ptr<Abstract::State> Nic::Agent::StateFactory(const Properties &props) {
+		std::shared_ptr<Nic::State> state = Nic::State::Factory(props);
 		states.push_back(state);
 		return state;
 	}

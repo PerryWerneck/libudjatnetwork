@@ -19,12 +19,12 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/icmp.h>
  #include <udjat/net/ip/state.h>
  #include <udjat/net/dns.h>
+ #include <udjat/tools/properties.h>
 
  namespace Udjat {
 
@@ -49,20 +49,20 @@
 			/// @return true if the state has changed.
 			virtual bool set(const int code, const char *name);
 
-			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const Properties &props) override;
 			std::shared_ptr<Abstract::State> computeState() override;
 
 		public:
 
 			Agent(const char *name = "");
-			Agent(const XML::Node &node);
+			Agent(const Properties &props);
 
 			/// @brief Do a DNS check
 			/// @return true if the state has changed.
 			bool refresh(bool) override;
 
-			Udjat::Value & getProperties(Value &value) const override;
-			bool getProperty(const char *key, std::string &value) const override;
+			Udjat::Value & get_properties(Variant &value) const override;
+			bool get_property(const char *key, Variant &value) const override;
 
 		};
 

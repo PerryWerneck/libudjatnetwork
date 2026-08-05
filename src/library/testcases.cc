@@ -22,22 +22,23 @@
  #include <udjat/tools/logger.h>
  #include <udjat/module.h>
  #include <udjat/net/dns.h>
- #include <udjat/tools/unit-test.h>
+ #include <udjat/tools/testsuite.h>
  #include <string>
  
  using namespace Udjat;
  using namespace std;
 
- #ifdef DEBUG 
+ #if defined(DEBUG) and ! defined(LIBUDJAT_STATIC) 
 
- UDJAT_API void enum_udjat_unit_tests(Udjat::UnitTests &tests) noexcept {
+ UDJAT_API void udjat_register_tests(Udjat::TestSuite &suite) noexcept {
 
-	debug(__FUNCTION__," begin -> ",tests.size());
+	using Case = TestSuite::Case;
 
-	tests.append(
-		UnitTests::Worker{
-			"Test hostname resolution",
-			[]() {
+	suite.add(
+		Case{
+			"Hostname resolution",
+			[](std::ostream &) {
+
 				DNS::Resolver resolver;
 
 				if(resolver.wait("localhost",10,1)) {
@@ -49,14 +50,45 @@
 				if(resolver.wait("invalid_host.invalid",5,1) != ETIMEDOUT) {
 					throw runtime_error("Got unexpected response resolving invalid_host.invalid");
 				}
-				
-				return true;
+
+				return "Host name resolution ok";
 			}
 		}
 	);
 
- }  
+ }
 
- #endif
+#endif
+
+//  #ifdef DEBUG 
+
+//  UDJAT_API void enum_udjat_unit_tests(Udjat::UnitTests &tests) noexcept {
+
+// 	debug(__FUNCTION__," begin -> ",tests.size());
+
+// 	tests.append(
+// 		UnitTests::Worker{
+// 			"Test hostname resolution",
+// 			[]() {
+// 				DNS::Resolver resolver;
+
+// 				if(resolver.wait("localhost",10,1)) {
+// 					throw runtime_error("Failed to resolve localhost");
+// 				}
+
+// 				Logger::String{"Resolved localhost to ", resolver.size(), " records."}.info();
+
+// 				if(resolver.wait("invalid_host.invalid",5,1) != ETIMEDOUT) {
+// 					throw runtime_error("Got unexpected response resolving invalid_host.invalid");
+// 				}
+				
+// 				return true;
+// 			}
+// 		}
+// 	);
+
+//  }  
+
+//  #endif
 
 

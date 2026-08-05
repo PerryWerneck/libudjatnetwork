@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/agent/state.h>
  #include <udjat/net/dns/response.h>
+ #include <udjat/tools/properties.h>
 
  namespace Udjat {
 
@@ -30,14 +31,14 @@
 		public:
 			const DNS::Response id;
 
-			State(const XML::Node &node, const DNS::Response i) : Abstract::State{node}, id{i} {
+			State(const Properties &props, const DNS::Response i) : Abstract::State{props}, id{i} {
 			}
 
 			State(const char *name, const Level level, const char *summary, const char *body, const DNS::Response i)
 				: Abstract::State{name,level,summary,body}, id{i} {
 			}
 
-			static std::shared_ptr<State> Factory(const XML::Node &node);
+			static std::shared_ptr<State> Factory(const Properties &props);
 			static std::shared_ptr<State> Factory(const DNS::Response id);
 
 		};

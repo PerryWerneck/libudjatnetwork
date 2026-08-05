@@ -19,7 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/agent.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/icmp.h>
@@ -48,7 +48,7 @@
 		protected:
 
 			/// @brief Build and IP state from xml node.
-			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override;
+			std::shared_ptr<Abstract::State> StateFactory(const Properties &props) override;
 
 			/// @brief Set and ICMP state
 			virtual void set(const ICMP::Response response, const IP::Address &from) override;
@@ -60,10 +60,10 @@
 
 		public:
 
-			static std::shared_ptr<Abstract::Agent> Factory(const XML::Node &node);
+			static std::shared_ptr<Abstract::Agent> Factory(const Properties &props);
 
 			Agent(const char *name = "");
-			Agent(const XML::Node &node, const char *ipaddr = "");
+			Agent(const Properties &props, const char *ipaddr = "");
 
 			/// @brief Do an ICMP check
 			/// @return true if the state has changed.
@@ -73,8 +73,8 @@
 
 			Udjat::Value & get(Udjat::Value &value) const override;
 
-			Udjat::Value & getProperties(Value &value) const override;
-			bool getProperty(const char *key, std::string &value) const override;
+			Udjat::Value & get_properties(Variant &value) const override;
+			bool get_property(const char *key, Variant &value) const override;
 
 		};
 

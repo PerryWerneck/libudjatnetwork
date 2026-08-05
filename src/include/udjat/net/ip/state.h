@@ -49,8 +49,8 @@
 					: Udjat::Abstract::State{name,level,summary,body} { }
 
 				/// @brief Create state from xml node
-				State(const XML::Node &node)
-					: Udjat::Abstract::State{node} { }
+				State(const Properties &props)
+					: Udjat::Abstract::State{props} { }
 
 				/// @brief Test if IP is in range.
 				/// @param value IP to test.
@@ -79,13 +79,13 @@
 
 		public:
 
-			static std::shared_ptr<Abstract::IP::State> Factory(const XML::Node &node);
+			static std::shared_ptr<Abstract::IP::State> Factory(const Properties &props);
 
 			/// @brief Create state from subnet on format xxx.xxx.xxx.xxx/bits
 			State(const char *subnet);
 
 			/// @brief Create state from XML node.
-			State(const XML::Node &node);
+			State(const Properties &props);
 
 			std::string to_string() const noexcept override;
 

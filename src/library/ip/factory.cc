@@ -30,22 +30,22 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Agent> IP::Agent::Factory(const XML::Node &node) {
+	std::shared_ptr<Abstract::Agent> IP::Agent::Factory(const Properties &props) {
 
 		
-		switch(node.get("type","host").select("host","default-gateway",nullptr)) {
+		switch(props.get("type","host").select("host","default-gateway",nullptr)) {
 		case 0:	// IP based host
-			return make_shared<Udjat::IP::Agent>(node);
+			return make_shared<Udjat::IP::Agent>(props);
 			break;
 
 		case 1: // Default gateway
-			return make_shared<Udjat::IP::Gateway>(node);
+			return make_shared<Udjat::IP::Gateway>(props);
 
 		default:
-			if(node.attribute("hostname")) {
-				return make_shared<Udjat::DNS::Agent>(node);
-			} else if(node.attribute("ip")) {
-				return make_shared<Udjat::IP::Agent>(node);
+			if(props.contains("hostname")) {
+				return make_shared<Udjat::DNS::Agent>(props);
+			} else if(props.contains("ip")) {
+				return make_shared<Udjat::IP::Agent>(props);
 			}
 		}
 

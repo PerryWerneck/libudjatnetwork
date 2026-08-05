@@ -181,10 +181,9 @@
 		public:
 
 			State(const int code);
-			State(const XML::Node &node, const int code);
+			State(const Properties &props, const int code);
 
-			// static std::shared_ptr<State> Factory(const XML::Node &node, const int code);
-			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const XML::Node &node);
+			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const Properties &props);
 			static std::shared_ptr<State> Factory(const Udjat::Abstract::Object &object, const int code);
 
 		};

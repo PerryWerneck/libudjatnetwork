@@ -31,7 +31,7 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::IP::State> IP::State::Factory(const XML::Node &node) {
+	std::shared_ptr<Abstract::IP::State> IP::State::Factory(const Properties &props) {
 
 		const struct {
 			const char *name;
@@ -51,7 +51,7 @@
 
 		};
 
-		const char *subnet = Object::getAttribute(node,"subnet").as_string();
+		auto subnet = props["subnet"];
 
 		class Internal : public Abstract::IP::State, public IP::SubNet {
 		private:
@@ -84,7 +84,7 @@
 			}
 
 		public:
-			Internal(const XML::Node &node, bool r) : Abstract::IP::State{node}, revert{r} {
+			Internal(const Properties &props, bool r) : Abstract::IP::State{props}, revert{r} {
 			}
 
 			bool empty() const noexcept override {
@@ -101,19 +101,19 @@
 		};
 
 		for(size_t ix = 0; ix < N_ELEMENTS(locals);ix++) {
-			if(!strcasecmp(subnet,locals[ix].name)) {
-				return make_shared<Internal>(node,locals[ix].revert);
+			if(!strcasecmp(subnet.c_str(),locals[ix].name)) {
+				return make_shared<Internal>(props,locals[ix].revert);
 			}
 		}
 
 		// Create default state.
-		return make_shared<IP::State>(node);
+		return make_shared<IP::State>(props);
 	}
 
 	IP::State::State(const char *subnet) : Abstract::IP::State{subnet}, IP::SubNet{subnet} {
 	}
 
-	IP::State::State(const XML::Node &node) : Abstract::IP::State{node}, IP::SubNet{node} {
+	IP::State::State(const Properties &props) : Abstract::IP::State{props}, IP::SubNet{props} {
 	}
 
 	std::string IP::State::to_string() const noexcept {

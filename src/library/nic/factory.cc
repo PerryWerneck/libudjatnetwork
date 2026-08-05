@@ -28,22 +28,22 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Agent> Nic::Agent::Factory(const XML::Node &node) {
+	std::shared_ptr<Abstract::Agent> Nic::Agent::Factory(const Properties &props) {
 
-		const char *device_name = node.attribute("device-name").as_string();
+		const auto device_name = props["device-name"];
 
-		if(*device_name) {
+		if(!device_name.empty()) {
 
-			if(!(strcasecmp(device_name,"*") && strcasecmp(device_name,"all"))) {
+			if(!(strcasecmp(device_name.c_str(),"*") && strcasecmp(device_name.c_str(),"all"))) {
 
-				if(node.attribute("auto-detect").as_bool(false)) {
-					return make_shared<Nic::AutoDetect>(node);
+				if(props.get("auto-detect",false)) {
+					return make_shared<Nic::AutoDetect>(props);
 				}
 
-				return make_shared<Nic::List>(node);
+				return make_shared<Nic::List>(props);
 			}
 
-			return make_shared<Nic::Agent>(node);
+			return make_shared<Nic::Agent>(props);
 		}
 
 

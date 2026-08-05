@@ -29,52 +29,11 @@
 
  namespace Udjat {
 
- 	Nic::List::List(const XML::Node &node) : Udjat::Agent<unsigned int>{node} {
+ 	Nic::List::List(const Properties &props) : Udjat::Agent<unsigned int>{props} {
 	}
 
 	bool Nic::List::refresh(bool) {
 		return set(active());
-	}
-
-	bool Nic::List::getProperties(const char *path, Value &value) const {
-
-		if(super::getProperties(path,value)) {
-			return true;
-		}
-
-		if(!*path) {
-			return false;
-
-		}
-
-#ifdef _WIN32
-
-		// FIX-ME: Why Network::Interface::for_each isnt working on windows?
-		return false;
-
-#else
-		return Network::Interface::for_each([&value,path](const Network::Interface &interface) {
-			if(!strcasecmp(interface.name(),path)) {
-
-				value["carrier"] = stoi(File::Text{String{"/sys/class/net/",interface.name(),"/carrier"}}.c_str()) != 0;
-
-				interface.getProperties(value);
-				return true;
-			}
-			return false;
-		});
-#endif // _WIN32
-
-	}
-
-	Value & Nic::List::getProperties(Value &value) const {
-
-		Abstract::Object::getProperty("nics",value["nics"]);
-		Abstract::Object::getProperty("active",value["active"]);
-
-		// TODO: List all interfaces.
-
-		return super::getProperties(value);
 	}
 
  }
