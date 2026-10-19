@@ -21,7 +21,7 @@ project(
 	'udjatnetwork', 
 	['cpp'],
 	version: '2.0.0',
-	default_options : ['cpp_std=c++17', 'buildtype=release'],
+	default_options : [ 'c_std=c11', 'cpp_std=c++17', 'buildtype=release', 'default_library=shared' ],
 	license: 'GPL-3.0-or-later',
 )
 
@@ -55,8 +55,7 @@ libudjat = dependency(
 )
 
 lib_deps = [
-  libudjat,
-  dependency('pugixml',method : 'pkg-config',required: true)
+  libudjat
 ]
 
 #
@@ -228,7 +227,7 @@ if host_machine.system() == 'windows'
     )
   )
 
-  dynamic = shared_library(
+  libudjatnetwork = library(
     meson.project_name(), 
     config_src + lib_src + resources,
     install: true,
@@ -242,30 +241,13 @@ if host_machine.system() == 'windows'
     include_directories: includes_dir
   )
 
-  static_library = declare_dependency(
-    link_with:static_library(
-      meson.project_name(), 
-      config_src + lib_src,
-      install: true,
-      dependencies: lib_deps,
-      cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-      include_directories: includes_dir
-    ),
-      dependencies: lib_deps,
-      link_args: [ 
-        '-lws2_32',
-      ],
-      include_directories: includes_dir
-  )
-
   # https://mesonbuild.com/Reference-manual_functions.html#shared_library
   module = shared_library(
     'http', 
-    config_src + module_src + resources,
+    config_src + module_src + lib_src + resources,
     name_prefix: 'udjat-module-',
     install: true,
     install_tag: 'module',
-    link_with: dynamic, 
     install_dir: libudjat.get_variable('module_path'),
     gnu_symbol_visibility: 'hidden',
     dependencies: lib_deps,
@@ -274,7 +256,7 @@ if host_machine.system() == 'windows'
 
 else
 
-  dynamic = shared_library(
+  libudjatnetwork = library(
     meson.project_name(), 
     config_src + lib_src,
     install: true,
@@ -289,48 +271,33 @@ else
     include_directories: includes_dir
   )
 
-  static_library = declare_dependency(
-    link_with:static_library(
-      meson.project_name(), 
-      config_src + lib_src,
-      install: true,
-      dependencies: lib_deps,
-      cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-      gnu_symbol_visibility: 'hidden',
-      include_directories: includes_dir
-    ),
-    dependencies: lib_deps,
-    link_args: [ 
-    '-lresolv',
-    ],
-    include_directories: includes_dir
-  )
-
   # https://mesonbuild.com/Reference-manual_functions.html#shared_library
   module = shared_library(
     'network', 
-    config_src + module_src,
+    config_src + module_src + lib_src,
     name_prefix: 'udjat-module-',
     install: true,
-    link_with: dynamic,
     install_dir: libudjat.get_variable('module_path'),
     gnu_symbol_visibility: 'hidden',
     dependencies: lib_deps,
+    link_args: [ 
+      '-lresolv',
+    ],
     include_directories: includes_dir
   )
 
 endif
 
-dynamic_library = declare_dependency(
-  link_with: dynamic,
-  include_directories: includes_dir,
-)
+libudjatnetwork_dep = declare_dependency(
+  link_with : libudjatnetwork,
+  include_directories : includes_dir
+) 
 
 executable(
   meson.project_name(),
   test_src,
   install: false,
-  #link_with : [ dynamic ],
+  link_with : [ module ],
   dependencies: [ libudjat ],
   include_directories: includes_dir
 )
