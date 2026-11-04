@@ -35,6 +35,7 @@
 	using Case = TestSuite::Case;
 
 	suite.add(
+		PACKAGE_DESCRIPTION,
 		Case{
 			"Hostname resolution",
 			[](std::ostream &) {

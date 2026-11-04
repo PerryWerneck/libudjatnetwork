@@ -47,6 +47,7 @@ subdir('po')
 # Required libraries
 #
 # libresolv, resolv.h?
+
 libudjat = dependency(
   'libudjat',
   required: true, 
@@ -158,15 +159,6 @@ if host_machine.system() == 'windows'
     libraries_private: [ '-lws2_32 ']
   )
 
-  pkg.generate(
-    name: 'lib' + meson.project_name() + '-static',
-    description: project_description,
-    libraries: [ 
-      '-l' + meson.project_name(),
-      '-lws2_32',
-  ]
-  )
-
   lib_src += [
     'src/library/os/windows/defaultgateway.cc',
     'src/library/os/windows/icmp_controller.cc',
@@ -183,12 +175,6 @@ else
     requires: [ 'libudjat' ],
     libraries: [ '-l' + meson.project_name() ],
     libraries_private: [ '-lresolv' ]
-  )
-
-  pkg.generate(
-    name: 'lib' + meson.project_name() + '-static',
-    description: project_description,
-    libraries: [ '-l:lib' + meson.project_name() + '.a', '-lresolv' ]
   )
 
   lib_src += [

@@ -87,7 +87,7 @@
 	}
 
 	Udjat::Value & IP::Agent::get(Udjat::Value &value) const {
-		value.set(std::to_string((IP::Address) *this));
+		value.assign(std::to_string((IP::Address) *this));
 		return value;
 	}
 
