@@ -21,7 +21,12 @@ project(
 	'udjatnetwork', 
 	['cpp'],
 	version: '2.0.0',
-	default_options : [ 'c_std=c11', 'cpp_std=c++17', 'buildtype=release', 'default_library=shared' ],
+	default_options : [ 
+    'c_std=c11', 
+    'cpp_std=c++17', 
+    'buildtype=release', 
+    'default_library=both' 
+  ],
 	license: 'GPL-3.0-or-later',
 )
 
